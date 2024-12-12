@@ -1,0 +1,8 @@
+.zona_impresion{
+	position: absolute;
+	box-sizing: border-box;
+width: 60%;
+	-webkit-box-shadow: 7px 6px 21px -2px rgba(0,0,0,0.58);
+-moz-box-shadow: 7px 6px 21px -2px rgba(0,0,0,0.58);
+box-shadow: 7px 6px 21px -2px rgba(0,0,0,0.58);
+}
