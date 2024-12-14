@@ -2,7 +2,22 @@
 if (strlen(session_id()) < 1)
     session_start();
 
-$permisos = ['Escritorio', 'Asignaciones', 'Acceso', 'Estudiante', 'Secretaria'];
+    $permisos = [
+        'Escritorio', 
+        'Descargar', 
+        'Solicitud', 
+        'Atencion', 
+        'Estado', 
+        'Historial', 
+        'Aprobadas', 
+        'Ver_Solicitudes', 
+        'Subir_Solicitud', 
+        'Gestion', 
+        'Reporte',
+        'Estudiante', 
+        'Secretaria'
+    ];
+    
 foreach ($permisos as $permiso) {
     if (!isset($_SESSION[$permiso])) {
         $_SESSION[$permiso] = 1;

@@ -1,6 +1,5 @@
 <?php
 require_once "../config/Conexion.php";  // Asegúrate de que se incluya el archivo de conexión
-
 class Usuario {
     public function __construct() {}
 
@@ -30,7 +29,7 @@ class Usuario {
                 }
 
                 // Establecer permisos para estudiantes o usuarios
-                //$this->establecerPermisos($usuario->Rol);
+                $this->establecerPermisos($usuario->Rol);
 
                 return $usuario;
             }
@@ -45,26 +44,56 @@ class Usuario {
     private function establecerPermisos($rol) {
         // Resetear todos los permisos
         $_SESSION['Escritorio'] = 0;
-        $_SESSION['Secretaria'] = 0;
-        $_SESSION['Docente'] = 0;
-        $_SESSION['Asignaciones'] = 0;
-        $_SESSION['Acceso'] = 0;
+        $_SESSION['Descargar'] = 0;
+        $_SESSION['Solicitud'] = 0;
+        $_SESSION['Atencion'] = 0;
+        $_SESSION['Estado'] = 0;
+        $_SESSION['Historial'] = 0;
+        $_SESSION['Aprobadas'] = 0;
+        $_SESSION['Ver_Solicitudes'] = 0;
+        $_SESSION['Subir_Solicitud'] = 0;
+        $_SESSION['Gestion'] = 0;
+        $_SESSION['Reporte'] = 0;
     
         // Establecer permisos generales
         $_SESSION['Escritorio'] = 1;
     
         // Asignar permisos según el rol
         switch(strtoupper($rol)) {
-            case 'SECRETARIA':
-                $_SESSION['Secretaria'] = 1;
-                break;
             case 'ESTUDIANTE':
-                $_SESSION['Estudiante'] = 1;
+                $_SESSION['Descargar'] = 1;
+                $_SESSION['Solicitud'] = 1;
+                $_SESSION['Atencion'] = 1;
+                $_SESSION['Estado'] = 1;
+                $_SESSION['Historial'] = 1;
+                $_SESSION['Aprobadas'] = 1;
+                $_SESSION['Estudiante'] = 1;  // Activar permisos para Estudiante
                 break;
-            default:
+                
+            case 'SECRETARIA':
+                $_SESSION['Ver_Solicitudes'] = 1;
+                $_SESSION['Subir_Solicitud'] = 1;
+                $_SESSION['Gestion'] = 1;
+                $_SESSION['Reporte'] = 1;
+                $_SESSION['Secretaria'] = 1;  // Activar permisos para Secretaria
                 break;
         }
     }
+    
+
+    public function descargarSolicitud($file) {
+        if (file_exists($file)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+            exit();
+        } else {
+            die('El archivo no existe.');
+        }
+    }
+       
     
 }
 ?>
