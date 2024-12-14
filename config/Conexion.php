@@ -7,23 +7,27 @@ if (!function_exists('ejecutarConsultaSP')) {
     // Ejecuta procedimientos almacenados
     function ejecutarConsultaSP($sql, $db = 'atencion_ciudadana') { 
         $Fn = new Cls_DataConnection();
-        $Cn = $Fn->Fn_getConnect($db);
-        $query = $Cn->query($sql);
-        $Cn->close();
+        $Cn = $Fn->Fn_getConnect($db); // Aquí se obtiene la conexión
+        $query = $Cn->query($sql); // Ejecuta la consulta
+        $Cn->close(); // Cierra la conexión
         return $query;
     }
 }
 
+// Conexión por defecto a la base de datos 'atencion_ciudadana'
 $conexion = new Cls_DataConnection();
-$conexion = $conexion->Fn_getConnect('atencion_ciudadana'); // Conexión a la base de datos 'atencion_ciudadana' por defecto
-mysqli_query($conexion, 'SET NAMES "utf8"');
+$conexion = $conexion->Fn_getConnect('atencion_ciudadana'); // Conexión a 'atencion_ciudadana'
 
-// Verifica si hay errores en la conexión
-if (mysqli_connect_errno()) {
-    printf("Falló en la conexión con la base de datos: %s\n", mysqli_connect_error());
+// Asegúrate de que la conexión es exitosa
+if ($conexion->connect_errno) {
+    printf("Falló la conexión: %s\n", $conexion->connect_error);
     exit();
 }
 
+// Configuración de la codificación
+$conexion->query('SET NAMES "utf8"'); // Usar el método query directamente sobre el objeto conexión
+
+// Verifica si las funciones no están definidas previamente
 if (!function_exists('ejecutarConsulta')) {
     // Ejecuta consultas generales
     function ejecutarConsulta($sql, $db = 'atencion_ciudadana') {
@@ -63,4 +67,5 @@ if (!function_exists('ejecutarConsulta')) {
         return htmlspecialchars($str);
     }
 }
+
 ?>
