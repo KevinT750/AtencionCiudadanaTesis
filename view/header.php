@@ -43,6 +43,8 @@ foreach ($permisos as $permiso) {
     <link rel="stylesheet" href="../public/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="../public/css/daterangepicker.css">
 
+
+
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -134,7 +136,7 @@ foreach ($permisos as $permiso) {
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="descargarSolicitud.php">Descargar Solicitud</a></li>
+                                
                                 <li><a href="solicitudEstudiante.php">Solicitud de Estudiante</a></li>
                                 <li><a href="atencionCiudadana.php">Atención Ciudadana</a></li>
                             </ul>
