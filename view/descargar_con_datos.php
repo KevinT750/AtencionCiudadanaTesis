@@ -24,15 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $asuntoTexto = $_POST['asuntoTexto'];
     $archivo = $_FILES['archivo'];
 
-    // Validar y mover archivo subido
+    // No guardamos el archivo en el servidor, solo lo subimos a Google Drive
     $uploadFile = null;
     if ($archivo['error'] == UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        $uploadFile = $uploadDir . basename($archivo['name']);
-        move_uploaded_file($archivo['tmp_name'], $uploadFile);
+        // No movemos el archivo al servidor
+        // Guardamos el archivo temporalmente en memoria para subirlo directamente a Drive
+        $archivoContenido = file_get_contents($archivo['tmp_name']);
+        $mimeType = mime_content_type($archivo['tmp_name']);
     }
 
     // Generar documento usando plantilla
@@ -69,10 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error al crear carpeta de mes: " . $carpetaMes['error']);
     }
 
+    // Subir el archivo directamente a Google Drive sin guardarlo localmente
     $subida = Drive::subirArchivo(
         basename($outputPath),
         mime_content_type($outputPath),
-        $outputPath,
+        $outputPath, // Usamos el archivo temporal generado
         $carpetaMes['carpetaMesId'],
         $servicio
     );
