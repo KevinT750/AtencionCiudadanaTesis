@@ -10,7 +10,9 @@ if (!isset($_SESSION['usu_nombre'])) {
 require 'header.php';
 
 if ($_SESSION['Solicitud'] == 1) {
+
 ?>
+
     <div class="content-wrapper">
         <section class="content">
             <div class="row">
@@ -20,26 +22,24 @@ if ($_SESSION['Solicitud'] == 1) {
                             <h1 class="box-title">Enviar Solicitud</h1>
                         </div>
                         <div class="box-body">
-                            <form id="formSolicitud" method="post" enctype="multipart/form-data" action="procesarSolicitud.php">
+                            <form id="formSolicitud" method="post" enctype="multipart/form-data" action="descargar_con_datos.php">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="fecha">Fecha:</label>
-                                        <input type="date" class="form-control" id="fecha" name="fecha" min="2024-01-01" value="<?php echo date('Y-m-d'); ?>"
-                                        required>
+                                        <input type="date" class="form-control" id="fecha" name="fecha" min="2024-01-01" value="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="nombre">Nombres Completos:</label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese sus nombres completos" value="<?php echo $_SESSION['usu_nombre']; ?>" required>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="cedula">Número de Cédula:</label>
                                         <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required>
                                     </div>
                                     <div class="form-group col-md-6">
-                                    <div class="form-group">
                                         <label for="carrera">Carrera:</label>
                                         <select class="form-control" id="carrera" name="carrera" required>
                                             <option value="">Seleccione su carrera</option>
@@ -58,21 +58,19 @@ if ($_SESSION['Solicitud'] == 1) {
                                             <option value="Idiomas (Certificación B1)">Idiomas (Certificación B1)</option>
                                         </select>
                                     </div>
-
-                                    </div>
                                 </div>
-                                
+
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="telefono">Teléfono Domicilio:</label>
-                                        <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono domicilio">
+                                        <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono domicilio (Opcional)">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="celular">Celular:</label>
                                         <input type="text" class="form-control" id="celular" name="celular" placeholder="Número de celular" required>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label for="correo">Correo Electrónico:</label>
@@ -81,32 +79,19 @@ if ($_SESSION['Solicitud'] == 1) {
                                 </div>
 
                                 <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="asuntoCombo">Asunto:</label>
-                                        <select class="form-control" id="asuntoCombo" name="asuntoCombo" onchange="cambiarTextoAsunto()" required>
-                                            <option value="">Seleccione un asunto</option>
-                                            <option value="Cambio de Carreras">Cambio de Carreras</option>
-                                            <option value="Homologaciones">Homologaciones</option>
-                                            <option value="Matrículas">Matrículas</option>
-                                            <option value="Certificados">Certificados</option>
-                                            <option value="Título">Título</option>
-                                            <option value="Otro">Otro</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-12">
                                         <label for="asuntoTexto">Detalles del Asunto:</label>
-                                        <textarea class="form-control" id="asuntoTexto" name="asuntoTexto" rows="3" placeholder="Ingrese los detalles del asunto" required></textarea>
+                                        <textarea class="form-control" id="asuntoTexto" name="asuntoTexto" rows="3"   placeholder="Ingrese el Asunto" require></textarea>
                                     </div>
                                 </div>
 
-                                
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label for="archivo">Adjuntar Cédula (PDF):</label>
-                                        <input type="file" class="form-control-file" id="archivo" name="archivo" accept="application/pdf" required>
+                                        <input type="file" class="form-control-file" id="archivo" name="archivo" accept="application/pdf">
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group text-center">
                                     <button type="button" class="btn btn-success btn-lg mx-2" onclick="window.location.href='descargar.php'">
                                         <i class="fa fa-download"></i> Descargar Solicitud
@@ -118,7 +103,6 @@ if ($_SESSION['Solicitud'] == 1) {
                                         <i class="fa fa-trash"></i> Limpiar
                                     </button>
                                 </div>
-
                             </form>
                         </div>
                     </div>
@@ -126,6 +110,7 @@ if ($_SESSION['Solicitud'] == 1) {
             </div>
         </section>
     </div>
+
 <?php
 } else {
     require 'noacceso.php';

@@ -1,5 +1,9 @@
 <?php
-require_once "../config/Conexion.php";  // Asegúrate de que se incluya el archivo de conexión
+require_once "../config/Conexion.php";
+require_once 'vendor/autoload.php';
+
+use PhpOffice\PhpWord\TemplateProcessor;
+
 class Usuario {
     public function __construct() {}
 
@@ -79,7 +83,6 @@ class Usuario {
                 break;
         }
     }
-    
 
     public function descargarSolicitud($file) {
         if (file_exists($file)) {
@@ -93,6 +96,33 @@ class Usuario {
             die('El archivo no existe.');
         }
     }
-       
+
+    public function generarDocumentoSolicitud($nombres, $cedula, $carrera, $telefono_domicilio, $celular, $correo, $fecha, $asunto) {
+        try {
+            // Ruta al documento base
+            $templatePath = '../public/document/Solicitud Cambio.docx';
+            $outputPath = 'ruta/a/Solicitud_Completada.docx';
+
+            // Crear una instancia de TemplateProcessor
+            $templateProcessor = new TemplateProcessor($templatePath);
+
+            // Rellenar los campos del documento
+            $templateProcessor->setValue('fecha', $fecha); // Fecha actual
+            $templateProcessor->setValue('dirigido', 'Msc. Pedro Arias');
+            $templateProcessor->setValue('nombres', $nombres);
+            $templateProcessor->setValue('cedula', $cedula);
+            $templateProcessor->setValue('carrera', $carrera);
+            $templateProcessor->setValue('telefono_domicilio', $telefono_domicilio);
+            $templateProcessor->setValue('celular', $celular);
+            $templateProcessor->setValue('correo', $correo);
+            $templateProcessor->setValue('asunto', $asunto);
+
+            $templateProcessor->saveAs($outputPath);
+
+            echo "Documento generado correctamente en: $outputPath";
+        } catch (Exception $e) {
+            error_log("Error al generar el documento: " . $e->getMessage());
+        }
+    }
 }
 ?>

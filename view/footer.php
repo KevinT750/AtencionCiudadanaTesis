@@ -31,6 +31,6 @@ const fechaFormateada = `${anio}-${mes.toString().padStart(2, '0')}-${dia.toStri
 console.log(`Fecha formateada: ${fechaFormateada}`);
 
 </script>
-
+<script src="script/asunto.js"></script>
 </body>
 </html>
