@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "atencion-ciudadana-445118",
+  "private_key_id": "8aa81e69186fcdf3250eedd570d9894e07108358",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQChX6WQKeOFyocF\nIFgHWFzRqNT7tq51MOtmGHqkm1XhpKtUX+UYW9uJQSQHXDYq6LmPZ/BWq9qJtuzh\n9KE8UFHou9C0wzxL4phFNrqXdOmo3OOjZDx4N+0aztAnqdbdUb00HknANw4LTC4L\nRYisdHho5jVkNcbgCI/z45xWOdsRJI8EevW0Y1zYlil4/zx/tl0vnteKwPnimbcQ\nvZkyrATu29ftALl1ZWNKGOTC9TY0XTpN115s4NVOLXrOeiAYFa2XrPCHVeoFjD0E\nybjbbX5qwt5rb5f/3EirsnVWqaCdiwDga9I00aHxUZ1sJ4w0zQBdwU7jpKzryPsK\nd6SpX3nRAgMBAAECggEAAxH5qYrgeyvJopd1UUt1NaB1j+XvfweLnP1HfRD/Auxh\n/ZiW+F4MCNoaTEEM/0c++4td01pQ7biTHG/t7uK00j2biIrj32o73So/xdCpvuaX\n9qR6MYvX2SAY7f5BWiPbWo3ed5ecjuq3wAtmQKi1H0LM/n927Y2AJqLclzfh0vtE\nNx/AWHAu76XiUaX5NcM5y1DsNc8sJlG7ZxFKLDmoZGWxUR4WcvGSUZt1q5K346s4\nF8ADy3upjAkvHFxMdXu0uoDwu+s37p4pyVYoLuzgkZBgOzcCNW76jlA/elblnsiw\nO9gtagk89x8vm1oqFSd8jGkTRDs2sLEmNMMjRwAUOQKBgQDUBBkTVt9GaEMCni4g\nWSIhw49k7ktYs5B6SPJkgB1R2E+SIO1XojbRwVKWh/1BdQwxKd7Wd+y4nV6nZliM\nWJzLmMgV6VXd6ZjCpy8hhwoR4nXXw34wOl/h5pKkDwCxouFXqW9pt5yrwIbHrLq9\nlG3gxoOckpWKfWtyG2zgcvEWSQKBgQDC2f7gz+u+zfwN7Z61fzXnmCh9ks7l422X\nDok5rFsXKsD+g/QO5cjBl5pJMYV51tQMgkO3xQWOuidPtv10EmKJg5GTh9ycK4kK\n7pEQzpAh1gyMX5J2sbYzBbxPHngNMzbps7tmKUD4429l3q37WFFtrqwyHM+bLLlH\nj0UROmMnSQKBgQC6cWAbwalXIRjMlI27pKZ/SpovB976ge3rm3qNJpyh/Lb8qjgN\neHj8vCUEe1Ia3fN6yHdN4ugo8TrruvTjdolsAU7y9d6s51+OzbaEpVwVnjBDLYcq\noirvXPRXkVnq3HGNxVJUhUMhRo0/yoXtcTmvEONsLPuUbfauwa9dMbcRAQKBgBkY\nrMxV215K95DvrwZfaRj4LxblZsKTRVU0aRZFjcHxHsRpSHD2xaGxngyZVUC5G7y0\ntnYf6TRV46RPxFtD1u8xQ/nFgPOYY+FFkuegQ04oXJtj3+BryTTPI07pdLr2grcd\nECD7ZUPpPzrWsH/0AyDmY4Vc0pyA6Sg/Wrz6UTUJAoGBALmc4KlocrbIt5Yt8rkz\nkrPMbwcMdV/Al1Do3PK+k2mwJnzpwhyKl6VjpBzAOjVrKbHnJ5+UfYAUmUt8Q6SA\nUmE5ucVxgMX2mLp67vjl3tSB3iPhMTmNxEUoQjQu7Av0KzGa1gg9mEahJm860op3\nheYk0JwyzAEmCFDHS7rzVb7g\n-----END PRIVATE KEY-----\n",
+  "client_email": "atencion-ciudadana@atencion-ciudadana-445118.iam.gserviceaccount.com",
+  "client_id": "113267896074610782719",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/atencion-ciudadana%40atencion-ciudadana-445118.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

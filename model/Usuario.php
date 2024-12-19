@@ -1,6 +1,6 @@
 <?php
 require_once "../config/Conexion.php";
-require_once 'vendor/autoload.php';
+require_once '../phpOffice/vendor/autoload.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
