@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $templateProcessor->setValue('fecha', $fecha);
         $templateProcessor->setValue('nombres', $nombre);
         $templateProcessor->setValue('cedula', $cedula);
+        $templateProcessor->setValue('carrera',$carrera);
         $templateProcessor->setValue('telefono_domicilio', $telefono);
         $templateProcessor->setValue('celular', $celular);
         $templateProcessor->setValue('correo', $correo);
@@ -57,12 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error al iniciar sesión en Google Drive.");
     }
 
-    $carpetaAtencion = Drive::obtenerCarpetaAtencionCiudadana($servicio);
-    if (!$carpetaAtencion['estado']) {
-        die("Error al obtener carpeta de Atención Ciudadana: " . $carpetaAtencion['error']);
-    }
 
-    $carpetaMes = Drive::crearCarpetaAnioMes($carpetaAtencion['carpetaId'], $servicio);
+    $carpetaMes = Drive::crearCarpetaAnioMes('1T9j6kxIHxsIWFMDajsc9IOUo01TQKC_3', $servicio);
     if (!$carpetaMes['estado']) {
         die("Error al crear carpeta de mes: " . $carpetaMes['error']);
     }

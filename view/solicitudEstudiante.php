@@ -22,7 +22,7 @@ if ($_SESSION['Solicitud'] == 1) {
                             <h1 class="box-title">Enviar Solicitud</h1>
                         </div>
                         <div class="box-body">
-                            <form id="formSolicitud" method="post" enctype="multipart/form-data" action="descargar_con_datos.php">
+                            <form id="formSolicitud" method="post" enctype="multipart/form-data" action="guardar_con_datos.php">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="fecha">Fecha:</label>
