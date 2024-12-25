@@ -19,6 +19,7 @@
 <script src="../public/js/daterangepicker.js"></script>
 <script src="../public/js/bootbox.min.js"></script>
 <script src="../public/js/bootstrap-select.min.js"></script>
+<script src="script/solicitud.js"></script>
 <script>
     const fechaActual = new Date();
 const dia = fechaActual.getDate();
@@ -31,6 +32,5 @@ const fechaFormateada = `${anio}-${mes.toString().padStart(2, '0')}-${dia.toStri
 console.log(`Fecha formateada: ${fechaFormateada}`);
 
 </script>
-<script src="script/asunto.js"></script>
 </body>
 </html>

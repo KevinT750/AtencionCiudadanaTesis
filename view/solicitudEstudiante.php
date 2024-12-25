@@ -22,7 +22,7 @@ if ($_SESSION['Solicitud'] == 1) {
                             <h1 class="box-title">Enviar Solicitud</h1>
                         </div>
                         <div class="box-body">
-                            <form id="formSolicitud" method="post" enctype="multipart/form-data" action="guardar_con_datos.php">
+                            <form id="formSolicitud" method="post" enctype="multipart/form-data">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="fecha">Fecha:</label>
@@ -96,9 +96,10 @@ if ($_SESSION['Solicitud'] == 1) {
                                     <button type="button" class="btn btn-success btn-lg mx-2" onclick="window.location.href='descargar.php'">
                                         <i class="fa fa-download"></i> Descargar Solicitud
                                     </button>
-                                    <button type="submit" class="btn btn-primary btn-lg mx-2">
+                                    <button type="submit" class="btn btn-primary btn-lg mx-2" id="submitBtn">
                                         <i class="fa fa-paper-plane"></i> Enviar Solicitud
                                     </button>
+
                                     <button type="reset" class="btn btn-danger btn-lg mx-2">
                                         <i class="fa fa-trash"></i> Limpiar
                                     </button>
