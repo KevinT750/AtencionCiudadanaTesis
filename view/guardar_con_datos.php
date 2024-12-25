@@ -25,74 +25,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $asuntoTexto = $_POST['asuntoTexto'];
     $archivo = $_FILES['archivo'];
 
+    // Verificar que el archivo no exceda los 2 MB
+    if ($archivo['size'] > 2 * 1024 * 1024) {
+        echo "<script>alert('El archivo excede el tamaño máximo permitido de 2 MB.');</script>";
+        exit();
+    }
+
     // Ruta de la plantilla
     $templatePath = realpath('C:/xampp/htdocs/Atencion Ciudadana/public/document/Solicitud Cambio.docx');
 
-    // Crear carpeta del mes actual si no existe
-    $mesActual = date('F_Y'); // Ejemplo: December_2024
-    $directorioMes = "../public/document/$mesActual";
+    // Subir el documento a Google Drive
+    $servicio = Drive::servicioGoogle();
+    if ($servicio['estado']) {
+        $servicioDrive = $servicio['dato'];
 
-    if (!is_dir($directorioMes)) {
-        if (!mkdir($directorioMes, 0777, true)) {
-            echo "<script>console.error('Error al crear directorio para el mes actual.');</script>";
-            exit();
-        }
-    }
+        // Gestionar carpetas del año y mes actuales
+        $resultadoCarpetas = Drive::gestionarCarpetasAnualYMensual(RAIZ, $servicioDrive);
 
-    // Generar el documento final en la carpeta del mes actual
-    $outputPath = "$directorioMes/Solicitud_Completada_$cedula.docx";
+        if ($resultadoCarpetas["estado"]) {
+            $anioCarpetaId = $resultadoCarpetas["anioCarpetaId"];
+            $mesCarpetaId = $resultadoCarpetas["mesCarpetaId"];
 
-    if ($templatePath && file_exists($templatePath)) {
-        // Procesar plantilla
-        try {
-            $templateProcessor = new TemplateProcessor($templatePath);
-            $templateProcessor->setValue('fecha', $fecha);
-            $templateProcessor->setValue('nombres', $nombre);
-            $templateProcessor->setValue('cedula', $cedula);
-            $templateProcessor->setValue('carrera', $carrera);
-            $templateProcessor->setValue('telefono_domicilio', $telefono);
-            $templateProcessor->setValue('celular', $celular);
-            $templateProcessor->setValue('correo', $correo);
-            $templateProcessor->setValue('asunto', $asuntoTexto);
-            $templateProcessor->saveAs($outputPath);
+            // Procesar plantilla de solicitud y subirla a Google Drive
+            if ($templatePath && file_exists($templatePath)) {
+                try {
+                    $templateProcessor = new TemplateProcessor($templatePath);
+                    $templateProcessor->setValue('fecha', $fecha);
+                    $templateProcessor->setValue('nombres', $nombre);
+                    $templateProcessor->setValue('cedula', $cedula);
+                    $templateProcessor->setValue('carrera', $carrera);
+                    $templateProcessor->setValue('telefono_domicilio', $telefono);
+                    $templateProcessor->setValue('celular', $celular);
+                    $templateProcessor->setValue('correo', $correo);
+                    $templateProcessor->setValue('asunto', $asuntoTexto);
 
-            // Subir archivo a Google Drive
-            $servicio = Drive::servicioGoogle();
-            if ($servicio['estado']) {
-                $servicioDrive = $servicio['dato'];
+                    // Guardar el archivo en memoria
+                    $contentDoc = $templateProcessor->saveAs('php://output');
 
-                // Gestionar carpetas del año y mes actuales
-                $resultadoCarpetas = Drive::gestionarCarpetasAnualYMensual(RAIZ, $servicioDrive);
-
-                if ($resultadoCarpetas["estado"]) {
-                    $anioCarpetaId = $resultadoCarpetas["anioCarpetaId"];
-                    $mesCarpetaId = $resultadoCarpetas["mesCarpetaId"];
-
-                    // Subir el archivo a la carpeta mensual
+                    // Subir documento de solicitud a Google Drive
                     $archivoDrive = new Google_Service_Drive_DriveFile();
                     $archivoDrive->setName("{$nombre}_{$carrera}_{$fecha}.docx");
                     $archivoDrive->setParents([$mesCarpetaId]);
 
-                    $contenidoArchivo = file_get_contents($outputPath);
                     $resultadoSubida = $servicioDrive->files->create($archivoDrive, [
-                        'data' => $contenidoArchivo,
+                        'data' => $contentDoc,
                         'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         'uploadType' => 'multipart',
                         'fields' => 'id'
                     ]);
 
-                    echo "<script>console.log('Archivo subido exitosamente con ID: " . $resultadoSubida->id . "');</script>";
-                } else {
-                    echo "<script>console.error('Error al gestionar carpetas: " . $resultadoCarpetas["error"] . "');</script>";
+                    echo "<script>console.log('Documento subido exitosamente a Google Drive con ID: " . $resultadoSubida->id . "');</script>";
+
+                    // Subir archivo de cédula a Google Drive
+                    $archivoCedula = $archivo['tmp_name'];
+                    $nombreCedula = "$cedula.pdf";
+                    
+                    $archivoCedulaDrive = new Google_Service_Drive_DriveFile();
+                    $archivoCedulaDrive->setName($nombreCedula);
+                    $archivoCedulaDrive->setParents([$mesCarpetaId]);
+
+                    // Subir archivo PDF de cédula a Google Drive
+                    $contenidoCedula = file_get_contents($archivoCedula);
+                    $resultadoCedulaSubida = $servicioDrive->files->create($archivoCedulaDrive, [
+                        'data' => $contenidoCedula,
+                        'mimeType' => 'application/pdf',
+                        'uploadType' => 'multipart',
+                        'fields' => 'id'
+                    ]);
+
+                    echo "<script>console.log('Cédula subida exitosamente a Google Drive con ID: " . $resultadoCedulaSubida->id . "');</script>";
+
+                } catch (Exception $e) {
+                    echo "<script>console.error('Error al procesar la plantilla: " . $e->getMessage() . "');</script>";
                 }
             } else {
-                echo "<script>console.error('Error al conectar con Google Drive: " . $servicio["error"] . "');</script>";
+                echo "<script>console.error('Plantilla no encontrada o no accesible.');</script>";
             }
-        } catch (Exception $e) {
-            echo "<script>console.error('Error al procesar la plantilla: " . $e->getMessage() . "');</script>";
+        } else {
+            echo "<script>console.error('Error al gestionar carpetas: " . $resultadoCarpetas["error"] . "');</script>";
         }
     } else {
-        echo "<script>console.error('Plantilla no encontrada o no accesible.');</script>";
+        echo "<script>console.error('Error al conectar con Google Drive: " . $servicio["error"] . "');</script>";
     }
 }
 ?>

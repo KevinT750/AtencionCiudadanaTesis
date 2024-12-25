@@ -12,27 +12,24 @@ class Usuario {
             if (empty($usu_login) || empty($usu_clave)) {
                 return false;
             }
-            
-            // Llamamos al procedimiento almacenado SP_Login
+
             $sql = "call atencion_ciudadana_ist17j.SP_Login('$usu_login', '$usu_clave')";
             $rspta = ejecutarConsulta($sql);
             
             if ($rspta && $rspta->num_rows > 0) {
-                // Aquí obtenemos la información de usuario y el rol (Estudiante/Usuario)
+
                 $usuario = $rspta->fetch_object();
                 
                 $_SESSION['usu_id'] = $usuario->UsuarioID;
                 $_SESSION['usu_nombre'] = $usuario->Nombre;
                 $_SESSION['usu_login'] = $usu_login;
                 
-                // Establecer los permisos de acuerdo al rol
                 if ($usuario->Rol == 'Estudiante') {
                     $_SESSION['Rol'] = 'Estudiante';
                 } else {
                     $_SESSION['Rol'] = 'Secretaria';
                 }
 
-                // Establecer permisos para estudiantes o usuarios
                 $this->establecerPermisos($usuario->Rol);
 
                 return $usuario;
@@ -46,7 +43,7 @@ class Usuario {
     }
 
     private function establecerPermisos($rol) {
-        // Resetear todos los permisos
+
         $_SESSION['Escritorio'] = 0;
         $_SESSION['Descargar'] = 0;
         $_SESSION['Solicitud'] = 0;
@@ -58,8 +55,7 @@ class Usuario {
         $_SESSION['Subir_Solicitud'] = 0;
         $_SESSION['Gestion'] = 0;
         $_SESSION['Reporte'] = 0;
-    
-        // Establecer permisos generales
+
         $_SESSION['Escritorio'] = 1;
     
         // Asignar permisos según el rol
@@ -124,5 +120,8 @@ class Usuario {
             error_log("Error al generar el documento: " . $e->getMessage());
         }
     }
+
+    
+
 }
 ?>

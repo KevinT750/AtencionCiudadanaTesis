@@ -15,10 +15,8 @@ try {
             $logina = trim($_POST['logina']);
             $clavea = trim($_POST['clavea']);
             
-            // Hasheamos la contraseña usando SHA-256
             $clavehash = hash("SHA256", $clavea);
             
-            // Llamamos al método de verificar del modelo Usuario
             $rspta = $usuario->verificar($logina, $clavehash);
             
             if ($rspta) {
