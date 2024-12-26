@@ -18,7 +18,7 @@ if ($_SESSION['Solicitud'] == 1) {
             <div class="row">
                 <div class="col-md-12">
                     <div class="box">
-                        <div class="box-header with-border" align="center">
+                    <div class="box-header with-border" style="text-align: center;">
                             <h1 class="box-title">Enviar Solicitud</h1>
                         </div>
                         <div class="box-body">
@@ -33,11 +33,10 @@ if ($_SESSION['Solicitud'] == 1) {
                                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese sus nombres completos" value="<?php echo $_SESSION['usu_nombre']; ?>" required>
                                     </div>
                                 </div>
-
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="cedula">Número de Cédula:</label>
-                                        <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required>
+                                        <input type="stext" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="carrera">Carrera:</label>
@@ -119,4 +118,3 @@ if ($_SESSION['Solicitud'] == 1) {
 
 require 'footer.php';
 ob_end_flush();
-?>
