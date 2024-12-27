@@ -117,18 +117,4 @@ class Drive {
     }
 }
 
-// Uso
-$servicio = Drive::servicioGoogle();
-if ($servicio['estado']) {
-    $servicioDrive = $servicio['dato'];
-    $resultado = Drive::gestionarCarpetasAnualYMensual(RAIZ, $servicioDrive);
-
-    if ($resultado["estado"]) {
-        echo $resultado["mensaje"] . " (Año ID: " . $resultado["anioCarpetaId"] . ", Mes ID: " . $resultado["mesCarpetaId"] . ")";
-    } else {
-        echo "Error: " . $resultado["error"];
-    }
-} else {
-    echo "Error al conectar con el servicio de Google Drive: " . $servicio["error"];
-}
 ?>

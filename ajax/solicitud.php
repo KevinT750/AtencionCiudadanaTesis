@@ -3,27 +3,42 @@ ob_start();
 session_start();
 
 if (!isset($_SESSION['usu_nombre'])) {
-    echo "<script>alert('No has iniciado sesión.'); window.location.href='../index.php';</script>"; // Redirige al index
+    header("Location: login.html");
     exit();
 }
 
-require_once 'modelo_solicitud.php';
+require_once '../model/solicitud.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datos = $_POST;
     $archivo = $_FILES['archivo'];
 
+    // Validar tamaño del archivo
     if ($archivo['size'] > 2 * 1024 * 1024) {
-        echo "<script>alert('El archivo excede el tamaño máximo permitido de 2 MB.'); window.location.href='formulario.php';</script>";
+        echo json_encode([
+            'estado' => false,
+            'error' => 'El archivo excede el tamaño máximo permitido de 2 MB.'
+        ]);
         exit();
     }
 
+    // Procesar solicitud
     $resultado = ModeloSolicitud::procesarSolicitud($datos, $archivo);
 
     if ($resultado['estado']) {
-        echo "<script>console.log('Documento subido exitosamente a Google Drive con ID: " . $resultado['doc_id'] . " y Cédula con ID: " . $resultado['cedula_id'] . "'); alert('Solicitud enviada correctamente.'); window.location.href='formulario.php';</script>";
+        // Responder con éxito
+        echo json_encode([
+            'estado' => true,
+            'mensaje' => 'Solicitud enviada correctamente.',
+            'doc_id' => $resultado['doc_id'],
+            'cedula_id' => $resultado['cedula_id']
+        ]);
     } else {
-        echo "<script>console.error('Error: " . $resultado['error'] . "'); alert('Error al enviar la solicitud: " . $resultado['error'] . "'); window.location.href='formulario.php';</script>";
+        // Responder con error
+        echo json_encode([
+            'estado' => false,
+            'error' => 'Error al enviar la solicitud: ' . $resultado['error']
+        ]);
     }
 }
 ?>

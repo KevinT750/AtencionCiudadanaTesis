@@ -7,7 +7,8 @@ if (!isset($_SESSION['usu_nombre'])) {
     exit();
 }
 
-require 'header.php';
+require_once 'header.php';
+date_default_timezone_set('America/Guayaquil');
 
 if ($_SESSION['Solicitud'] == 1) {
 
@@ -80,7 +81,7 @@ if ($_SESSION['Solicitud'] == 1) {
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label for="asuntoTexto">Detalles del Asunto:</label>
-                                        <textarea class="form-control" id="asuntoTexto" name="asuntoTexto" rows="3"   placeholder="Ingrese el Asunto" require></textarea>
+                                        <textarea class="form-control" id="asuntoTexto" name="asuntoTexto" rows="3" placeholder="Ingrese el Asunto" required></textarea>
                                     </div>
                                 </div>
 

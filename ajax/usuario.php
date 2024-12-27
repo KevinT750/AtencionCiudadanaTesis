@@ -28,6 +28,29 @@ try {
             }
             break;
 
+            case 'solicitud':
+                // Verificar si la sesión está activa
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+    
+                if (isset($_SESSION['doc_ids'], $_SESSION['cedula_ids'], $_SESSION['usu_id'])) {
+                    $cedula_id = $_SESSION['cedula_ids'];
+                    $doc_id = $_SESSION['doc_ids'];
+                    $est_id = $_SESSION['usu_id'];
+    
+                    $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id);
+    
+                    if (isset($rspta['estado']) && $rspta['estado']) {
+                        echo "Solicitud procesada correctamente.";
+                    } else {
+                        echo "Error: " . ($rspta['error'] ?? 'Respuesta no válida.');
+                    }
+                } else {
+                    echo "No se encontraron IDs de documentos, cédulas o usuario en la sesión.";
+                }
+                break;
+
         case 'salir':
             session_unset();
             session_destroy();

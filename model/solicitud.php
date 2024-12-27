@@ -1,18 +1,20 @@
 <?php
 require_once '../phpOffice/vendor/autoload.php';
-require_once '../config/Conexion.php'; // Asegúrate de que la ruta sea correcta
+require_once '../config/Conexion.php'; // Verifica que la ruta sea correcta
 require_once '../Atencion_Ciudadana/drive.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class ModeloSolicitud {
     public static function procesarSolicitud($datos, $archivo) {
+        // Inicializar el servicio de Google Drive
         $servicio = Drive::servicioGoogle();
         if (!$servicio['estado']) {
             return ["estado" => false, "error" => $servicio["error"]];
         }
         $servicioDrive = $servicio['dato'];
 
+        // Gestionar carpetas en Google Drive por año y mes
         $resultadoCarpetas = Drive::gestionarCarpetasAnualYMensual(RAIZ, $servicioDrive);
         if (!$resultadoCarpetas["estado"]) {
             return ["estado" => false, "error" => $resultadoCarpetas["error"]];
@@ -20,12 +22,14 @@ class ModeloSolicitud {
         $anioCarpetaId = $resultadoCarpetas["anioCarpetaId"];
         $mesCarpetaId = $resultadoCarpetas["mesCarpetaId"];
 
-        $templatePath = realpath('C:/xampp/htdocs/Atencion Ciudadana/public/document/Solicitud Cambio.docx'); //Ruta absoluta
+        // Ruta absoluta a la plantilla del documento Word
+        $templatePath = realpath('C:/xampp/htdocs/Atencion Ciudadana/public/document/Solicitud Cambio.docx');
         if (!$templatePath || !file_exists($templatePath)) {
             return ["estado" => false, "error" => 'Plantilla no encontrada o no accesible.'];
         }
 
         try {
+            // Procesar plantilla Word
             $templateProcessor = new TemplateProcessor($templatePath);
             $templateProcessor->setValue('fecha', $datos['fecha']);
             $templateProcessor->setValue('nombres', $datos['nombre']);
@@ -36,19 +40,25 @@ class ModeloSolicitud {
             $templateProcessor->setValue('correo', $datos['correo']);
             $templateProcessor->setValue('asunto', $datos['asuntoTexto']);
 
-            $contentDoc = $templateProcessor->saveAs('php://output');
+            // Crear documento temporal en memoria
+            $tempFile = tempnam(sys_get_temp_dir(), 'Solicitud_') . '.docx';
+            $templateProcessor->saveAs($tempFile);
 
+            // Subir el documento a Google Drive
             $archivoDrive = new Google_Service_Drive_DriveFile();
             $archivoDrive->setName("{$datos['nombre']}_{$datos['carrera']}_{$datos['fecha']}.docx");
             $archivoDrive->setParents([$mesCarpetaId]);
 
+            $fileContent = file_get_contents($tempFile);
             $resultadoSubida = $servicioDrive->files->create($archivoDrive, [
-                'data' => $contentDoc,
+                'data' => $fileContent,
                 'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 'uploadType' => 'multipart',
                 'fields' => 'id'
             ]);
+            unlink($tempFile); // Eliminar archivo temporal
 
+            // Subir archivo PDF de cédula
             $archivoCedula = $archivo['tmp_name'];
             $nombreCedula = "{$datos['cedula']}.pdf";
 
@@ -64,10 +74,19 @@ class ModeloSolicitud {
                 'fields' => 'id'
             ]);
 
-            return ["estado" => true, "doc_id" => $resultadoSubida->id, "cedula_id" => $resultadoCedulaSubida->id];
+            // Guardar las IDs en la sesión, sobrescribiendo los valores anteriores
+            $_SESSION['doc_ids'] = $resultadoSubida->id; // Sobrescribir con el último ID
+            $_SESSION['cedula_ids'] = $resultadoCedulaSubida->id; // Sobrescribir con el último ID
+
+            // Retornar las IDs de los archivos subidos
+            return [
+                "estado" => true,
+                "doc_id" => $resultadoSubida->id,
+                "cedula_id" => $resultadoCedulaSubida->id
+            ];
 
         } catch (Exception $e) {
-            return ["estado" => false, "error" => $e->getMessage()];
+            return ["estado" => false, "error" => 'Error al procesar la solicitud: ' . $e->getMessage()];
         }
     }
 }

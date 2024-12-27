@@ -1,60 +1,104 @@
-$(document).ready(function() {
-    $("#submitBtn").on('click', function(e) {
-        e.preventDefault();
+function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
+    $(document).ready(function () {
+        $("#" + submitBtnId).on("click", function (e) {
+            e.preventDefault();
 
-        var archivoInput = document.getElementById("archivo");
-        var archivo = archivoInput.files[0];
+            // Obtener el archivo
+            var archivoInput = document.getElementById(archivoInputId);
+            var archivo = archivoInput.files[0];
 
-        if (!archivo) {
-            alert("Por favor, adjunte un archivo en formato PDF.");
-            return;
-        }
+            // Crear objeto FormData
+            var form = $("#" + formId); // Usar selector jQuery
+            var formData = new FormData(form[0]); // Obtener el elemento DOM del formulario
 
-        if (archivo.size > 2 * 1024 * 1024) {
-            alert("El archivo excede el tamaño máximo permitido de 2 MB.");
-            return;
-        }
+            var btnSubmit = $("#" + submitBtnId); // Referencia al botón
+            var originalText = btnSubmit.text();
+            btnSubmit.prop("disabled", true).text("Procesando...");
 
-        if (archivo.type !== "application/pdf") {
-            alert("Solo se permiten archivos en formato PDF.");
-            return;
-        }
-
-        var form = $("#formSolicitud"); // Usar selector jQuery
-        var formData = new FormData(form[0]); // Obtener el elemento DOM del formulario
-
-        var btnSubmit = $(this); // $(this) se refiere al botón que se hizo clic
-        var originalText = btnSubmit.text();
-        btnSubmit.prop('disabled', true).text('Procesando...');
-
-        $.ajax({
-            url: "../ajax/solicitud.php", // Enviar al controlador
-            type: "POST",
-            data: formData,
-            processData: false, // Importantísimo para FormData
-            contentType: false, // Importantísimo para FormData
-            success: function(response) {
-                try {
-                    var data = JSON.parse(response);
-                    if (data.estado) {
-                        alert("Solicitud enviada correctamente.");
-                        form[0].reset(); // Limpiar el formulario (acceder al elemento DOM)
-                    } else {
-                        alert("Error al enviar la solicitud: " + data.error);
-                        console.error("Error del servidor:", data.error);
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: url, // URL del controlador
+                type: "POST",
+                data: formData,
+                processData: false, // Importante para FormData
+                contentType: false, // Importante para FormData
+                success: function (response) {
+                    try {
+                        var data = JSON.parse(response); // Intentar parsear JSON
+                        if (data.estado) {
+                            guardarSolicitud(); // Llamar a guardarSolicitud después del éxito
+                        }
+                    } catch (e) {
+                        console.error("Error al procesar la respuesta:", e);
                     }
-                } catch (e) {
-                    alert("Error al procesar la respuesta del servidor.");
-                    console.error("Error al parsear JSON:", e, response); // Mostrar la respuesta completa para debugging
-                }
-            },
-            error: function(xhr, status, error) {
-                alert("Error en la conexión: " + error);
-                console.error("Error en la solicitud:", status, error, xhr.responseText);
-            },
-            complete: function() {
-                btnSubmit.prop('disabled', false).text(originalText);
-            }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud:", error);
+                },
+                complete: function () {
+                    btnSubmit.prop("disabled", false).text(originalText); // Restaurar botón
+                },
+            });
         });
     });
+}
+
+
+function guardarSolicitud() {
+    // Verificar si las sesiones están configuradas (simulación en el lado del cliente)
+    if (typeof sessionStorage.getItem('doc_ids') !== 'undefined' && 
+        typeof sessionStorage.getItem('cedula_ids') !== 'undefined' && 
+        typeof sessionStorage.getItem('usu_id') !== 'undefined') {
+
+        // Realizar la solicitud AJAX al servidor
+        $.ajax({
+            url: "../ajax/usuario.php?op=solicitud",
+            type: "POST",
+            dataType: "json",
+            success: function (response) {
+                // Manejo de la respuesta
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Solicitud procesada correctamente.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.error || 'No se pudo procesar la solicitud.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                // Manejo de errores
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error en el servidor: ' + error,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    } else {
+        Swal.fire({
+            title: 'Advertencia',
+            text: 'No hay información suficiente en la sesión.',
+            icon: 'warning',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}
+
+
+$(document).ready(function() {
+    enviarSolicitudFormulario(
+        "formSolicitud",      // El ID del formulario
+        "archivo",            // El ID del input tipo file
+        "submitBtn",          // El ID del botón de submit
+        "../ajax/solicitud.php" // URL del controlador que manejará la solicitud
+    );
 });

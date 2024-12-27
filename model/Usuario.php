@@ -42,6 +42,31 @@ class Usuario {
         }
     }
 
+    public function solicitud($idEstudiante, $isSolicitud, $idPdf){
+        try {
+            // Validar que todos los parámetros estén presentes
+            if (empty($idEstudiante) || empty($isSolicitud) || empty($idPdf)) {
+                return ["estado" => false, "error" => "Faltan parámetros necesarios"];
+            }
+    
+            // Ejecutar el procedimiento almacenado para insertar la solicitud
+            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf')";
+            $rspta = ejecutarConsulta($sql);
+    
+            // Verificar si la consulta fue exitosa
+            if ($rspta) {
+                return ["estado" => true, "mensaje" => "Solicitud procesada correctamente"];
+            } else {
+                return ["estado" => false, "error" => "Error al procesar la solicitud"];
+            }
+    
+        } catch (Exception $e) {
+            error_log("Error en solicitud: " . $e->getMessage());
+            return ["estado" => false, "error" => "Error inesperado: " . $e->getMessage()];
+        }
+    }
+    
+
     private function establecerPermisos($rol) {
 
         $_SESSION['Escritorio'] = 0;
