@@ -89,5 +89,39 @@ class ModeloSolicitud {
             return ["estado" => false, "error" => 'Error al procesar la solicitud: ' . $e->getMessage()];
         }
     }
+
+    public static function estadoSolicitud($idEst) {
+        try {
+            if (empty($idEst)) {
+                return false;
+            }
+    
+            $sql = "call atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$idEst')";
+            $rspta = ejecutarConsulta($sql);
+    
+            if ($rspta && $rspta->num_rows > 0) {
+                $solicitudes = [];
+    
+                while ($solicitud = $rspta->fetch_object()) {
+                    $solicitudes[] = [
+                        'sol_id' => $solicitud->sol_id,
+                        'sol_fecha' => $solicitud->sol_fecha,
+                        'sol_solicitud' => $solicitud->sol_solicitud,
+                        'sol_documento' => $solicitud->sol_documento,
+                        'estado_nombre' => $solicitud->estado_nombre
+                    ];
+                }
+    
+                return $solicitudes;
+            }
+    
+            return false;
+        } catch (Exception $e) {
+            error_log("Error en estadoSolicitud: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+
 }
 ?>
