@@ -115,6 +115,56 @@ class Drive {
         ];
         
     }
+    static public function visualizarArchivoPorId($archivoId, $servicio) {
+        try {
+            // Solicitar información sobre el archivo
+            $archivo = $servicio->files->get($archivoId, [
+                'fields' => 'id, name, mimeType, webViewLink', // Solicitar campos relevantes
+                'supportsAllDrives' => true
+            ]);
+    
+            // Verificar si se obtuvo la información del archivo
+            if ($archivo) {
+                // Comprobar si el archivo es un PDF o un documento de Google
+                $isPdf = $archivo->getMimeType() === 'application/pdf';
+                $isDoc = in_array($archivo->getMimeType(), ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword']);
+        
+                // Si es un PDF, crear un enlace específico para visualizarlo
+                if ($isPdf || $isDoc) {
+                    // Para .pdf o .doc, se usa la URL de vista pública
+                    $enlacePublico = "https://drive.google.com/uc?export=view&id=" . $archivo->getId();
+                } else {
+                    // Para otros tipos de archivo, usar el enlace de visualización estándar
+                    $enlacePublico = $archivo->getWebViewLink();
+                }
+        
+                // Retornar la información del archivo, incluyendo el enlace de visualización
+                return [
+                    "estado" => true,
+                    "archivo" => [
+                        "id" => $archivo->getId(),
+                        "nombre" => $archivo->getName(),
+                        "enlace" => $enlacePublico // Enlace ajustado según tipo de archivo
+                    ]
+                ];
+            } else {
+                return [
+                    "estado" => false,
+                    "mensaje" => "No se encontró el archivo con el ID especificado."
+                ];
+            }
+        } catch (Google_Service_Exception $error) {
+            return [
+                "estado" => false,
+                "error" => $error->getMessage()
+            ];
+        }
+    }
+    
+    
 }
+
+
+
 
 ?>

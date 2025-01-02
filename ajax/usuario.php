@@ -2,8 +2,10 @@
 session_start();
 require_once "../model/Usuario.php";
 require_once "../model/solicitud.php";
+require_once "../Atencion_Ciudadana/drive.php";
 $usuario = new Usuario();
 $solicitud = new ModeloSolicitud();
+$drive = new Drive();
 
 try {
     switch ($_GET["op"]) {
@@ -43,10 +45,11 @@ try {
                 $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id);
 
                 if (isset($rspta['estado']) && $rspta['estado']) {
-                    echo "Solicitud procesada correctamente.";
+                    echo json_encode(['success' => true, 'message' => 'Solicitud procesada correctamente.']); // Respuesta JSON para éxito
                 } else {
-                    echo "Error: " . ($rspta['error'] ?? 'Respuesta no válida.');
+                    echo json_encode(['success' => false, 'error' => $rspta['error'] ?? 'Respuesta no válida.']); // Respuesta JSON para error
                 }
+                
             } else {
                 echo "No se encontraron IDs de documentos, cédulas o usuario en la sesión.";
             }
@@ -71,20 +74,36 @@ try {
             }
             break;
 
-
-        case 'verDocumento':
-            if (isset($_GET['id'])) {
-                $id = $_GET['id'];
-                // Obtener la información del documento (id de Google Drive) desde la base de datos
-                $documento = $solicitud->getDocumentoById($id);
-                echo json_encode([
-                    'fileId' => $documento['file_id'],  // ID del archivo en Google Drive
-                    'fileType' => $documento['file_type']  // word o pdf
-                ]);
-            }
-            break;
-
-
+            case 'verDocumento':
+                if (isset($_GET['id'])) {
+                    $id = $_GET['id'];
+    
+                    // Obtener el servicio de Google Drive
+                    $servicio = $drive->servicioGoogle();
+                    
+                    if ($servicio['estado']) {
+                        // Obtener el documento usando el ID
+                        $documento = $drive->visualizarArchivoPorId($id, $servicio['dato']);
+            
+                        if ($documento['estado']) {
+                            echo json_encode([
+                                'estado' => true,
+                                'archivo' => $documento['archivo']
+                            ]);
+                        } else {
+                            echo json_encode([
+                                'estado' => false,
+                                'mensaje' => $documento['mensaje'] ?? $documento['error']
+                            ]);
+                        }
+                    } else {
+                        echo json_encode([
+                            'estado' => false,
+                            'mensaje' => 'No se pudo obtener el servicio de Google Drive.'
+                        ]);
+                    }
+                }
+                break;
         case 'salir':
             session_unset();
             session_destroy();

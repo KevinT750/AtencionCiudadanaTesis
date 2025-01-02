@@ -19,18 +19,11 @@
 <script src="../public/js/daterangepicker.js"></script>
 <script src="../public/js/bootbox.min.js"></script>
 <script src="../public/js/bootstrap-select.min.js"></script>
+
+
+<!-- Bootstrap CSS -->
+
 <script src="script/solicitud.js"></script>
-<script>
-    const fechaActual = new Date();
-const dia = fechaActual.getDate();
-const mes = fechaActual.getMonth() + 1; // Sumamos 1 para obtener el mes en formato humano
-const anio = fechaActual.getFullYear();
-
-// Formateamos la fecha como "YYYY-MM-DD" (formato requerido por el input de tipo date)
-const fechaFormateada = `${anio}-${mes.toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`;
-
-console.log(`Fecha formateada: ${fechaFormateada}`);
-
-</script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

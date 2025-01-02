@@ -42,6 +42,8 @@ foreach ($permisos as $permiso) {
     <link rel="stylesheet" href="../public/datatables/responsive.dataTables.min.css">
     <link rel="stylesheet" href="../public/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="../public/css/daterangepicker.css">
+    <link href="../public/datatables/jquery.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../public/css/model.css">
 
 
 
