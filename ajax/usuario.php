@@ -71,6 +71,39 @@ try {
             }
             break;
 
+            case 'estadoSolicitud':
+                $usu_id = isset($_GET['usu_id']) ? intval($_GET['usu_id']) : 0;
+                $rspta = $solicitud->estadoSolicitud($usu_id); // Llama al método para obtener los datos
+                $data = array();
+
+                if ($rspta !== false) {
+                    while ($reg = $rspta->fetch_row()) {
+                        $estado = isset($reg[5]) ? $reg[5] : NULL; // Usa isset correctamente
+                        $data[] = array(
+                            "0" => $reg[1],  // ID de la solicitud
+                            "1" => $reg[2],  // Fecha de la solicitud
+                            "2" => strip_tags(html_entity_decode($reg[3])), // ID del documento de la solicitud
+                            "3" => strip_tags(html_entity_decode($reg[4])), // ID del documento de cédula
+                            "4" => $estado   // Estado de la solicitud
+                        );
+                    }
+
+                    // Devuelve los datos en formato JSON para DataTables
+                    echo json_encode(array(
+                        "sEcho" => 1, // Eco de la solicitud
+                        "iTotalRecords" => count($data), // Total de registros encontrados
+                        "iTotalDisplayRecords" => count($data), // Total de registros mostrados
+                        "aaData" => $data // Los datos procesados
+                    ));
+                } else {
+                    // En caso de error, responde con un mensaje adecuado
+                    echo json_encode(array(
+                        "error" => "No se pudieron obtener los datos. Verifique la consulta o el procedimiento almacenado."
+                    ));
+                }
+                break;
+
+
 
         case 'verDocumento':
             if (isset($_GET['id'])) {
