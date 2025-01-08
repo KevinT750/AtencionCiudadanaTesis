@@ -152,8 +152,8 @@ foreach ($permisos as $permiso) {
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="estadoSolicitud.php">Ver Estado de la Solicitud</a></li>
-                                <li><a href="historial.php">Historial</a></li>
+                                
+                                <li><a href="solicitudEstado.php">Ver Estado de la Solicitud</a></li>
                                 <li><a href="aprobadasRechazadas.php">Aprobadas y Rechazadas</a></li>
                             </ul>
                         </li>
