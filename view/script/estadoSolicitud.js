@@ -1,6 +1,4 @@
 $(document).ready(async function (params) {
-    let datosUsu = {};
-    let usu_id;
 
     $('#solicitudesTable').DataTable({
         "ajax": {
@@ -50,7 +48,7 @@ $(document).ready(async function (params) {
                 }
             },
             {
-                "data": null,  // Botón que guarda data de columnas 2 y 3
+                "data": null,  // Botón que cancela data de columnas 2 y 3
                 "render": function (data, type, row) {
                     // Verificamos si el estado es "Leído"
                     var disableButton = (row[3] === "Leído") ? 'disabled' : ''; 

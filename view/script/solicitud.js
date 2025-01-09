@@ -137,7 +137,7 @@ $(document).ready(function () {
     "formSolicitud", // El ID del formulario
     "archivo", // El ID del input tipo file
     "submitBtn", // El ID del botón de submit
-    "../ajax/solicitud.php" // URL del controlador que manejará la solicitud
+    "../ajax/solicitud.php?op=estado" // URL del controlador que manejará la solicitud
   );
   cargarSolicitudes();
 });

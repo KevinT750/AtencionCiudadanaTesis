@@ -21,6 +21,7 @@
 <script src="../public/js/bootstrap-select.min.js"></script>
 
 
+
 <!-- Bootstrap CSS -->
 
 <script src="script/solicitud.js"></script>

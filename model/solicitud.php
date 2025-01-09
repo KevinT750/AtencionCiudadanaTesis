@@ -108,6 +108,8 @@ class ModeloSolicitud {
         $sql = "CALL SP_GetSolicitudesEstId($usu_id)";
         return ejecutarConsulta($sql); // Asegúrate de que `$this->conn` es una instancia válida de mysqli.
     }
+
+      
     
     
 
