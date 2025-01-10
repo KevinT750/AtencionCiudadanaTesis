@@ -162,9 +162,24 @@ class Drive {
     }
     
     
+    // Método para eliminar un archivo por ID
+static public function eliminarArchivoPorId($archivoId, $servicio) {
+    try {
+        // Eliminar el archivo
+        $servicio->files->delete($archivoId, ['supportsAllDrives' => true]);
+        
+        return [
+            "estado" => true,
+            "mensaje" => "Archivo eliminado exitosamente."
+        ];
+    } catch (Google_Service_Exception $error) {
+        return [
+            "estado" => false,
+            "error" => $error->getMessage()
+        ];
+    }
 }
 
-
-
+}
 
 ?>

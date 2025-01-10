@@ -53,7 +53,7 @@ if (isset($_GET['op'])) {
             break;
 
         case 'Solicitudes':
-            $rspta = $solicitud->Solicitud();
+            $rspta = $solicitud->Estado();
             $date[] = array();
 
             if($rspta !== false){
@@ -87,6 +87,22 @@ if (isset($_GET['op'])) {
             }
 
             break;
+
+        case 'Eliminar':
+                // Verificar si los parámetros necesarios están presentes
+            if (isset($_POST['sol_solicitud']) && isset($_POST['sol_documento'])) {
+                $sol_solicitud = $_POST['sol_solicitud'];
+                $sol_documento = $_POST['sol_documento'];
+                                    // Llamar a la función eliminarSolicitud
+                $rspta = $solicitud->eliminarSolicitud($sol_solicitud, $sol_documento);
+            
+                    // Verificar la respuesta y retornar el resultado al cliente
+                echo $rspta ? "Solicitud eliminada correctamente" : "No se pudo eliminar la solicitud.";
+                } else {
+                    echo "Faltan parámetros para eliminar la solicitud.";
+                }
+            break;
+            
 
         // Agregar otros casos si es necesario
         default:

@@ -109,9 +109,15 @@ class ModeloSolicitud {
         return ejecutarConsulta($sql); // Asegúrate de que `$this->conn` es una instancia válida de mysqli.
     }
 
-      
+    public function Estado(){
+        $sql = "call atencion_ciudadana_ist17j.SP_MOSTRAR_SOLICITUDES()";
+        return ejecutarConsulta($sql);
+    }
     
-    
+     public function eliminarSolicitud($sol_solicitud, $sol_documento){
+        $sql = "call atencion_ciudadana_ist17j.SP_EliminarSolicitud('$sol_solicitud', '$sol_documento');";
+        return ejecutarConsulta($sql);
+    }
 
 }
 ?>

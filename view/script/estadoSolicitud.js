@@ -84,4 +84,101 @@ $(document).ready(async function (params) {
         // Abrir el archivo en una nueva ventana
         window.open(fileUrl, '_blank');
     });
+
+    $('#solicitudesTable').on('click', '.cancelar-datos', function() { 
+        // Obtener los datos del botón
+        const sol_solicitud = $(this).data('columna-2');
+        const sol_documento = $(this).data('columna-3');
+        
+        // Mostrar la alerta de confirmación con SweetAlert2
+        Swal.fire({
+            title: "Advertencia",
+            text: "¿Estás seguro de que deseas eliminar esta solicitud y los archivos relacionados?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        }).then((result) => {
+            // Si el usuario confirma
+            if (result.isConfirmed) {
+                // Realizar la solicitud AJAX para eliminar los datos de la base de datos
+                $.ajax({
+                    url: '../ajax/solicitud.php?op=Eliminar',
+                    type: 'POST',
+                    data: {
+                        sol_solicitud: sol_solicitud,
+                        sol_documento: sol_documento
+                    },
+                    success: function(response) {
+                        console.log("Datos eliminados de la base de datos:", response);
+                        
+                        // Proceder a eliminar el primer archivo de Google Drive
+                        $.ajax({
+                            url: '../ajax/drive.php?op=ElimiarArchivos',
+                            type: 'POST',
+                            data: {
+                                archivoId: sol_solicitud // ID del primer archivo
+                            },
+                            success: function(responseDrive1) {
+                                console.log("Primer archivo eliminado de Google Drive:", responseDrive1);
+    
+                                // Proceder a eliminar el segundo archivo de Google Drive
+                                $.ajax({
+                                    url: '../ajax/drive.php?op=ElimiarArchivos',
+                                    type: 'POST',
+                                    data: {
+                                        archivoId: sol_documento // ID del segundo archivo
+                                    },
+                                    success: function(responseDrive2) {
+                                        console.log("Segundo archivo eliminado de Google Drive:", responseDrive2);
+    
+                                        // Mostrar mensaje de éxito y actualizar la tabla
+                                        Swal.fire({
+                                            title: "Éxito",
+                                            text: "La solicitud y los archivos se eliminaron exitosamente.",
+                                            icon: "success",
+                                            confirmButtonText: "Aceptar"
+                                        }).then(() => {
+                                            $('#solicitudesTable').DataTable().ajax.reload();
+                                        });
+                                    },
+                                    error: function(errorDrive2) {
+                                        console.error("Error al eliminar el segundo archivo en Google Drive:", errorDrive2);
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "Ocurrió un problema al eliminar el segundo archivo en Google Drive.",
+                                            icon: "error",
+                                            confirmButtonText: "Aceptar"
+                                        });
+                                    }
+                                });
+                            },
+                            error: function(errorDrive1) {
+                                console.error("Error al eliminar el primer archivo en Google Drive:", errorDrive1);
+                                Swal.fire({
+                                    title: "Error",
+                                    text: "Ocurrió un problema al eliminar el primer archivo en Google Drive.",
+                                    icon: "error",
+                                    confirmButtonText: "Aceptar"
+                                });
+                            }
+                        });
+                    },
+                    error: function(errorDB) {
+                        console.error("Error al eliminar datos en la base de datos:", errorDB);
+                        Swal.fire({
+                            title: "Error",
+                            text: "Ocurrió un problema al eliminar los datos de la base de datos.",
+                            icon: "error",
+                            confirmButtonText: "Aceptar"
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    
 });
+
