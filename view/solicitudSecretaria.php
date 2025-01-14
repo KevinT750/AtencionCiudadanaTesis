@@ -53,6 +53,7 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
 require 'footer.php';
 ?>
 <script src="script/solicitudSecretaria.js"></script>
+
 <?php
 ob_end_flush();
 ?>

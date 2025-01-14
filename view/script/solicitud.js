@@ -94,7 +94,7 @@ function guardarSolicitud() {
   }
 }
 
-function cargarSolicitudes() {
+/*function cargarSolicitudes() {
     $.ajax({
       url: "../ajax/usuario.php?op=estado",
       type: "GET",
@@ -131,7 +131,7 @@ function cargarSolicitudes() {
     });
   }
   
-
+*/
 $(document).ready(function () {
   enviarSolicitudFormulario(
     "formSolicitud", // El ID del formulario
@@ -139,5 +139,5 @@ $(document).ready(function () {
     "submitBtn", // El ID del botón de submit
     "../ajax/solicitud.php?op=estado" // URL del controlador que manejará la solicitud
   );
-  cargarSolicitudes();
+  //cargarSolicitudes();
 });

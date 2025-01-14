@@ -25,7 +25,7 @@ $(document).ready(async function() {
             {
                 "data": 5,  // ID de solicitud
                 "render": function (data, type, row) {
-                    return `
+                    return ` 
                         <button 
                             class="btn btn-info btn-sm ver-solicitud" 
                             data-file-url="https://docs.google.com/document/d/${data}/view" 
@@ -56,7 +56,6 @@ $(document).ready(async function() {
             {
                 "data": null,  // Botón que cancela data de columnas 2 y 3
                 "render": function (data, type, row) {
-                    // Verificamos si el estado es "Leído"
                     var disableButton = (row[3] === "Leído") ? 'disabled' : ''; 
                     return `
                         <button 
@@ -68,7 +67,6 @@ $(document).ready(async function() {
                         </button>`;
                 }
             }
-            
         ],
         "dom": '<"top"f>rt<"bottom"ilp><"clear">',
         "language": {
@@ -96,17 +94,89 @@ $(document).ready(async function() {
     });
 
     $('#solicitudesSecret').on('click', '.ver-solicitud', function () {
-        var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
+        var fileUrl = $(this).data('file-url');
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
         window.open(fileUrl, '_blank');
     });
 
-    // Evento para abrir otro archivo en una nueva ventana
     $('#solicitudesSecret').on('click', '.ver-otro-dato', function () {
-        var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
+        var fileUrl = $(this).data('file-url');
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
         window.open(fileUrl, '_blank');
     });
+
+    $('#solicitudesSecret').on('click', '.cancelar-datos', function () {
+        $.ajax({
+            url: "../ajax/solicitud.php?op=modalSecretaria",
+            type: "GET",
+            success: function (response) {
+                $('body').append(response); // Agregar el modal dinámicamente al DOM
+                $('#modalSubir').css('display', 'block'); // Mostrar el modal sin fondo oscuro
+    
+                // Referencias a elementos del modal
+                const btnAprobar = $("#btnAprobar");
+                const btnRechazar = $("#btnRechazar");
+                const mensajeArea = $("#mensajeArea");
+                const btnEnviar = $("#btnEnviar");
+    
+                // Eventos para mostrar/ocultar el área de texto
+                btnAprobar.on("click", function () {
+                    Swal.fire({
+                        title: "Solicitud Aprobada",
+                        text: "¿Estás seguro de proceder?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, proceder",
+                        cancelButtonText: "Cancelar",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            mensajeArea.show(); // Mostrar el área de texto
+                            $("#mensaje").focus(); // Enfocar el área de texto
+                        }
+                    });
+                });
+    
+                btnRechazar.on("click", function () {
+                    Swal.fire({
+                        title: "Solicitud Rechazada",
+                        text: "¿Estás seguro de proceder?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, proceder",
+                        cancelButtonText: "Cancelar",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            mensajeArea.show(); // Mostrar el área de texto
+                            $("#mensaje").focus();
+                        }
+                    });
+                });
+    
+                // Validar el envío del mensaje
+                btnEnviar.on("click", function () {
+                    const mensaje = $("#mensaje").val().trim();
+                    if (mensaje !== "") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Mensaje enviado",
+                            text: "El mensaje ha sido enviado exitosamente.",
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Por favor, escribe un mensaje antes de enviar.",
+                        });
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Hubo un error al cargar el modal:", error);
+            }
+        });
+    });
+    
+    
+    
+    
 });
