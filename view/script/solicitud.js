@@ -1,3 +1,4 @@
+
 function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
   $(document).ready(function () {
     $("#" + submitBtnId).on("click", function (e) {
@@ -94,44 +95,6 @@ function guardarSolicitud() {
   }
 }
 
-/*function cargarSolicitudes() {
-    $.ajax({
-      url: "../ajax/usuario.php?op=estado",
-      type: "GET",
-      dataType: "json",
-      success: function (response) {
-        if (response.success) {
-          const solicitudes = response.solicitudes;
-          let rows = "";
-          solicitudes.forEach((solicitud) => {
-            rows += `<tr>
-                                  <td>${solicitud.sol_id}</td>
-                                  <td>${solicitud.sol_fecha}</td>
-                                  <td>
-                                      <button class="btn btn-info btn-sm" onclick="verSolicitud(${solicitud.sol_solicitud})">
-                                          <i class="fa fa-eye"></i> Ver Solicitud
-                                      </button>
-                                  </td>
-                                  <td>
-                                      <button class="btn btn-success btn-sm" onclick="verDocumento(${solicitud.sol_documento})">
-                                          <i class="fa fa-file-pdf"></i> Ver Documento
-                                      </button>
-                                  </td>
-                                  <td><span class="badge bg-${solicitud.estado_class}">${solicitud.estado_nombre}</span></td>
-                                </tr>`;
-          });
-          $("#solicitudesTable tbody").html(rows);
-        } else {
-          alert(response.error);
-        }
-      },
-      error: function () {
-        alert("Error al obtener las solicitudes");
-      },
-    });
-  }
-  
-*/
 $(document).ready(function () {
   enviarSolicitudFormulario(
     "formSolicitud", // El ID del formulario
@@ -139,5 +102,4 @@ $(document).ready(function () {
     "submitBtn", // El ID del botón de submit
     "../ajax/solicitud.php?op=estado" // URL del controlador que manejará la solicitud
   );
-  //cargarSolicitudes();
 });
