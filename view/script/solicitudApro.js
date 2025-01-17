@@ -51,12 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Por favor, agrega al menos un correo destinatario.");
         }
     });
-
-    function cerrarModalAprobar() {
-        const modal = document.getElementById("modalEnviarSolicitud");
-        if (modal) {
-            modal.remove(); // Elimina el modal dinámico
-        }
-        document.getElementById("overlay").style.display = "none";
-    }
 });
+
+function cerrarModalAprobar() {
+    document.getElementById("modalEnviarSolicitud").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}

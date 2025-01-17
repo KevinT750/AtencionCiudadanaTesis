@@ -105,13 +105,13 @@ if (isset($_GET['op'])) {
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Acción requerida</h5>
-                                <button type="button" class="close" onclick="cerrarModal()">&times;</button>
                             </div>
                             <div class="modal-body">
                                 <p class="lead text-center">¿Qué acción desea realizar con la solicitud?</p>
                                 <div id="botonesAccion" class="botones-accion">
                                     <button id="btnAprobar" class="btn btn-success">Aprobar</button>
                                     <button id="btnRechazar" class="btn btn-danger">Rechazar</button>
+                                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button> <!-- Nuevo botón de cerrar -->
                                 </div>
                                 <div id="mensajeArea" class="mensaje-area" style="display: none;">
                                     <label for="mensaje">Escriba un mensaje:</label>
@@ -125,22 +125,20 @@ if (isset($_GET['op'])) {
                     </div>
                     
                     <div id="overlay" class="overlay"></div>
-            
+                
                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            
+                    <script src="../view/script/solicitudSe.js"></script>
+                
                     <link rel="stylesheet" href="../public/css/solicitudSe.css">';
                 echo $model;
                 break;
+            
             
                 case 'modalAprobar':
                     $modal = '
                     <div class="modal" id="modalEnviarSolicitud" tabindex="-1" aria-labelledby="modalEnviarSolicitudLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalEnviarSolicitudLabel">Enviar Solicitud a Coordinadores</h5>
-                                    <button type="button" class="btn-close" onclick="cerrarModalAprobar()" aria-label="Close"></button>
-                                </div>
                                 <div class="modal-body">
                                     <div class="container-fluid">
                                         <div class="row">
@@ -186,6 +184,7 @@ if (isset($_GET['op'])) {
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
                                                     <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                                    <button type="button" class="btn btn-secondary" onclick="cerrarModalAprobar()">Cerrar</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -194,12 +193,13 @@ if (isset($_GET['op'])) {
                             </div>
                         </div>
                     </div>
-                    
+                
                     <script src="../view/script/solicitudApro.js"></script>
                     <link rel="stylesheet" href="../public/css/solicitudApro.css">
                     ';
                     echo $modal;
                     break;
+                
                 
         // Agregar otros casos si es necesario
         default:
