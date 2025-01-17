@@ -1,4 +1,4 @@
-$(document).ready(async function() {
+$(document).ready(function () {
     $('#solicitudesSecret').DataTable({
         "ajax": {
             url: "../ajax/solicitud.php?op=Solicitudes",
@@ -25,7 +25,7 @@ $(document).ready(async function() {
             {
                 "data": 5,  // ID de solicitud
                 "render": function (data, type, row) {
-                    return `
+                    return ` 
                         <button 
                             class="btn btn-info btn-sm ver-solicitud" 
                             data-file-url="https://docs.google.com/document/d/${data}/view" 
@@ -54,10 +54,9 @@ $(document).ready(async function() {
                 }
             },
             {
-                "data": null,  // Botón que cancela data de columnas 2 y 3
+                "data": null,  // Botón que cancela datos de columnas 2 y 3
                 "render": function (data, type, row) {
-                    // Verificamos si el estado es "Leído"
-                    var disableButton = (row[3] === "Leído") ? 'disabled' : ''; 
+                    var disableButton = (row[3] === "Leído") ? 'disabled' : '';
                     return `
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
@@ -68,7 +67,6 @@ $(document).ready(async function() {
                         </button>`;
                 }
             }
-            
         ],
         "dom": '<"top"f>rt<"bottom"ilp><"clear">',
         "language": {
@@ -87,26 +85,119 @@ $(document).ready(async function() {
     });
 
     // Evento para mostrar un mensaje emergente cuando se pase el mouse por encima de un botón
-    $(document).on('mouseenter', '.btn', function() {
+    $(document).on('mouseenter', '.btn', function () {
         $(this).tooltip('show');
     });
 
-    $(document).on('mouseleave', '.btn', function() {
+    $(document).on('mouseleave', '.btn', function () {
         $(this).tooltip('hide');
     });
 
+    // Evento para ver solicitud
     $('#solicitudesSecret').on('click', '.ver-solicitud', function () {
-        var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
+        const fileUrl = $(this).data('file-url');
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
         window.open(fileUrl, '_blank');
     });
 
-    // Evento para abrir otro archivo en una nueva ventana
+    // Evento para ver otro dato
     $('#solicitudesSecret').on('click', '.ver-otro-dato', function () {
-        var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
+        const fileUrl = $(this).data('file-url');
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
         window.open(fileUrl, '_blank');
     });
+
+    // Evento para cancelar datos
+    $('#solicitudesSecret').on('click', '.cancelar-datos', function () {
+        const columna2 = $(this).data('columna-2');
+        const columna3 = $(this).data('columna-3');
+
+        $.ajax({
+            url: "../ajax/solicitud.php?op=modalSecretaria",
+            type: "GET",
+            success: function (response) {
+                $('body').append(response); // Agregar el modal dinámicamente al DOM
+                $('#modalSubir').css('display', 'block'); // Mostrar el modal sin fondo oscuro
+    
+                const btnAprobar = $("#btnAprobar");
+                const btnRechazar = $("#btnRechazar");
+                const mensajeArea = $("#mensajeArea");
+                const btnEnviar = $("#btnEnviar");
+    
+                btnAprobar.on("click", function () {
+                    Swal.fire({
+                        title: "Solicitud Aprobada",
+                        text: "¿Estás seguro de proceder?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, proceder",
+                        cancelButtonText: "Cancelar",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            mostrarModalAprobar();
+                            cerrarModal();
+                        }
+                    });
+                });
+    
+                btnRechazar.on("click", function () {
+                    Swal.fire({
+                        title: "Solicitud Rechazada",
+                        text: "¿Estás seguro de proceder?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sí, proceder",
+                        cancelButtonText: "Cancelar",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            mensajeArea.show();
+                            $("#mensaje").focus();
+                        }
+                    });
+                });
+    
+                btnEnviar.on("click", function () {
+                    const mensaje = $("#mensaje").val().trim();
+                    if (mensaje !== "") {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Mensaje enviado",
+                            text: "El mensaje ha sido enviado exitosamente.",
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Por favor, escribe un mensaje antes de enviar.",
+                        });
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Hubo un error al cargar el modal:", error);
+            }
+        });
+    });
+
+    function cerrarModal() {
+        $('#modalSubir').remove(); // Eliminar el modal del DOM
+        $('#overlay').hide();
+    }
+
+    function mostrarModalAprobar() {
+        $.ajax({
+            url: "../ajax/solicitud.php?op=modalAprobar",
+            type: "GET",
+            success: function (response) {
+                const modalContainer = $('<div>').html(response);
+                $('body').append(modalContainer);
+                $('#modalEnviarSolicitud').show();
+                $('#overlay').show();
+            },
+            error: function () {
+                Swal.fire("Error", "No se pudo cargar el modal. Intenta de nuevo.", "error");
+            }
+        });
+    }
+    
 });

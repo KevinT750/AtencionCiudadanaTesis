@@ -54,7 +54,7 @@ if (isset($_GET['op'])) {
 
         case 'Solicitudes':
             $rspta = $solicitud->Estado();
-            $date[] = array();
+            $data = [];
 
             if($rspta !== false){
                 while($reg = $rspta->fetch_row()){
@@ -68,8 +68,6 @@ if (isset($_GET['op'])) {
                         "6" => strip_tags(html_entity_decode($reg[3])),
                         "7" => $reg[4] //Estado
                     );
-
-                    
                 }
                 // Devuelve los datos en formato JSON para DataTables
                 echo json_encode(array(
@@ -78,32 +76,131 @@ if (isset($_GET['op'])) {
                     "iTotalDisplayRecords" => count($data), // Total de registros mostrados
                     "aaData" => $data // Los datos procesados
                 ));
-
             }else{
                 // En caso de error, responde con un mensaje adecuado
                 echo json_encode(array(
                     "error" => "No se pudieron obtener los datos. Verifique la consulta o el procedimiento almacenado."
                 ));
             }
-
             break;
 
         case 'Eliminar':
-                // Verificar si los parámetros necesarios están presentes
+            // Verificar si los parámetros necesarios están presentes
             if (isset($_POST['sol_solicitud']) && isset($_POST['sol_documento'])) {
                 $sol_solicitud = $_POST['sol_solicitud'];
                 $sol_documento = $_POST['sol_documento'];
-                                    // Llamar a la función eliminarSolicitud
+                // Llamar a la función eliminarSolicitud
                 $rspta = $solicitud->eliminarSolicitud($sol_solicitud, $sol_documento);
-            
-                    // Verificar la respuesta y retornar el resultado al cliente
-                echo $rspta ? "Solicitud eliminada correctamente" : "No se pudo eliminar la solicitud.";
-                } else {
-                    echo "Faltan parámetros para eliminar la solicitud.";
-                }
-            break;
-            
 
+                // Verificar la respuesta y retornar el resultado al cliente
+                echo $rspta ? "Solicitud eliminada correctamente" : "No se pudo eliminar la solicitud.";
+            } else {
+                echo "Faltan parámetros para eliminar la solicitud.";
+            }
+            break;
+
+            case 'modalSecretaria':
+                $model = '
+                    <div class="modal" id="modalSubir">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Acción requerida</h5>
+                            </div>
+                            <div class="modal-body">
+                                <p class="lead text-center">¿Qué acción desea realizar con la solicitud?</p>
+                                <div id="botonesAccion" class="botones-accion">
+                                    <button id="btnAprobar" class="btn btn-success">Aprobar</button>
+                                    <button id="btnRechazar" class="btn btn-danger">Rechazar</button>
+                                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button> <!-- Nuevo botón de cerrar -->
+                                </div>
+                                <div id="mensajeArea" class="mensaje-area" style="display: none;">
+                                    <label for="mensaje">Escriba un mensaje:</label>
+                                    <textarea id="mensaje" class="form-control" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+                                    <div class="boton-enviar">
+                                        <button id="btnEnviar" class="btn btn-primary">Enviar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="overlay" class="overlay"></div>
+                
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script src="../view/script/solicitudSe.js"></script>
+                
+                    <link rel="stylesheet" href="../public/css/solicitudSe.css">';
+                echo $model;
+                break;
+            
+            
+                case 'modalAprobar':
+                    $modal = '
+                    <div class="modal" id="modalEnviarSolicitud" tabindex="-1" aria-labelledby="modalEnviarSolicitudLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-info">
+                                                    <strong>Estudiante:</strong> <span id="nombreEstudiante">Juan Pérez</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <form id="formEnviarSolicitud">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="motivoSolicitud">Motivo de la Solicitud</label>
+                                                        <select class="form-control" id="motivoSolicitud" required>
+                                                            <option value="matricula">Matrícula</option>
+                                                            <option value="homologacion">Homologación</option>
+                                                            <option value="cambio_carrera">Cambio de Carrera</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
+                                                        <div id="correosDestinatarios" class="d-flex align-items-center">
+                                                            <input type="email" class="form-control me-2" id="buscarCorreo" placeholder="Buscar correo..." required>
+                                                            <button class="btn btn-success" type="button" id="agregarCorreo">+</button>
+                                                        </div>
+                                                        <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="comentario">Comentario (opcional)</label>
+                                                        <textarea class="form-control" id="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 text-center">
+                                                    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                                    <button type="button" class="btn btn-secondary" onclick="cerrarModalAprobar()">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <script src="../view/script/solicitudApro.js"></script>
+                    <link rel="stylesheet" href="../public/css/solicitudApro.css">
+                    ';
+                    echo $modal;
+                    break;
+                
+                
         // Agregar otros casos si es necesario
         default:
             echo json_encode([

@@ -1,0 +1,43 @@
+.botones-accion {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Espacio entre los botones */
+    margin-top: 20px;
+}
+
+.botones-accion .btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+.boton-enviar {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
