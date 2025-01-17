@@ -127,165 +127,8 @@ if (isset($_GET['op'])) {
                     <div id="overlay" class="overlay"></div>
             
                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const btnAprobar = document.getElementById("btnAprobar");
-                            const btnRechazar = document.getElementById("btnRechazar");
-                            const mensajeArea = document.getElementById("mensajeArea");
-                            const btnEnviar = document.getElementById("btnEnviar");
             
-                            btnAprobar.addEventListener("click", function () {
-                                Swal.fire({
-                                    title: "Solicitud Aprobada",
-                                    text: "¿Estás seguro de proceder?",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonText: "Sí, proceder",
-                                    cancelButtonText: "Cancelar",
-                                }).then((result) => {
-                                    mensajeArea.style.display = result.isConfirmed ? "block" : "none";
-                                    if (result.isConfirmed) {
-                                        // Cierra el modal actual
-                                        cerrarModal();
-                                        // Muestra el modalAprobar
-                                        mostrarModalAprobar();
-                                    }
-                                });
-                            });
-            
-                            btnRechazar.addEventListener("click", function () {
-                                Swal.fire({
-                                    title: "Solicitud Rechazada",
-                                    text: "¿Estás seguro de proceder?",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonText: "Sí, proceder",
-                                    cancelButtonText: "Cancelar",
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        mensajeArea.style.display = "none";
-                                        Swal.fire("Solicitud rechazada", "La acción fue completada.", "success");
-                                    }
-                                });
-                            });
-            
-                            btnEnviar.addEventListener("click", function () {
-                                const mensaje = document.getElementById("mensaje").value.trim();
-                                if (mensaje) {
-                                    Swal.fire({ icon: "success", title: "Mensaje enviado", text: "El mensaje se ha enviado exitosamente." });
-                                } else {
-                                    Swal.fire({ icon: "error", title: "Error", text: "Por favor, escribe un mensaje antes de enviar." });
-                                }
-                            });
-                        });
-            
-                        function cerrarModal() {
-                            document.getElementById("modalSubir").style.display = "none";
-                            document.getElementById("overlay").style.display = "none";
-                        }
-            
-                        function mostrarModalAprobar() {
-                            document.getElementById("modalEnviarSolicitud").style.display = "block";
-                            document.getElementById("overlay").style.display = "block";
-                        }
-            
-                        function cerrarModalAprobar() {
-                            document.getElementById("modalEnviarSolicitud").style.display = "none";
-                            document.getElementById("overlay").style.display = "none";
-                        }
-                    </script>
-            
-                    <style>
-                        /* Estilos para el modal */
-                        .modal {
-                            display: none;
-                            position: fixed;
-                            z-index: 1;
-                            left: 0;
-                            top: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-color: rgba(0, 0, 0, 0.5);
-                            justify-content: center;
-                            align-items: center;
-                        }
-            
-                        .modal-content {
-                            background-color: white;
-                            border-radius: 8px;
-                            padding: 20px;
-                            width: 50%;
-                            max-width: 600px;
-                            text-align: center;
-                        }
-            
-                        .modal-header {
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            background-color: #007bff;
-                            color: white;
-                            padding: 10px 20px;
-                            border-radius: 5px;
-                        }
-            
-                        .close {
-                            font-size: 1.5rem;
-                            background: none;
-                            border: none;
-                            color: white;
-                            cursor: pointer;
-                        }
-            
-                        .botones-accion {
-                            display: flex;
-                            justify-content: center;
-                            gap: 20px;
-                            margin-top: 20px;
-                        }
-            
-                        .botones-accion .btn {
-                            padding: 12px 30px;
-                            font-size: 1rem;
-                            border-radius: 5px;
-                            cursor: pointer;
-                            transition: background-color 0.3s ease;
-                        }
-            
-                        .btn-success {
-                            background-color: #28a745;
-                            border: none;
-                        }
-            
-                        .btn-danger {
-                            background-color: #dc3545;
-                            border: none;
-                        }
-            
-                        .boton-enviar {
-                            margin-top: 20px;
-                            display: flex;
-                            justify-content: center;
-                        }
-            
-                        .form-control {
-                            width: 100%;
-                            padding: 10px;
-                            border: 1px solid #ccc;
-                            border-radius: 5px;
-                            font-size: 1rem;
-                        }
-            
-                        .overlay {
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-color: rgba(0, 0, 0, 0.7);
-                            display: none;
-                        }
-                    </style>';
+                    <link rel="stylesheet" href="../public/css/solicitudSe.css">';
                 echo $model;
                 break;
             
@@ -296,173 +139,64 @@ if (isset($_GET['op'])) {
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="modalEnviarSolicitudLabel">Enviar Solicitud a Coordinadores</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                                    <button type="button" class="btn-close" onclick="cerrarModalAprobar()" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="alert alert-info">
-                                        <strong>Estudiante:</strong> <span id="nombreEstudiante">Juan Pérez</span>
-                                    </div>
-                
-                                    <form id="formEnviarSolicitud">
-                                        <div class="form-group">
-                                            <label for="motivoSolicitud">Motivo de la Solicitud</label>
-                                            <select class="form-control" id="motivoSolicitud" required>
-                                                <option value="matricula">Matrícula</option>
-                                                <option value="homologacion">Homologación</option>
-                                                <option value="cambio_carrera">Cambio de Carrera</option>
-                                            </select>
-                                        </div>
-                
-                                        <div class="form-group">
-                                            <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
-                                            <div id="correosDestinatarios" class="input-group">
-                                                <input type="email" class="form-control" id="buscarCorreo" placeholder="Buscar correo..." required>
-                                                <button class="btn" type="button" id="agregarCorreo">+</button>
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-info">
+                                                    <strong>Estudiante:</strong> <span id="nombreEstudiante">Juan Pérez</span>
+                                                </div>
                                             </div>
-                                            <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
                                         </div>
-                
-                                        <div class="form-group">
-                                            <label for="comentario">Comentario (opcional)</label>
-                                            <textarea class="form-control" id="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
-                                        </div>
-                
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-                                        </div>
-                                    </form>
+                                        <form id="formEnviarSolicitud">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="motivoSolicitud">Motivo de la Solicitud</label>
+                                                        <select class="form-control" id="motivoSolicitud" required>
+                                                            <option value="matricula">Matrícula</option>
+                                                            <option value="homologacion">Homologación</option>
+                                                            <option value="cambio_carrera">Cambio de Carrera</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
+                                                        <div id="correosDestinatarios" class="d-flex align-items-center">
+                                                            <input type="email" class="form-control me-2" id="buscarCorreo" placeholder="Buscar correo..." required>
+                                                            <button class="btn btn-success" type="button" id="agregarCorreo">+</button>
+                                                        </div>
+                                                        <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="comentario">Comentario (opcional)</label>
+                                                        <textarea class="form-control" id="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 text-center">
+                                                    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                
-                    <style>
-                        .modal {
-                            display: none;
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-color: rgba(0, 0, 0, 0.5);
-                            z-index: 999;
-                        }
-                        .modal-dialog {
-                            margin-top: 10%;
-                            margin-left: auto;
-                            margin-right: auto;
-                            width: 80%;
-                        }
-                        .modal-content {
-                            background-color: white;
-                            padding: 20px;
-                            border-radius: 8px;
-                        }
-                        .modal-header {
-                            background-color: #007bff;
-                            color: white;
-                            padding: 10px;
-                        }
-                        .modal-header .close {
-                            color: white;
-                            font-size: 1.5em;
-                        }
-                        .alert-info {
-                            background-color: #d9edf7;
-                            padding: 10px;
-                            margin-bottom: 15px;
-                            border-radius: 4px;
-                        }
-                        .form-group {
-                            margin-bottom: 15px;
-                        }
-                        .form-control {
-                            width: 100%;
-                            padding: 10px;
-                            border-radius: 4px;
-                            border: 1px solid #ccc;
-                        }
-                        .input-group {
-                            display: flex;
-                            gap: 10px;
-                        }
-                        .input-group .btn {
-                            background-color: #28a745;
-                            color: white;
-                            border: none;
-                            cursor: pointer;
-                        }
-                        .input-group .btn:hover {
-                            background-color: #218838;
-                        }
-                        .btn-primary {
-                            background-color: #007bff;
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
-                            cursor: pointer;
-                        }
-                        .btn-primary:hover {
-                            background-color: #0056b3;
-                        }
-                    </style>
-                
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const agregarCorreoBtn = document.getElementById("agregarCorreo");
-                            const buscarCorreoInput = document.getElementById("buscarCorreo");
-                            const correosDestinatariosDiv = document.getElementById("correosDestinatarios");
-                            const formEnviarSolicitud = document.getElementById("formEnviarSolicitud");
-                            const errorCorreo = document.getElementById("errorCorreo");
-                
-                            const correosDisponibles = [
-                                "coordinador1@universidad.edu",
-                                "coordinador2@universidad.edu",
-                                "coordinador3@universidad.edu"
-                            ];
-                
-                            agregarCorreoBtn.addEventListener("click", function () {
-                                const correoSeleccionado = buscarCorreoInput.value.trim();
-                
-                                if (correoSeleccionado && correosDisponibles.includes(correoSeleccionado)) {
-                                    const divCorreo = document.createElement("div");
-                                    divCorreo.classList.add("input-group", "mb-2");
-                                    divCorreo.innerHTML = `
-                                        <input type="text" class="form-control" value="${correoSeleccionado}" disabled>
-                                        <button class="btn btn-danger btn-sm" type="button" onclick="eliminarCorreo(this)">X</button>
-                                    `;
-                                    correosDestinatariosDiv.appendChild(divCorreo);
-                                    buscarCorreoInput.value = "";
-                                    errorCorreo.style.display = "none";
-                                } else {
-                                    errorCorreo.style.display = "block";
-                                }
-                            });
-                
-                            window.eliminarCorreo = function (button) {
-                                button.parentElement.remove();
-                            };
-                
-                            formEnviarSolicitud.addEventListener("submit", function (e) {
-                                e.preventDefault();
-                                const correosDestinatarios = [];
-                                const comentarios = document.getElementById("comentario").value.trim();
-                
-                                const inputsCorreos = correosDestinatariosDiv.querySelectorAll("input");
-                                inputsCorreos.forEach(input => {
-                                    correosDestinatarios.push(input.value);
-                                });
-                
-                                if (correosDestinatarios.length > 0) {
-                                    alert(`La solicitud ha sido enviada a: ${correosDestinatarios.join(", ")}`);
-                                    formEnviarSolicitud.reset();
-                                    correosDestinatariosDiv.innerHTML = "";
-                                } else {
-                                    alert("Por favor, agrega al menos un correo destinatario.");
-                                }
-                            });
-                        });
-                    </script>
+                    
+                    <script src="../view/script/solicitudApro.js"></script>
+                    <link rel="stylesheet" href="../public/css/solicitudApro.css">
                     ';
                     echo $modal;
                     break;
