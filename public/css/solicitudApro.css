@@ -102,3 +102,10 @@
 .btn-secondary:hover {
     background-color: #5a6268;
 }
+
+#correosDestinatarios .form-control {
+    width: calc(100% - 50px); /* Ajusta el ancho del input */
+}
+#correosDestinatarios button {
+    min-width: 40px;
+}

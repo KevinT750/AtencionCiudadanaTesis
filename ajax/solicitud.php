@@ -165,10 +165,16 @@ if (isset($_GET['op'])) {
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
-                                                        <div id="correosDestinatarios" class="d-flex align-items-center">
-                                                            <input type="email" class="form-control me-2" id="buscarCorreo" placeholder="Buscar correo..." required>
-                                                            <button class="btn btn-success" type="button" id="agregarCorreo">+</button>
+                                                        <div id="correosDestinatarios">
+                                                            <div class="d-flex align-items-center mb-2">
+                                                                <input type="email" class="form-control me-2" placeholder="Buscar correo..." required>
+                                                                <button class="btn btn-success" type="button" id="agregarCorreo">+</button>
+                                                            </div>
+                                                            <!-- Contenedor para agregar más correos -->
+                                                            <div id="contenedorCorreos"></div>
+                                                            <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
                                                         </div>
+
                                                         <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
                                                     </div>
                                                 </div>

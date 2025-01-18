@@ -193,11 +193,53 @@ $(document).ready(function () {
                 $('body').append(modalContainer);
                 $('#modalEnviarSolicitud').show();
                 $('#overlay').show();
+    
+                // Llama al método para inicializar la funcionalidad de agregar correos
+                inicializarAgregarCorreo();
             },
             error: function () {
                 Swal.fire("Error", "No se pudo cargar el modal. Intenta de nuevo.", "error");
             }
         });
+    }
+    
+    // Método para inicializar la funcionalidad de agregar correos
+    function inicializarAgregarCorreo() {
+        const agregarCorreoBtn = document.getElementById("agregarCorreo");
+        const contenedorCorreos = document.getElementById("contenedorCorreos");
+    
+        if (agregarCorreoBtn && contenedorCorreos) {
+            agregarCorreoBtn.addEventListener("click", function () {
+                // Crear un nuevo contenedor para el correo
+                const nuevoCorreoDiv = document.createElement("div");
+                nuevoCorreoDiv.className = "d-flex align-items-center mb-2";
+    
+                // Crear un nuevo campo de correo
+                const nuevoCorreoInput = document.createElement("input");
+                nuevoCorreoInput.type = "email";
+                nuevoCorreoInput.className = "form-control me-2";
+                nuevoCorreoInput.placeholder = "Buscar correo...";
+                nuevoCorreoInput.required = true;
+    
+                // Crear un botón para eliminar este campo
+                const eliminarCorreoBtn = document.createElement("button");
+                eliminarCorreoBtn.type = "button";
+                eliminarCorreoBtn.className = "btn btn-danger";
+                eliminarCorreoBtn.textContent = "-";
+    
+                // Eliminar el campo al hacer clic en el botón "-"
+                eliminarCorreoBtn.addEventListener("click", function () {
+                    contenedorCorreos.removeChild(nuevoCorreoDiv);
+                });
+    
+                // Añadir el input y el botón al contenedor
+                nuevoCorreoDiv.appendChild(nuevoCorreoInput);
+                nuevoCorreoDiv.appendChild(eliminarCorreoBtn);
+    
+                // Agregar el nuevo contenedor al contenedor principal
+                contenedorCorreos.appendChild(nuevoCorreoDiv);
+            });
+        }
     }
     
 });
