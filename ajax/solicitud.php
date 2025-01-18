@@ -133,8 +133,16 @@ if (isset($_GET['op'])) {
                 echo $model;
                 break;
             
-            
                 case 'modalAprobar':
+                    // Cargar los correos desde el archivo JSON
+                    $rutaArchivo = '../Mailer/emails.json';
+                    $correos = [];
+                    if (file_exists($rutaArchivo)) {
+                        $correos = json_decode(file_get_contents($rutaArchivo), true);
+                    }
+                
+                    $correosSeleccionados = isset($_POST['correosSeleccionados']) ? $_POST['correosSeleccionados'] : [];
+                
                     $modal = '
                     <div class="modal" id="modalEnviarSolicitud" tabindex="-1" aria-labelledby="modalEnviarSolicitudLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -148,12 +156,12 @@ if (isset($_GET['op'])) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <form id="formEnviarSolicitud">
+                                        <form id="formEnviarSolicitud" method="POST" action="">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="motivoSolicitud">Motivo de la Solicitud</label>
-                                                        <select class="form-control" id="motivoSolicitud" required>
+                                                        <select class="form-control" id="motivoSolicitud" name="motivoSolicitud" required>
                                                             <option value="matricula">Matrícula</option>
                                                             <option value="homologacion">Homologación</option>
                                                             <option value="cambio_carrera">Cambio de Carrera</option>
@@ -167,15 +175,31 @@ if (isset($_GET['op'])) {
                                                         <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
                                                         <div id="correosDestinatarios">
                                                             <div class="d-flex align-items-center mb-2">
-                                                                <input type="email" class="form-control me-2" placeholder="Buscar correo..." required>
-                                                                <button class="btn btn-success" type="button" id="agregarCorreo">+</button>
+                                                                <select id="comboCorreos" class="form-control me-2" name="correoSeleccionado">
+                                                                    <option value="">Seleccione un correo...</option>';
+                
+                    // Mostrar los correos disponibles
+                    foreach ($correos as $correo) {
+                        $selected = in_array($correo, $correosSeleccionados) ? 'disabled' : '';
+                        $modal .= "<option value='$correo' $selected>$correo</option>";
+                    }
+                
+                    $modal .= '
+                                                                </select>
+                                                                <button class="btn btn-success" type="button" name="agregarCorreo">+</button>
                                                             </div>
-                                                            <!-- Contenedor para agregar más correos -->
-                                                            <div id="contenedorCorreos"></div>
-                                                            <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
+                                                            <div id="contenedorCorreos">';
+                
+                    // Mostrar los correos seleccionados (si hay)
+                    foreach ($correosSeleccionados as $correoSeleccionado) {
+                        $modal .= "<div class='d-flex align-items-center mb-2'>$correoSeleccionado 
+                                    <button type='button' class='btn btn-danger ms-2' name='eliminarCorreo' value='$correoSeleccionado'>X</button></div>";
+                    }
+                
+                    $modal .= '
+                                                            </div>
+                                                            <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo ya seleccionado. Por favor, elige otro.</small>
                                                         </div>
-
-                                                        <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo no válido. Por favor, ingresa un correo válido de los coordinadores.</small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,7 +207,7 @@ if (isset($_GET['op'])) {
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="comentario">Comentario (opcional)</label>
-                                                        <textarea class="form-control" id="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
+                                                        <textarea class="form-control" id="comentario" name="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -199,10 +223,10 @@ if (isset($_GET['op'])) {
                             </div>
                         </div>
                     </div>
-                
                     <script src="../view/script/solicitudApro.js"></script>
                     <link rel="stylesheet" href="../public/css/solicitudApro.css">
                     ';
+                    
                     echo $modal;
                     break;
                 
@@ -222,3 +246,4 @@ if (isset($_GET['op'])) {
     ]);
 }
 ?>
+
