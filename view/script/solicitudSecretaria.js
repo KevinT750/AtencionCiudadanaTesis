@@ -112,6 +112,10 @@ $(document).ready(function () {
         const columna2 = $(this).data('columna-2');
         const columna3 = $(this).data('columna-3');
 
+    // Enviar los datos con localStorage (opción rápida)
+        localStorage.setItem('columna2', columna2);
+        localStorage.setItem('columna3', columna3);
+
         $.ajax({
             url: "../ajax/solicitud.php?op=modalSecretaria",
             type: "GET",
