@@ -1,44 +1,33 @@
 $(document).ready(function() {
-    $("#frmAcceso").on('submit', function(e) {
+    $('#btnSubmit').on('click', function(e) {
         e.preventDefault();
         
-        let logina = $("#logina").val();
-        let clavea = $("#clavea").val();
+        var usuario = $('#logina').val();
+        var clave = $('#clavea').val();
         
-        if (!logina || !clavea) {
-            bootbox.alert("Por favor, complete todos los campos");
+        // Validación de campos vacíos
+        if (usuario === '' || clave === '') {
+            alert('Por favor, complete todos los campos');
             return;
         }
         
-        let btnSubmit = $(this).find('button[type="submit"]');
-        let originalText = btnSubmit.text();
-        btnSubmit.prop('disabled', true).text('Procesando...');
-
-        $.ajax({
-            url: "../ajax/usuario.php?op=verificar",
-            type: "POST",
-            data: {
-                "logina": logina,
-                "clavea": clavea
-            },
-            success: function(response) {
-                try {
-                    let data = JSON.parse(response);
-                    if (data.error) {
-                        bootbox.alert(data.error);
-                    } else if (data.success) {
-                        window.location.href = "escritorio.php";  // Redirige si el login es exitoso
-                    }
-                } catch (e) {
-                    bootbox.alert("Error en el servidor");
-                }
-            },
-            error: function(xhr, status, error) {
-                bootbox.alert("Error en la conexión: " + error);
-            },
-            complete: function() {
-                btnSubmit.prop('disabled', false).text(originalText);
+        // Cambiar el texto del botón y deshabilitarlo durante el proceso
+        var $btnSubmit = $('#btnSubmit');
+        $btnSubmit.prop('disabled', true);
+        $btnSubmit.text('Procesando...');
+        
+        // Simulamos un login
+        setTimeout(function() {
+            // Simulamos la verificación de credenciales
+            if (usuario === 'admin' && clave === '1234') {
+                alert('Ingreso exitoso');
+            } else {
+                alert('Credenciales incorrectas');
             }
-        });
+            
+            // Restauramos el botón después del proceso
+            $btnSubmit.prop('disabled', false);
+            $btnSubmit.text('Enviar');
+        }, 1000);
     });
 });
