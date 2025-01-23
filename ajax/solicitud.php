@@ -8,8 +8,10 @@ if (!isset($_SESSION['usu_nombre'])) {
 }
 
 require_once '../model/solicitud.php';
+require_once '../model/Usuario.php';
 
 $solicitud = new ModeloSolicitud();
+$usuario = new Usuario();
 
 // Verificar si el parámetro 'op' está presente en la URL
 if (isset($_GET['op'])) {
@@ -100,41 +102,91 @@ if (isset($_GET['op'])) {
             break;
 
             case 'modalSecretaria':
-                $model = '
-                    <div class="modal" id="modalSubir">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Acción requerida</h5>
-                            </div>
-                            <div class="modal-body">
-                                <p class="lead text-center">¿Qué acción desea realizar con la solicitud?</p>
-                                <div id="botonesAccion" class="botones-accion">
-                                    <button id="btnAprobar" class="btn btn-success">Aprobar</button>
-                                    <button id="btnRechazar" class="btn btn-danger">Rechazar</button>
-                                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button> <!-- Nuevo botón de cerrar -->
+                // Verificar si la sesión está iniciada antes de llamarlo
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start(); // Iniciar la sesión solo si no está activa
+                }
+            
+                // Almacena las variables columna2 y columna3 en la sesión
+                $_SESSION['columna2'] = isset($_POST['columna2']) ? $_POST['columna2'] : 'Sin valor';
+                $_SESSION['columna3'] = isset($_POST['columna3']) ? $_POST['columna3'] : 'Sin valor';
+            
+                $columna2 = $_SESSION['columna2'];
+                $columna3 = $_SESSION['columna3'];
+            
+                // Asegúrate de que el objeto $model esté instanciado
+                if (isset($usuario)) {
+                    // Llamar a la función datosEst para obtener el nombre del estudiante
+                    $sol_solicitud = $_POST['columna2']; // Asumimos que columna2 es sol_solicitud
+                    $sol_documento = $_POST['columna3']; // Asumimos que columna3 es sol_documento
+            
+                    // Llamar a la función y obtener el nombre del estudiante
+                    $usu = $usuario->datosEst($sol_solicitud, $sol_documento);
+            
+                    if ($usu) {
+                        // Si se obtiene el nombre del estudiante, guardarlo en la sesión
+                        $_SESSION['est_nombre'] = $usu['est_nombre'];
+                        $_SESSION['est_correoPersonal'] = $usu['est_correoPersonal'];
+                        $_SESSION['est_celular'] = $usu['est_celular']; // Asumiendo que 'est_nombre' es el campo que te interesa
+                    } else {
+                        $_SESSION['est_nombre'] = 'Nombre no encontrado';
+                    }
+            
+                    // Ahora puedes utilizar la variable de sesión 'est_nombre' en la vista
+                    $model = '
+                        <div class="modal" id="modalSubir">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Acción requerida</h5>
                                 </div>
-                                <div id="mensajeArea" class="mensaje-area" style="display: none;">
-                                    <label for="mensaje">Escriba un mensaje:</label>
-                                    <textarea id="mensaje" class="form-control" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
-                                    <div class="boton-enviar">
-                                        <button id="btnEnviar" class="btn btn-primary">Enviar</button>
+                                <div class="modal-body">
+                                    <p class="lead text-center">¿Qué acción desea realizar con la solicitud?</p>
+                                    <div id="botonesAccion" class="botones-accion">
+                                        <button id="btnAprobar" class="btn btn-success">Aprobar</button>
+                                        <button id="btnRechazar" class="btn btn-danger">Rechazar</button>
+                                        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button> <!-- Nuevo botón de cerrar -->
+                                    </div>
+                                    <div id="mensajeArea" class="mensaje-area" style="display: none;">
+                                        <label for="mensaje">Escriba un mensaje:</label>
+                                        <textarea id="mensaje" class="form-control" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+                                        <div class="boton-enviar">
+                                            <button id="btnEnviar" class="btn btn-primary">Enviar</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div id="overlay" class="overlay"></div>
-                
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script src="../view/script/solicitudSe.js"></script>
-                
-                    <link rel="stylesheet" href="../public/css/solicitudSe.css">';
-                echo $model;
+            
+                        <div id="overlay" class="overlay"></div>
+            
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script src="../view/script/solicitudSe.js"></script>
+            
+                        <link rel="stylesheet" href="../public/css/solicitudSe.css">';
+            
+                    echo $model;
+                } else {
+                    echo "Error: El objeto \$model no está instanciado.";
+                }
                 break;
             
+            
+            
+            
+                case 'cerrarSesion':
+                    session_start(); // Iniciar la sesión
+                    unset($_SESSION['columna2']); // Destruir sesión columna2
+                    unset($_SESSION['columna3']);
+                    unset($_SESSION['est_nombre']); // Destruir sesión columna3
+                    unset($_SESSION['est_correoPersonal']);
+                    unset($_SESSION['est_celular']);
+                    echo 'Sesiones eliminadas correctamente';
+                    break;
+
                 case 'modalAprobar':
-                    // Cargar los correos desde el archivo JSON
+                    
+                    session_start();
+                    $nombre = isset($_SESSION['est_nombre']) ? $_SESSION['est_nombre'] : 'No disponible';
                     $rutaArchivo = '../Mailer/emails.json';
                     $correos = [];
                     if (file_exists($rutaArchivo)) {
@@ -152,7 +204,8 @@ if (isset($_GET['op'])) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="alert alert-info">
-                                                    <strong>Estudiante:</strong> <span id="nombreEstudiante">Juan Pérez</span>
+                                                    <strong>Estudiante:</strong> <span id="nombreEstudiante"></span><br>
+                                                    <strong>' . htmlspecialchars($nombre) . '</strong>
                                                 </div>
                                             </div>
                                         </div>

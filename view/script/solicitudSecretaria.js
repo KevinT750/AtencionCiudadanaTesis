@@ -60,11 +60,12 @@ $(document).ready(function () {
                     return `
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
-                            data-columna-2="${row[1]}" 
-                            data-columna-3="${row[2]}" ${disableButton} 
+                            data-columna-2="${row[5]}" 
+                            data-columna-3="${row[6 ]}" ${disableButton} 
                             title="${disableButton ? 'No se puede cancelar (ya leído)' : 'Dejar comentario'}">
                             <i class="fa fa-comments"></i> Dejar Comentario
                         </button>`;
+                        // columna2 Solicitud y 3 documentos
                 }
             }
         ],
@@ -111,14 +112,14 @@ $(document).ready(function () {
     $('#solicitudesSecret').on('click', '.cancelar-datos', function () {
         const columna2 = $(this).data('columna-2');
         const columna3 = $(this).data('columna-3');
-
-    // Enviar los datos con localStorage (opción rápida)
-        localStorage.setItem('columna2', columna2);
-        localStorage.setItem('columna3', columna3);
-
+    
         $.ajax({
             url: "../ajax/solicitud.php?op=modalSecretaria",
-            type: "GET",
+            type: "POST", // Cambiado a POST
+            data: {
+                columna2: columna2,
+                columna3: columna3
+            },
             success: function (response) {
                 $('body').append(response); // Agregar el modal dinámicamente al DOM
                 $('#modalSubir').css('display', 'block'); // Mostrar el modal sin fondo oscuro
@@ -182,6 +183,7 @@ $(document).ready(function () {
             }
         });
     });
+    
 
     function cerrarModal() {
         $('#modalSubir').remove(); // Eliminar el modal del DOM

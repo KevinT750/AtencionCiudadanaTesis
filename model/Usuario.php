@@ -146,7 +146,18 @@ class Usuario {
         }
     }
 
+    public function datosEst($sol_solicitud, $sol_documento) {
+        $sql = "call atencion_ciudadana_ist17j.obtener_datos_estudiante('$sol_solicitud', '$sol_documento');";
+        $resultado = ejecutarConsulta($sql);
     
-
+        // Verifica si hay resultados
+        if ($resultado && $resultado->num_rows > 0) {
+            // Recupera el primer registro como un array asociativo
+            return $resultado->fetch_assoc(); // Esto te devuelve los datos como un array
+        }
+        
+        return null; // Retorna null si no se encuentra el estudiante
+    }
+    
 }
 ?>
