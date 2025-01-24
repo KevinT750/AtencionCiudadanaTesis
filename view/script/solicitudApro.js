@@ -4,15 +4,17 @@ function cerrarModalAprobar() {
         type: "POST",
         success: function (response) {
             console.log(response); // Mensaje de confirmación en la consola
-            // Oculta el modal y el overlay
-            document.getElementById("modalEnviarSolicitud").style.display = "none";
-            document.getElementById("overlay").style.display = "none";
+
+            // Usar jQuery para ocultar el modal y el overlay
+            $('#modalEnviarSolicitud').remove();
+            $('#overlay').remove();
         },
         error: function (xhr, status, error) {
             console.error("Error al cerrar la sesión:", error);
         },
     });
 }
+
 
 $(document).ready(function() {
 

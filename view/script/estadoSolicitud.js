@@ -25,7 +25,7 @@ $(document).ready(async function (params) {
                     return `
                     <button 
                       class="btn btn-info btn-sm ver-solicitud" 
-                      data-file-url="https://docs.google.com/document/d/${data}/view">
+                      data-file-url="https://drive.google.com/file/d/${data}/preview">
                       <i class="fa fa-eye"></i> Ver Solicitud
                     </button>`;
                 }
@@ -36,7 +36,7 @@ $(document).ready(async function (params) {
                     return `
                     <button 
                       class="btn btn-success btn-sm ver-otro-dato" 
-                      data-file-url="https://drive.google.com/file/d/${data}/view">
+                      data-file-url="https://drive.google.com/file/d/${data}/preview">
                       <i class="fa fa-eye"></i> Ver Documento
                     </button>`;
                 }
@@ -73,17 +73,57 @@ $(document).ready(async function (params) {
     $('#solicitudesTable').on('click', '.ver-solicitud', function () {
         var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
-        window.open(fileUrl, '_blank');
+        modalSol(fileUrl);
     });
 
     // Evento para abrir otro archivo en una nueva ventana
     $('#solicitudesTable').on('click', '.ver-otro-dato', function () {
         var fileUrl = $(this).data('file-url'); // Obtener la URL del archivo
         console.log("Ver archivo con URL:", fileUrl);
-        // Abrir el archivo en una nueva ventana
-        window.open(fileUrl, '_blank');
+        modalSol(fileUrl);
     });
+
+    function modalSol(idDrive) {
+        const data = {
+            id: idDrive,
+        };
+    
+        $.ajax({
+            url: "../ajax/solicitud.php?op=modalSol",  // Ruta al archivo PHP
+            type: "POST",
+            dataType: "json",  // Asegúrate de que la respuesta se maneje como JSON
+            data: data,
+            success: function(response) {
+                // Verifica si la respuesta contiene el contenido necesario
+                if (response && response.modalContent) {
+                    // Inserta el contenido del modal en el body
+                    const modalContainer = $('<div>').html(response.modalContent);
+                    $('body').append(modalContainer);
+    
+                    // Asegúrate de que el modal y el overlay tengan la clase show para hacerlos visibles
+                    $('#documentModal').addClass('show');
+                    $('#overlay').addClass('show');
+    
+                    // Opcional: Añadir un listener para cerrar el modal cuando el overlay sea clickeado
+                    $('#overlay').on('click', function() {
+                        $('#documentModal').remove();  // Eliminar modal
+                        $('#overlay').remove();        // Eliminar overlay
+                    });
+    
+                    // Añadir funcionalidad de cerrar el modal con el botón de cerrar
+                    $('.modal-close').on('click', function() {
+                        $('#documentModal').remove();  // Eliminar modal
+                        $('#overlay').remove();        // Eliminar overlay
+                    });
+                } else {
+                    Swal.fire("Error", "La respuesta del servidor no contiene el contenido esperado.", "error");
+                }
+            },
+            error: function() {
+                Swal.fire("Error", "No se pudo cargar el modal. Intenta de nuevo.", "error");
+            }
+        });
+    }
 
     $('#solicitudesTable').on('click', '.cancelar-datos', function() { 
         // Obtener los datos del botón

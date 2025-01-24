@@ -239,7 +239,6 @@ if (isset($_GET['op'])) {
                 
             
                 case 'cerrarSesion':
-                    session_start(); // Iniciar la sesión
                     unset($_SESSION['columna2']); // Destruir sesión columna2
                     unset($_SESSION['columna3']);
                     unset($_SESSION['est_nombre']); // Destruir sesión columna3
@@ -250,7 +249,7 @@ if (isset($_GET['op'])) {
 
                 case 'modalAprobar':
                     
-                    session_start();
+                    
                     $nombre = isset($_SESSION['est_nombre']) ? $_SESSION['est_nombre'] : 'No disponible';
                     $rutaArchivo = '../Mailer/emails.json';
                     $correos = [];

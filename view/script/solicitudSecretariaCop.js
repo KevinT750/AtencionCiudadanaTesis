@@ -101,7 +101,7 @@ $(document).ready(function () {
         const id = $(this).data('file-url');
         modalSol(id);
     });
-    
+
     // Evento para ver otro dato
     $('#solicitudesSecret').on('click', '.ver-otro-dato', function () {
         const fileUrl = $(this).data('file-url');
@@ -110,28 +110,39 @@ $(document).ready(function () {
         modalSol(id);
     });
 
-    // Evento para cancelar datos
+
+    function agregarModal(content) {
+        // Limpiar cualquier modal anterior
+        $('.modal, #overlay').remove();
+
+        // Agregar el nuevo modal al DOM
+        $('body').append(content);
+
+        // Mostrar el modal y overlay
+        $('.modal').addClass('show');
+        $('#overlay').addClass('show');
+    }
+
+    // Función para cerrar cualquier modal
+    function cerrarModal() {
+        $('.modal, #overlay').remove();
+    }
+
+    // Evento para manejar el modal de "Dejar un mensaje"
     $('#solicitudesSecret').on('click', '.cancelar-datos', function () {
         const columna2 = $(this).data('columna-2');
         const columna3 = $(this).data('columna-3');
-    
+
         $.ajax({
             url: "../ajax/solicitud.php?op=modalSecretaria",
-            type: "POST", // Cambiado a POST
-            data: {
-                columna2: columna2,
-                columna3: columna3
-            },
+            type: "POST",
+            data: { columna2, columna3 },
             success: function (response) {
-                $('body').append(response); // Agregar el modal dinámicamente al DOM
-                $('#modalSubir').css('display', 'block'); // Mostrar el modal sin fondo oscuro
-    
-                const btnAprobar = $("#btnAprobar");
-                const btnRechazar = $("#btnRechazar");
-                const mensajeArea = $("#mensajeArea");
-                const btnEnviar = $("#btnEnviar");
-    
-                btnAprobar.on("click", function () {
+                // Agregar el modal dinámicamente al DOM
+                agregarModal(response);
+
+                // Manejar eventos del modal
+                $('#btnAprobar').on('click', function () {
                     Swal.fire({
                         title: "Solicitud Aprobada",
                         text: "¿Estás seguro de proceder?",
@@ -146,8 +157,8 @@ $(document).ready(function () {
                         }
                     });
                 });
-    
-                btnRechazar.on("click", function () {
+
+                $('#btnRechazar').on('click', function () {
                     Swal.fire({
                         title: "Solicitud Rechazada",
                         text: "¿Estás seguro de proceder?",
@@ -157,82 +168,51 @@ $(document).ready(function () {
                         cancelButtonText: "Cancelar",
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            mensajeArea.show();
-                            $("#mensaje").focus();
+                            $('#mensajeArea').show();
+                            $('#mensaje').focus();
                         }
                     });
                 });
-    
-                btnEnviar.on("click", function () {
-                    const mensaje = $("#mensaje").val().trim();
-                    if (mensaje !== "") {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Mensaje enviado",
-                            text: "El mensaje ha sido enviado exitosamente.",
-                        });
+
+                $('#btnEnviar').on('click', function () {
+                    const mensaje = $('#mensaje').val().trim();
+                    if (mensaje) {
+                        Swal.fire("Mensaje enviado", "El mensaje se envió correctamente.", "success");
                     } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error",
-                            text: "Por favor, escribe un mensaje antes de enviar.",
-                        });
+                        Swal.fire("Error", "Por favor, escribe un mensaje antes de enviar.", "error");
                     }
                 });
+
+                // Cerrar modal
+                $('.modal-close, #overlay').on('click', cerrarModal);
             },
             error: function (xhr, status, error) {
-                console.error("Hubo un error al cargar el modal:", error);
-            }
+                console.error("Error al cargar el modal:", error);
+            },
         });
     });
-    
+
+    // Evento para manejar el modal de visualización de documentos
     function modalSol(idDrive) {
-        const data = {
-            id: idDrive,
-        };
-    
         $.ajax({
-            url: "../ajax/solicitud.php?op=modalSol",  // Ruta al archivo PHP
+            url: "../ajax/solicitud.php?op=modalSol",
             type: "POST",
-            dataType: "json",  // Asegúrate de que la respuesta se maneje como JSON
-            data: data,
-            success: function(response) {
-                // Verifica si la respuesta contiene el contenido necesario
-                if (response && response.modalContent) {
-                    // Inserta el contenido del modal en el body
-                    const modalContainer = $('<div>').html(response.modalContent);
-                    $('body').append(modalContainer);
-    
-                    // Asegúrate de que el modal y el overlay tengan la clase show para hacerlos visibles
-                    $('#documentModal').addClass('show');
-                    $('#overlay').addClass('show');
-    
-                    // Opcional: Añadir un listener para cerrar el modal cuando el overlay sea clickeado
-                    $('#overlay').on('click', function() {
-                        $('#documentModal').remove();  // Eliminar modal
-                        $('#overlay').remove();        // Eliminar overlay
-                    });
-    
-                    // Añadir funcionalidad de cerrar el modal con el botón de cerrar
-                    $('.modal-close').on('click', function() {
-                        $('#documentModal').remove();  // Eliminar modal
-                        $('#overlay').remove();        // Eliminar overlay
-                    });
+            dataType: "json",
+            data: { id: idDrive },
+            success: function (response) {
+                if (response.modalContent) {
+                    agregarModal(response.modalContent);
+
+                    // Evento para cerrar modal
+                    $('#overlay, .modal-close').on('click', cerrarModal);
                 } else {
-                    Swal.fire("Error", "La respuesta del servidor no contiene el contenido esperado.", "error");
+                    Swal.fire("Error", "El contenido del modal no se pudo cargar.", "error");
                 }
             },
-            error: function() {
+            error: function () {
                 Swal.fire("Error", "No se pudo cargar el modal. Intenta de nuevo.", "error");
-            }
+            },
         });
-    }
-    
-    
-
-    function cerrarModal() {
-        $('#modalSubir').remove(); // Eliminar el modal del DOM
-        $('#overlay').hide();
     }
 
     function mostrarModalAprobar() {
@@ -240,11 +220,13 @@ $(document).ready(function () {
             url: "../ajax/solicitud.php?op=modalAprobar",
             type: "GET",
             success: function (response) {
+                // Crear un contenedor para el modal
                 const modalContainer = $('<div>').html(response);
-                $('body').append(modalContainer);
-                $('#modalEnviarSolicitud').show();
-                $('#overlay').show();
     
+                // Usar agregarModal para mostrar el modal
+                agregarModal(modalContainer);
+    
+                // Inicializar cualquier funcionalidad del modal (por ejemplo, agregar correos)
                 inicializarAgregarCorreo();
             },
             error: function () {
@@ -253,6 +235,7 @@ $(document).ready(function () {
         });
     }
     
+
     function inicializarAgregarCorreo() {
         const agregarCorreoBtn = document.querySelector("[name='agregarCorreo']"); // Seleccionar el botón "+"
         const contenedorCorreos = document.getElementById("contenedorCorreos");
@@ -275,80 +258,31 @@ $(document).ready(function () {
         function verificarCorreosDisponibles(correosDisponibles) {
             // Si todos los correos han sido seleccionados, deshabilitamos el botón "+"
             const correosRestantes = correosDisponibles.filter(correo => !correosSeleccionados.includes(correo));
-            if (correosRestantes.length === 0) {
-                agregarCorreoBtn.disabled = true;  // Deshabilitar el botón "+"
-                Swal.fire("¡Todos los correos ya han sido seleccionados!", "", "info");
-            } else {
-                agregarCorreoBtn.disabled = false;  // Habilitar el botón "+"
-            }
+            agregarCorreoBtn.disabled = correosRestantes.length === 0;
         }
-    
-        // Evitar el envío del formulario cuando se hace clic en el botón "+"
-        agregarCorreoBtn.addEventListener("click", function (event) {
-            event.preventDefault(); // Prevenir la recarga de la página al hacer clic en "+"
-            
-            // Cargar los correos desde el archivo JSON
-            fetch('../Mailer/emails.json')
-                .then(response => response.json())
-                .then(correos => {
-                    // Actualizar la lista de correos seleccionados
-                    actualizarCorreosSeleccionados();
-    
-                    // Verificar si aún hay correos disponibles
-                    verificarCorreosDisponibles(correos);
-    
-                    // Si todos los correos ya fueron seleccionados, no permitir agregar más
-                    if (agregarCorreoBtn.disabled) return;
-    
-                    // Crear un nuevo contenedor para el combo (select)
-                    const nuevoCorreoDiv = document.createElement("div");
-                    nuevoCorreoDiv.className = "d-flex align-items-center mb-2";
-                    
-                    // Crear un nuevo ComboBox (select)
-                    const nuevoCorreoSelect = document.createElement("select");
-                    nuevoCorreoSelect.className = "form-control me-2";
-                    nuevoCorreoSelect.name = "correoSeleccionado"; // Agregar un nombre para el campo select
-                    
-                    // Añadir las opciones al ComboBox
-                    correos.forEach(function(correo) {
-                        const nuevaOpcion = document.createElement("option");
-                        nuevaOpcion.value = correo;
-                        nuevaOpcion.textContent = correo;
-                        if (correosSeleccionados.includes(correo)) {
-                            nuevaOpcion.disabled = true; // Deshabilitar los correos ya seleccionados
-                        }
-                        nuevoCorreoSelect.appendChild(nuevaOpcion);
-                    });
-    
-                    // Crear un botón para eliminar este ComboBox
-                    const eliminarCorreoBtn = document.createElement("button");
-                    eliminarCorreoBtn.type = "button";
-                    eliminarCorreoBtn.className = "btn btn-danger";
-                    eliminarCorreoBtn.textContent = "-";
-                    
-                    // Eliminar el ComboBox al hacer clic en el botón "-"
-                    eliminarCorreoBtn.addEventListener("click", function () {
-                        contenedorCorreos.removeChild(nuevoCorreoDiv);
-                        actualizarCorreosSeleccionados(); // Actualizar la lista de correos seleccionados
-                        verificarCorreosDisponibles(correos); // Verificar nuevamente si se pueden agregar más correos
-                    });
-                    
-                    // Añadir el select y el botón al contenedor
-                    nuevoCorreoDiv.appendChild(nuevoCorreoSelect);
-                    nuevoCorreoDiv.appendChild(eliminarCorreoBtn);
-                    
-                    // Agregar el nuevo contenedor al contenedor principal
-                    contenedorCorreos.appendChild(nuevoCorreoDiv);
-                    
-                    // Actualizar la lista de correos seleccionados para que no se repitan
-                    actualizarCorreosSeleccionados();
-                    verificarCorreosDisponibles(correos); // Verificar si se pueden agregar más correos
-                })
-                .catch(error => {
-                    console.error("Error al cargar el archivo JSON:", error);
-                    Swal.fire("Error", "No se pudo cargar los correos. Intenta de nuevo.", "error");
-                });
+
+        // Restablecer las opciones disponibles en el select
+        function restablecerOpcionesDisponibles() {
+            const correosDisponibles = ['correo1@example.com', 'correo2@example.com', 'correo3@example.com'];
+            verificarCorreosDisponibles(correosDisponibles);
+        }
+
+        // Evento para agregar un nuevo correo
+        agregarCorreoBtn.addEventListener('click', function() {
+            actualizarCorreosSeleccionados();
+            // Generar el nuevo campo select
+            const nuevoCorreo = document.createElement("select");
+            nuevoCorreo.name = "correoSeleccionado";
+            // Añadir opciones al select
+            ['correo1@example.com', 'correo2@example.com', 'correo3@example.com'].forEach(function (correo) {
+                const option = document.createElement("option");
+                option.value = correo;
+                option.text = correo;
+                nuevoCorreo.appendChild(option);
+            });
+
+            contenedorCorreos.appendChild(nuevoCorreo);
+            restablecerOpcionesDisponibles();
         });
     }
-    
 });
