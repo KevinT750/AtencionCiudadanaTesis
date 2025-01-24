@@ -170,8 +170,73 @@ if (isset($_GET['op'])) {
                 }
                 break;
             
-            
-            
+                case 'modalSol':
+                    $sol_solicitud = $_POST['id'];
+                    $modal = '
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Visualizador de Documentos</title>
+                        <link rel="stylesheet" href="../public/css/modalSol.css">
+                    </head>
+                    <body>
+                        <div id="documentModal" class="modal">
+                            <div id="overlay" class="modal-overlay" onclick="closeModal()"></div>
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5>Visualizar Documentos</h5>
+                                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="lead text-center">Seleccione un documento para visualizar:</p>
+                                    <div class="documento-iframe">
+                                        <iframe 
+                                            id="documentIframe"
+                                            src="'.$sol_solicitud.'" 
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <script>
+                            const modal = document.getElementById("documentModal");
+                            const documentIframe = document.getElementById("documentIframe");
+                
+                            function openModal(documentUrl = null) {
+                                if (documentUrl) {
+                                    documentIframe.src = documentUrl;
+                                }
+                                modal.classList.add("show");
+                            }
+                
+                            function closeModal() {
+                                modal.classList.remove("show");
+                                documentIframe.src = ""; // Reset iframe source
+                            }
+                
+                            // Close modal with Escape key
+                            document.addEventListener("keydown", (event) => {
+                                if (event.key === "Escape" && modal.classList.contains("show")) {
+                                    closeModal();
+                                }
+                            });
+                
+                            // Método para cargar el documento dinámicamente
+                            window.loadDocument = function(url) {
+                                openModal(url);
+                            };
+                        </script>
+                    </body>
+                    </html>
+                    ';
+                    echo json_encode(['modalContent' => $modal]);
+                    break;
+                
+                
             
                 case 'cerrarSesion':
                     session_start(); // Iniciar la sesión
