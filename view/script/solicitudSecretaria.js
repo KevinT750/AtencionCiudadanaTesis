@@ -61,11 +61,10 @@ $(document).ready(function () {
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
                             data-columna-2="${row[5]}" 
-                            data-columna-3="${row[6 ]}" ${disableButton} 
+                            data-columna-3="${row[6]}" ${disableButton} 
                             title="${disableButton ? 'No se puede cancelar (ya leído)' : 'Dejar comentario'}">
                             <i class="fa fa-comments"></i> Dejar Comentario
                         </button>`;
-                        // columna2 Solicitud y 3 documentos
                 }
             }
         ],
@@ -82,8 +81,22 @@ $(document).ready(function () {
         "ordering": true,
         "searching": true,
         "responsive": true,
-        "autoWidth": false
+        "autoWidth": false,
+        "buttons": [
+            // Agregamos solo el botón de Excel con un diseño personalizado
+            {
+                extend: 'excelHtml5',
+                text: '<i class="fa fa-file-excel-o"></i> Exportar a Excel', // Icono y texto
+                className: 'btn btn-success btn-sm', // Estilo con Bootstrap
+                titleAttr: 'Exportar a Excel'
+            }
+        ],
+        "initComplete": function() {
+            // Agregar clase adicional o estilo si es necesario
+            $('.dt-buttons .btn').addClass('mx-2');
+        }
     });
+    
 
     // Evento para mostrar un mensaje emergente cuando se pase el mouse por encima de un botón
     $(document).on('mouseenter', '.btn', function () {

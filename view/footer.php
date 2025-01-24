@@ -16,8 +16,12 @@
 <script src="../public/js/bootstrap-select.min.js"></script>
 
 <!-- DataTables y otras librerías JS -->
+
+<!-- DataTables y otras librerías JS -->
 <script src="../public/datatables/jquery.dataTables.min.js"></script>
 <script src="../public/datatables/dataTables.buttons.min.js"></script>
+<script src="../public/datatables/buttons.print.min.js"></script> <!-- Necesario para el botón de impresión -->
+<script src="../public/datatables/dataTables.responsive.min.js"></script>
 <script src="../public/datatables/buttons.colVis.min.js"></script>
 <script src="../public/datatables/buttons.html5.min.js"></script>
 <script src="../public/datatables/jszip.min.js"></script>

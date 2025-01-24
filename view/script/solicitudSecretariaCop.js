@@ -61,15 +61,14 @@ $(document).ready(function () {
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
                             data-columna-2="${row[5]}" 
-                            data-columna-3="${row[6 ]}" ${disableButton} 
+                            data-columna-3="${row[6]}" ${disableButton} 
                             title="${disableButton ? 'No se puede cancelar (ya leído)' : 'Dejar comentario'}">
                             <i class="fa fa-comments"></i> Dejar Comentario
                         </button>`;
-                        // columna2 Solicitud y 3 documentos
                 }
             }
         ],
-        "dom": '<"top"f>rt<"bottom"ilp><"clear">',
+        "dom": '<"top"f>rt<"bottom"ilp><"clear">', // Elimina los botones PDF, Print, etc.
         "language": {
             "search": "Buscar:",
             "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -82,8 +81,22 @@ $(document).ready(function () {
         "ordering": true,
         "searching": true,
         "responsive": true,
-        "autoWidth": false
+        "autoWidth": false,
+        "buttons": [
+            // Agregamos solo el botón de Excel con un diseño personalizado
+            {
+                extend: 'excelHtml5',
+                text: '<i class="fa fa-file-excel-o"></i> Exportar a Excel', // Icono y texto
+                className: 'btn btn-success btn-sm', // Estilo con Bootstrap
+                titleAttr: 'Exportar a Excel'
+            }
+        ],
+        "initComplete": function() {
+            // Agregar clase adicional o estilo si es necesario
+            $('.dt-buttons .btn').addClass('mx-2');
+        }
     });
+    
 
     // Evento para mostrar un mensaje emergente cuando se pase el mouse por encima de un botón
     $(document).on('mouseenter', '.btn', function () {
@@ -258,31 +271,79 @@ $(document).ready(function () {
         function verificarCorreosDisponibles(correosDisponibles) {
             // Si todos los correos han sido seleccionados, deshabilitamos el botón "+"
             const correosRestantes = correosDisponibles.filter(correo => !correosSeleccionados.includes(correo));
-            agregarCorreoBtn.disabled = correosRestantes.length === 0;
+            if (correosRestantes.length === 0) {
+                agregarCorreoBtn.disabled = true;  // Deshabilitar el botón "+"
+                Swal.fire("¡Todos los correos ya han sido seleccionados!", "", "info");
+            } else {
+                agregarCorreoBtn.disabled = false;  // Habilitar el botón "+"
+            }
         }
-
-        // Restablecer las opciones disponibles en el select
-        function restablecerOpcionesDisponibles() {
-            const correosDisponibles = ['correo1@example.com', 'correo2@example.com', 'correo3@example.com'];
-            verificarCorreosDisponibles(correosDisponibles);
-        }
-
-        // Evento para agregar un nuevo correo
-        agregarCorreoBtn.addEventListener('click', function() {
-            actualizarCorreosSeleccionados();
-            // Generar el nuevo campo select
-            const nuevoCorreo = document.createElement("select");
-            nuevoCorreo.name = "correoSeleccionado";
-            // Añadir opciones al select
-            ['correo1@example.com', 'correo2@example.com', 'correo3@example.com'].forEach(function (correo) {
-                const option = document.createElement("option");
-                option.value = correo;
-                option.text = correo;
-                nuevoCorreo.appendChild(option);
-            });
-
-            contenedorCorreos.appendChild(nuevoCorreo);
-            restablecerOpcionesDisponibles();
+    
+        // Evitar el envío del formulario cuando se hace clic en el botón "+"
+        agregarCorreoBtn.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevenir la recarga de la página al hacer clic en "+"
+            
+            // Cargar los correos desde el archivo JSON
+            fetch('../Mailer/emails.json')
+                .then(response => response.json())
+                .then(correos => {
+                    // Actualizar la lista de correos seleccionados
+                    actualizarCorreosSeleccionados();
+    
+                    // Verificar si aún hay correos disponibles
+                    verificarCorreosDisponibles(correos);
+    
+                    // Si todos los correos ya fueron seleccionados, no permitir agregar más
+                    if (agregarCorreoBtn.disabled) return;
+    
+                    // Crear un nuevo contenedor para el combo (select)
+                    const nuevoCorreoDiv = document.createElement("div");
+                    nuevoCorreoDiv.className = "d-flex align-items-center mb-2";
+                    
+                    // Crear un nuevo ComboBox (select)
+                    const nuevoCorreoSelect = document.createElement("select");
+                    nuevoCorreoSelect.className = "form-control me-2";
+                    nuevoCorreoSelect.name = "correoSeleccionado"; // Agregar un nombre para el campo select
+                    
+                    // Añadir las opciones al ComboBox
+                    correos.forEach(function(correo) {
+                        const nuevaOpcion = document.createElement("option");
+                        nuevaOpcion.value = correo;
+                        nuevaOpcion.textContent = correo;
+                        if (correosSeleccionados.includes(correo)) {
+                            nuevaOpcion.disabled = true; // Deshabilitar los correos ya seleccionados
+                        }
+                        nuevoCorreoSelect.appendChild(nuevaOpcion);
+                    });
+    
+                    // Crear un botón para eliminar este ComboBox
+                    const eliminarCorreoBtn = document.createElement("button");
+                    eliminarCorreoBtn.type = "button";
+                    eliminarCorreoBtn.className = "btn btn-danger";
+                    eliminarCorreoBtn.textContent = "-";
+                    
+                    // Eliminar el ComboBox al hacer clic en el botón "-"
+                    eliminarCorreoBtn.addEventListener("click", function () {
+                        contenedorCorreos.removeChild(nuevoCorreoDiv);
+                        actualizarCorreosSeleccionados(); // Actualizar la lista de correos seleccionados
+                        verificarCorreosDisponibles(correos); // Verificar nuevamente si se pueden agregar más correos
+                    });
+                    
+                    // Añadir el select y el botón al contenedor
+                    nuevoCorreoDiv.appendChild(nuevoCorreoSelect);
+                    nuevoCorreoDiv.appendChild(eliminarCorreoBtn);
+                    
+                    // Agregar el nuevo contenedor al contenedor principal
+                    contenedorCorreos.appendChild(nuevoCorreoDiv);
+                    
+                    // Actualizar la lista de correos seleccionados para que no se repitan
+                    actualizarCorreosSeleccionados();
+                    verificarCorreosDisponibles(correos); // Verificar si se pueden agregar más correos
+                })
+                .catch(error => {
+                    console.error("Error al cargar el archivo JSON:", error);
+                    Swal.fire("Error", "No se pudo cargar los correos. Intenta de nuevo.", "error");
+                });
         });
     }
 });

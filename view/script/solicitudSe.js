@@ -6,8 +6,8 @@ function cerrarModal() {
         success: function (response) {
             console.log(response); // Mensaje de confirmación en la consola
             // Oculta el modal y el overlay
-            document.getElementById("modalSubir").style.display = "none";
-            document.getElementById("overlay").style.display = "none";
+            $('#modalSubir').remove();
+            $('#overlay').remove();
         },
         error: function (xhr, status, error) {
             console.error("Error al cerrar la sesión:", error);

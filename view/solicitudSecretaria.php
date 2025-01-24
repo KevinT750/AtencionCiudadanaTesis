@@ -17,12 +17,14 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
                 <div class="col-md-12">
                     <div class="card shadow-lg">
                         <div class="card-header bg-primary text-white text-center">
-                            <h1 class="card-title mb-0">Solicitudes</h1>
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-file-alt me-2"></i>Gestión de Solicitudes
+                            </h3>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table id="solicitudesSecret" class="table table-hover table-striped table-bordered">
-                                    <thead>
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>Fecha</th>
                                             <th>Nombre</th>
@@ -32,7 +34,7 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
                                             <th>Solicitud</th>
                                             <th>Documento</th>
                                             <th>Estado</th>
-                                            <th>Comentario</th> <!-- Nueva columna -->
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -45,6 +47,7 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
             </div>
         </section>
     </div>
+    
 <?php
 } else {
     require 'noacceso.php';
