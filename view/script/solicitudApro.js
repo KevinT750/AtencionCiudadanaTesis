@@ -36,13 +36,46 @@ $(document).ready(function() {
     function enviarSolicitud() {
         const correosSeleccionados = obtenerCorreosSeleccionados();
         const comentario = $('#comentario').val();
+    
+        // Validación de campos
+        if (!motivoSolicitud) {
+            swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor selecciona un motivo de solicitud.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+    
+        if (correosSeleccionados.length === 0) {
+            swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor selecciona al menos un correo.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+    
+        if (!comentario) {
+            swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor ingresa un comentario.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+    
+        // Si pasa la validación, construye el objeto de datos
         const data = {
             motivoSolicitud: motivoSolicitud,
             correosSeleccionados: correosSeleccionados,
             comentario: comentario,
         };
     
-        // Enviar los datos con AJAX usando jQuery
+        // Llamada AJAX para enviar datos al servidor
         $.ajax({
             url: '../ajax/phpMailer.php?op=enviarCorreo',
             type: 'POST',
@@ -56,6 +89,7 @@ $(document).ready(function() {
                         text: response.mensaje,
                         confirmButtonText: 'Aceptar'
                     });
+                    cambiarEstado(3);
                 } else {
                     swal.fire({
                         icon: 'error',
@@ -76,6 +110,7 @@ $(document).ready(function() {
             }
         });
     }
+    
 
     // Agregar el evento de envío al formulario
     $('#formEnviarSolicitud').on('submit', function(event) {
@@ -84,6 +119,25 @@ $(document).ready(function() {
     });
 });
 
-
+function cambiarEstado(idEstado){
+    $.ajax({
+        url: "../ajax/solicitud.php?op=cambiarEstado",
+        type: "POST",
+        dataType: 'json',
+        data: {id: idEstado},
+        success: function(response){
+            if (response.success) {
+                // Si el cambio de estado es exitoso, recargar la tabla
+                $('#solicitudesSecret').DataTable().ajax.reload();
+                alert(response.message); // Mostrar mensaje de éxito
+            } else {
+                alert("Error: " + response.message); // Mostrar mensaje de error
+            }
+        },
+        error: function(error){
+            console.error("Error en la solicitud AJAX", error);
+        }
+    });
+}
 
 

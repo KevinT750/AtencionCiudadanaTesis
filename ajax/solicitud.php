@@ -102,32 +102,26 @@ if (isset($_GET['op'])) {
             break;
 
             case 'modalSecretaria':
-                // Verificar si la sesión está iniciada antes de llamarlo
                 if (session_status() == PHP_SESSION_NONE) {
-                    session_start(); // Iniciar la sesión solo si no está activa
+                    session_start(); // Inicia la sesión si no está activa
                 }
             
-                // Almacena las variables columna2 y columna3 en la sesión
+                // Almacenar variables en la sesión
                 $_SESSION['columna2'] = isset($_POST['columna2']) ? $_POST['columna2'] : 'Sin valor';
                 $_SESSION['columna3'] = isset($_POST['columna3']) ? $_POST['columna3'] : 'Sin valor';
             
-                $columna2 = $_SESSION['columna2'];
-                $columna3 = $_SESSION['columna3'];
-            
-                // Asegúrate de que el objeto $model esté instanciado
+                // Asegurarse de que el objeto usuario esté disponible
                 if (isset($usuario)) {
-                    // Llamar a la función datosEst para obtener el nombre del estudiante
-                    $sol_solicitud = $_POST['columna2']; // Asumimos que columna2 es sol_solicitud
-                    $sol_documento = $_POST['columna3']; // Asumimos que columna3 es sol_documento
+                    $sol_solicitud = $_SESSION['columna2'];
+                    $sol_documento = $_SESSION['columna3'];
             
-                    // Llamar a la función y obtener el nombre del estudiante
+                    // Obtener información del estudiante
                     $usu = $usuario->datosEst($sol_solicitud, $sol_documento);
             
                     if ($usu) {
-                        // Si se obtiene el nombre del estudiante, guardarlo en la sesión
                         $_SESSION['est_nombre'] = $usu['est_nombre'];
                         $_SESSION['est_correoPersonal'] = $usu['est_correoPersonal'];
-                        $_SESSION['est_celular'] = $usu['est_celular']; // Asumiendo que 'est_nombre' es el campo que te interesa
+                        $_SESSION['est_celular'] = $usu['est_celular'];
                     } else {
                         $_SESSION['est_nombre'] = 'Nombre no encontrado';
                     }
@@ -194,7 +188,7 @@ if (isset($_GET['op'])) {
                                     <div class="documento-iframe">
                                         <iframe 
                                             id="documentIframe"
-                                            src="'.$sol_solicitud.'" 
+                                            src="'.$sol_solicitud.'"
                                             allowfullscreen>
                                         </iframe>
                                     </div>
@@ -346,8 +340,48 @@ if (isset($_GET['op'])) {
                     
                     echo $modal;
                     break;
-                
-                
+
+                    case 'cambiarEstado':
+                        if (session_status() == PHP_SESSION_NONE) {
+                            session_start(); // Asegura que la sesión esté activa
+                        }
+                    
+                        // Validar la existencia de las variables en la sesión
+                        if (!isset($_SESSION['columna2']) || !isset($_SESSION['columna3'])) {
+                            echo json_encode([
+                                'success' => false,
+                                'message' => 'Error: Las columnas 2 y 3 no están disponibles en la sesión. Asegúrate de haber ejecutado modalSecretaria antes.'
+                            ]);
+                            break;
+                        }
+                    
+                        $columna2 = $_SESSION['columna2'];
+                        $columna3 = $_SESSION['columna3'];
+                    
+                        $idEstado = isset($_POST['id']) ? $_POST['id'] : null;
+                    
+                        if ($idEstado !== null) {
+                            if (isset($solicitud) && method_exists($solicitud, 'cambiarEstadoSolicitud')) {
+                                $resultado = $solicitud->cambiarEstadoSolicitud($columna2, $columna3, $idEstado);
+                    
+                                echo json_encode([
+                                    'success' => $resultado,
+                                    'message' => $resultado ? 'Estado actualizado correctamente' : 'No se pudo actualizar el estado'
+                                ]);
+                            } else {
+                                echo json_encode([
+                                    'success' => false,
+                                    'message' => 'Error: El objeto solicitud o su método cambiarEstadoSolicitud no existen.'
+                                ]);
+                            }
+                        } else {
+                            echo json_encode([
+                                'success' => false,
+                                'message' => 'Error: ID del estado no especificado.'
+                            ]);
+                        }
+                        break;
+                    
         // Agregar otros casos si es necesario
         default:
             echo json_encode([

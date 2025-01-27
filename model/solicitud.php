@@ -119,5 +119,10 @@ class ModeloSolicitud {
         return ejecutarConsulta($sql);
     }
 
+    public function cambiarEstadoSolicitud($sol_solicitud, $sol_documento, $idEstado){
+        $sql = "call atencion_ciudadana_ist17j.SP_ActualizarEstadoSolicitud('$sol_solicitud', '$sol_documento', '$idEstado');
+        ";
+        return ejecutarConsulta($sql);
+    }
 }
 ?>

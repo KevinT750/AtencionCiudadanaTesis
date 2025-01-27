@@ -47,26 +47,65 @@ $(document).ready(function () {
                 }
             },
             {
-                "data": 7,  // Estado (Leído o No Leído)
+                "data": 7,  // Estado (Enviado, Leído, Aceptado, Rechazado, No Leído)
                 "render": function (data, type, row) {
-                    return `<span class="badge bg-${data === "Leído" ? 'success' : 'warning'}" 
-                    title="${data === 'Leído' ? 'Leída' : 'No Leída'}">${data}</span>`;
+                    // Determinar la clase de fondo y el título según el estado
+                    let badgeClass, titleText;
+            
+                    switch (data) {
+                        case "Enviado":
+                            badgeClass = "primary";
+                            titleText = "Solicitud Enviada";
+                            break;
+                        case "Leído":
+                            badgeClass = "success";
+                            titleText = "Solicitud Leída";
+                            break;
+                        case "Aceptado":
+                            badgeClass = "info";
+                            titleText = "Solicitud Aceptada";
+                            break;
+                        case "Rechazado":
+                            badgeClass = "danger";
+                            titleText = "Solicitud Rechazada";
+                            break;
+                        case "No Leído":
+                            badgeClass = "warning";
+                            titleText = "Solicitud No Leída";
+                            break;
+                        default:
+                            badgeClass = "secondary";
+                            titleText = "Estado Desconocido";
+                            break;
+                    }
+            
+                    // Retornar el span con clase y título dinámico
+                    return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
                 }
             },
+            
             {
                 "data": null,  // Botón que cancela datos de columnas 2 y 3
                 "render": function (data, type, row) {
-                    var disableButton = (row[3] === "Leído") ? 'disabled' : '';
+                    // Verificar si el estado del botón requiere estar deshabilitado
+                    const estado = row[7]; // Asegúrate de que el estado esté en la columna 7
+                    const disableButton = estado !== "No Leído" ? 'disabled' : '';
+                    const titleText = disableButton 
+                        ? `No puede Dejar un comentario (${estado.toLowerCase()})` 
+                        : 'Dejar comentario';
+            
+                    // Retornar el botón con la condición aplicada
                     return `
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
                             data-columna-2="${row[5]}" 
                             data-columna-3="${row[6]}" ${disableButton} 
-                            title="${disableButton ? 'No se puede cancelar (ya leído)' : 'Dejar comentario'}">
+                            title="${titleText}">
                             <i class="fa fa-comments"></i> Dejar Comentario
                         </button>`;
                 }
             }
+            
         ],
         "dom": '<"top"f>rt<"bottom"ilp><"clear">', // Elimina los botones PDF, Print, etc.
         "language": {
@@ -181,6 +220,7 @@ $(document).ready(function () {
                         cancelButtonText: "Cancelar",
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            cambiarEstado('4')
                             $('#mensajeArea').show();
                             $('#mensaje').focus();
                         }
@@ -247,6 +287,29 @@ $(document).ready(function () {
             }
         });
     }
+
+    function cambiarEstado(idEstado){
+        $.ajax({
+            url: "../ajax/solicitud.php?op=cambiarEstado",
+            type: "POST",
+            dataType: 'json',
+            data: {id: idEstado},
+            success: function(response){
+                if (response.success) {
+                    // Si el cambio de estado es exitoso, recargar la tabla
+                    $('#solicitudesSecret').DataTable().ajax.reload();
+                    alert(response.message); // Mostrar mensaje de éxito
+                } else {
+                    alert("Error: " + response.message); // Mostrar mensaje de error
+                }
+            },
+            error: function(error){
+                console.error("Error en la solicitud AJAX", error);
+            }
+        });
+    }
+    
+    
     
 
     function inicializarAgregarCorreo() {
