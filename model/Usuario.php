@@ -159,5 +159,26 @@ class Usuario {
         return null; // Retorna null si no se encuentra el estudiante
     }
     
+    public function idEstudiante($tipo, $valor) {
+        $sql = "call atencion_ciudadana_ist17j.SP_BUSCAR_ESTUDIANTE('$tipo', '$valor');";
+        $resultado = ejecutarConsulta($sql);
+        
+        // Verifica si hay resultados
+        if ($resultado && $resultado->num_rows > 0) {
+            $data = array();
+            while ($reg = $resultado->fetch_assoc()) {
+                $data[] = array(
+                    'id' => $reg['est_id'],
+                    'nombre' => isset($reg['est_nombre']) ? $reg['est_nombre'] : 'No disponible', // Valor predeterminado
+                    'cedula' => isset($reg['est_cedula']) ? $reg['est_cedula'] : 'No disponible'  // Valor predeterminado
+                );
+            }
+            return $data; // Devuelve todos los registros como un arreglo
+        }
+    
+        return []; // Retorna un arreglo vacío si no hay resultados
+    }
+    
+    
 }
 ?>

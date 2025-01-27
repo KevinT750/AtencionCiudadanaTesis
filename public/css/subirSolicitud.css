@@ -1,0 +1,48 @@
+    /* Centrar el contenedor principal */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Ajustar la apariencia de la tarjeta */
+    .card {
+        width: 100%;
+        max-width: 600px;
+        border-radius: 15px;
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    /* Estilo para los campos de entrada */
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    /* Estilo para el botón */
+    .btn {
+        padding: 12px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+
+    /* Añadir margen en los bordes del formulario */
+    .card-body {
+        padding: 25px;
+    }

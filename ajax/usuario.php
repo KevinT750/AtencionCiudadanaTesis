@@ -178,12 +178,52 @@ try {
                 // Enviar el modal al cliente
                 echo $modal;
                 break;
+
+                case 'estudianteId':
+                    if (isset($_POST['tipo']) && isset($_POST['valor'])) { // Validar si se recibieron los parámetros
+                        $tipo = trim($_POST['tipo']); // 'cedula' o 'nombre'
+                        $valor = trim($_POST['valor']); // Valor parcial a buscar
+                        $data = array(); // Almacenará los resultados
+                    
+                        // Llamar al método que ejecuta el procedimiento almacenado
+                        $rspta = $usuario->idEstudiante($tipo, $valor);
+                
+                        // Verifica si se obtienen resultados y es un objeto
+                        if ($rspta !== false && is_object($rspta)) {
+                            while ($reg = $rspta->fetch_assoc()) { // Ahora es seguro usar fetch_assoc()
+                                $data[] = array(
+                                    'id' => $reg['est_id'], // ID del estudiante
+                                    'nombre' => $reg['est_nombre'], // Nombre del estudiante
+                                    'cedula' => $reg['est_cedula'] // Cédula del estudiante
+                                );
+                            }
+                            // Enviar los resultados como JSON
+                            echo json_encode($data);
+                        } else if (is_array($rspta)) {
+                            // Si rspta es un array, asumir que ya contiene los datos y responder
+                            echo json_encode($rspta);
+                        } else {
+                            // Si no hay resultados, responder con un error
+                            echo json_encode(array(
+                                'error' => true,
+                                'message' => 'No se encontraron resultados para la búsqueda.'
+                            ));
+                        }
+                    } else {
+                        // Respuesta en caso de error si los parámetros no fueron proporcionados
+                        echo json_encode(array(
+                            'error' => true,
+                            'message' => 'Parámetros tipo y valor son requeridos.'
+                        ));
+                    }
+                    break;
                 
         case 'salir':
             session_unset();
             session_destroy();
             header("Location: ../index.php");
             break;
+            
 
         default:
             echo json_encode(['error' => 'Operación no válida']);

@@ -172,7 +172,8 @@ $(document).ready(function () {
                     const result = JSON.parse(response);
                     if (result.success) {
                         console.log("Estado actualizado correctamente:", result.message);
-                        table.ajax.reload();
+                        $('#solicitudesSecret').DataTable().ajax.reload();
+                        
                     } else {
                         console.error("Error al actualizar el estado:", result.message);
                     }
@@ -210,6 +211,7 @@ $(document).ready(function () {
 
     // Función para cerrar cualquier modal
     function cerrarModal() {
+        $('#solicitudesSecret').DataTable().ajax.reload();
         $('.modal, #overlay').remove();
     }
 
