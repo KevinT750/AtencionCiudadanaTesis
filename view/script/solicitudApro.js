@@ -121,7 +121,7 @@ $(document).ready(function() {
 
 function cambiarEstado(idEstado){
     $.ajax({
-        url: "../ajax/solicitud.php?op=cambiarEstado",
+        url: "../ajax/solicitud.php?op=cambiarEstado1",
         type: "POST",
         dataType: 'json',
         data: {id: idEstado},

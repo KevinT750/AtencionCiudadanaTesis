@@ -28,7 +28,9 @@ $(document).ready(function () {
                     return ` 
                         <button 
                             class="btn btn-info btn-sm ver-solicitud" 
-                            data-file-url="https://drive.google.com/file/d/${data}/preview" 
+                            data-file-url="https://drive.google.com/file/d/${data}/preview"
+                            data-columna-2="${row[5]}" 
+                            data-columna-3="${row[6]}"
                             title="Ver Solicitud">
                             <i class="fa fa-eye"></i> Ver Solicitud
                         </button>`;
@@ -89,7 +91,7 @@ $(document).ready(function () {
                 "render": function (data, type, row) {
                     // Verificar si el estado del botón requiere estar deshabilitado
                     const estado = row[7]; // Asegúrate de que el estado esté en la columna 7
-                    const disableButton = estado !== "No Leído" ? 'disabled' : '';
+                    const disableButton = (estado !== "No Leído" && estado !== "Leído") ? 'disabled' : '';
                     const titleText = disableButton 
                         ? `No puede Dejar un comentario (${estado.toLowerCase()})` 
                         : 'Dejar comentario';
@@ -146,14 +148,45 @@ $(document).ready(function () {
         $(this).tooltip('hide');
     });
 
-    // Evento para ver solicitud
     $('#solicitudesSecret').on('click', '.ver-solicitud', function () {
-        const fileUrl = $(this).data('file-url');
+        const fileUrl = $(this).data('file-url');  // Obtener la URL del archivo
         console.log("Ver archivo con URL:", fileUrl);
-        const id = $(this).data('file-url');
+    
+        const id = $(this).data('file-url');  // Obtener el ID
+        const estado = $(this).closest('tr').find('.badge').text().trim();  // Obtener el estado actual de la solicitud
+        
+        // Obtener columna2 y columna3 directamente desde el botón
+        const columna2 = $(this).data('columna-2');  // Obtener columna2 desde el botón
+        const columna3 = $(this).data('columna-3');  // Obtener columna3 desde el botón
+        
+        // Mostrar el modal
         modalSol(id);
+    
+        // Validar el estado antes de enviar la solicitud AJAX
+        if (estado === "No Leído") {
+            $.ajax({
+                url: "../ajax/solicitud.php?op=cambiarEstado",
+                type: "POST",
+                data: { columna2, columna3, idEstado: 2 },  // Enviar columna2, columna3 e idEstado
+                success: function (response) {
+                    const result = JSON.parse(response);
+                    if (result.success) {
+                        console.log("Estado actualizado correctamente:", result.message);
+                        table.ajax.reload();
+                    } else {
+                        console.error("Error al actualizar el estado:", result.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        } else {
+            console.log("La acción no se puede realizar porque el estado no es 'No Leído'.");
+        }
     });
-
+    
+    
     // Evento para ver otro dato
     $('#solicitudesSecret').on('click', '.ver-otro-dato', function () {
         const fileUrl = $(this).data('file-url');
@@ -290,7 +323,7 @@ $(document).ready(function () {
 
     function cambiarEstado(idEstado){
         $.ajax({
-            url: "../ajax/solicitud.php?op=cambiarEstado",
+            url: "../ajax/solicitud.php?op=cambiarEstado1",
             type: "POST",
             dataType: 'json',
             data: {id: idEstado},
@@ -308,9 +341,6 @@ $(document).ready(function () {
             }
         });
     }
-    
-    
-    
 
     function inicializarAgregarCorreo() {
         const agregarCorreoBtn = document.querySelector("[name='agregarCorreo']"); // Seleccionar el botón "+"

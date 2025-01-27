@@ -343,22 +343,29 @@ if (isset($_GET['op'])) {
 
                     case 'cambiarEstado':
                         if (session_status() == PHP_SESSION_NONE) {
-                            session_start(); // Asegura que la sesión esté activa
+                            session_start(); // Asegurar que la sesión esté activa
                         }
                     
-                        // Validar la existencia de las variables en la sesión
+                        // Verificar si las columnas están en la sesión, si no, obtenerlas del POST
                         if (!isset($_SESSION['columna2']) || !isset($_SESSION['columna3'])) {
-                            echo json_encode([
-                                'success' => false,
-                                'message' => 'Error: Las columnas 2 y 3 no están disponibles en la sesión. Asegúrate de haber ejecutado modalSecretaria antes.'
-                            ]);
-                            break;
+                            if (isset($_POST['columna2']) && isset($_POST['columna3'])) {
+                                $_SESSION['columna2'] = $_POST['columna2'];
+                                $_SESSION['columna3'] = $_POST['columna3'];
+                            } else {
+                                echo json_encode([
+                                    'success' => false,
+                                    'message' => 'Error: Las columnas 2 y 3 no se encontraron en la sesión ni fueron enviadas mediante POST.'
+                                ]);
+                                break;
+                            }
                         }
                     
+                        // Asignar las columnas desde la sesión
                         $columna2 = $_SESSION['columna2'];
                         $columna3 = $_SESSION['columna3'];
                     
-                        $idEstado = isset($_POST['id']) ? $_POST['id'] : null;
+                        // Validar el ID del estado
+                        $idEstado = isset($_POST['idEstado']) ? $_POST['idEstado'] : null;
                     
                         if ($idEstado !== null) {
                             if (isset($solicitud) && method_exists($solicitud, 'cambiarEstadoSolicitud')) {
@@ -381,6 +388,48 @@ if (isset($_GET['op'])) {
                             ]);
                         }
                         break;
+
+                        case 'cambiarEstado1':
+                            if (session_status() == PHP_SESSION_NONE) {
+                                session_start(); // Asegura que la sesión esté activa
+                            }
+                        
+                            // Validar la existencia de las variables en la sesión
+                            if (!isset($_SESSION['columna2']) || !isset($_SESSION['columna3'])) {
+                                echo json_encode([
+                                    'success' => false,
+                                    'message' => 'Error: Las columnas 2 y 3 no están disponibles en la sesión. Asegúrate de haber ejecutado modalSecretaria antes.'
+                                ]);
+                                break;
+                            }
+                        
+                            $columna2 = $_SESSION['columna2'];
+                            $columna3 = $_SESSION['columna3'];
+                        
+                            $idEstado = isset($_POST['id']) ? $_POST['id'] : null;
+                        
+                            if ($idEstado !== null) {
+                                if (isset($solicitud) && method_exists($solicitud, 'cambiarEstadoSolicitud')) {
+                                    $resultado = $solicitud->cambiarEstadoSolicitud($columna2, $columna3, $idEstado);
+                        
+                                    echo json_encode([
+                                        'success' => $resultado,
+                                        'message' => $resultado ? 'Estado actualizado correctamente' : 'No se pudo actualizar el estado'
+                                    ]);
+                                } else {
+                                    echo json_encode([
+                                        'success' => false,
+                                        'message' => 'Error: El objeto solicitud o su método cambiarEstadoSolicitud no existen.'
+                                    ]);
+                                }
+                            } else {
+                                echo json_encode([
+                                    'success' => false,
+                                    'message' => 'Error: ID del estado no especificado.'
+                                ]);
+                            }
+                            break;
+                    
                     
         // Agregar otros casos si es necesario
         default:

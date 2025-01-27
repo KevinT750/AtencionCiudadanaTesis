@@ -18,56 +18,98 @@ $(document).ready(async function (params) {
             }
         },
         "columns": [
-            { "data": 0 },  // Fecha
+            {
+                "data": 0,  // Fecha
+                "title": "Fecha"  // Título de la columna
+            },
             {
                 "data": 1,  // ID de solicitud
                 "render": function (data, type, row) {
                     return `
                     <button 
                       class="btn btn-info btn-sm ver-solicitud" 
-                      data-file-url="https://drive.google.com/file/d/${data}/preview">
+                      data-file-url="https://drive.google.com/file/d/${data}/preview" 
+                      title="Ver Solicitud">
                       <i class="fa fa-eye"></i> Ver Solicitud
                     </button>`;
-                }
+                },
+                "title": "Acción"  // Título de la columna
             },
             {
-                "data": 2,
+                "data": 2,  // Documento
                 "render": function (data, type, row) {
                     return `
                     <button 
                       class="btn btn-success btn-sm ver-otro-dato" 
-                      data-file-url="https://drive.google.com/file/d/${data}/preview">
+                      data-file-url="https://drive.google.com/file/d/${data}/preview" 
+                      title="Ver Documento">
                       <i class="fa fa-eye"></i> Ver Documento
                     </button>`;
-                }
+                },
+                "title": "Acción"  // Título de la columna
             },
             {
                 "data": 3,  // Estado (Leído o No Leído)
                 "render": function (data, type, row) {
-                    return `<span class="badge bg-${data === "Leído" ? 'success' : 'warning'}">${data}</span>`;
-                }
+                    let badgeClass, titleText;
+            
+                    // Si el estado es "No Leído", lo mostramos como "Enviado"
+                    if (data === "No Leído") {
+                        data = "Enviado";  // Cambiar "No Leído" a "Enviado"
+                    }
+            
+                    switch (data) {
+                        case "Enviado":
+                            badgeClass = "primary";
+                            titleText = "Solicitud Enviada";
+                            break;
+                        case "Leído":
+                            badgeClass = "success";
+                            titleText = "Solicitud Leída";
+                            break;
+                        case "Aceptado":
+                            badgeClass = "info";
+                            titleText = "Solicitud Aceptada";
+                            break;
+                        case "Rechazado":
+                            badgeClass = "danger";
+                            titleText = "Solicitud Rechazada";
+                            break;
+                        default:
+                            badgeClass = "secondary";
+                            titleText = "Estado Desconocido";
+                            break;
+                    }
+                    
+                    // Devuelve el badge con el texto y estilo correspondientes
+                    return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
+                },
+                "title": "Estado"  // Título de la columna
             },
+            
             {
-                "data": null,  // Botón que cancela data de columnas 2 y 3
+                "data": null,  // Botón para cancelar
                 "render": function (data, type, row) {
-                    // Verificamos si el estado es "Leído"
-                    var disableButton = (row[3] === "Leído") ? 'disabled' : ''; 
+                    var disableButton = (row[3] === "Aceptado" || row[3] === "Rechazado") ? 'disabled' : ''; 
                     return `
                     <button 
                       class="btn btn-danger btn-sm cancelar-datos" 
                       data-columna-2="${row[1]}" 
-                      data-columna-3="${row[2]}" ${disableButton}>
+                      data-columna-3="${row[2]}" ${disableButton} 
+                      title="Cancelar">
                       <i class="fa fa-trash"></i> Cancelar
                     </button>`;
-                }
+                },
+                "title": "Acción"  // Título de la columna
             }
         ],
-        "responsive": true, // Hacer la tabla responsiva
-        "paging": true, // Habilitar paginación
-        "lengthChange": false, // Deshabilitar la opción de cambiar el número de filas por página
-        "info": true, // Mostrar información de la tabla
-        "autoWidth": false // Desactivar ajuste automático de ancho de las columnas
+        "responsive": true,  // Hacer la tabla responsiva
+        "paging": true,  // Habilitar paginación
+        "lengthChange": false,  // Deshabilitar la opción de cambiar el número de filas por página
+        "info": true,  // Mostrar información de la tabla
+        "autoWidth": false  // Desactivar ajuste automático de ancho de las columnas
     });
+    
 
     // Evento para abrir el archivo en una nueva ventana
     $('#solicitudesTable').on('click', '.ver-solicitud', function () {
