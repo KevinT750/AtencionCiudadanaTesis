@@ -53,6 +53,51 @@ if (isset($_GET['op'])) {
                 }
             }
             break;
+            case 'estado1':
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    // Obtener los datos y los archivos
+                    $datos = $_POST;
+                    $archivoSolicitud = $_FILES['archivo_solicitud'];  // Solicitud
+                    $archivoCedula = $_FILES['archivo_cedula'];        // Cédula
+                
+                    // Validar el tamaño del archivo de la solicitud
+                    if ($archivoSolicitud['size'] > 2 * 1024 * 1024) {
+                        echo json_encode([
+                            'estado' => false,
+                            'error' => 'El archivo de la solicitud excede el tamaño máximo permitido de 2 MB.'
+                        ]);
+                        exit();
+                    }
+            
+                    // Validar el tamaño del archivo de la cédula
+                    if ($archivoCedula['size'] > 2 * 1024 * 1024) {
+                        echo json_encode([
+                            'estado' => false,
+                            'error' => 'El archivo de la cédula excede el tamaño máximo permitido de 2 MB.'
+                        ]);
+                        exit();
+                    }
+            
+                    // Procesar solicitud
+                    $resultado = ModeloSolicitud::procesarSolicitud1($datos, $archivoSolicitud, $archivoCedula);
+                
+                    if ($resultado['estado']) {
+                        echo json_encode([
+                            'estado' => true,
+                            'mensaje' => 'Solicitud enviada correctamente.',
+                            'doc_id' => $resultado['doc_id'],
+                            'cedula_id' => $resultado['cedula_id']
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'estado' => false,
+                            'error' => 'Error al enviar la solicitud: ' . $resultado['error']
+                        ]);
+                    }
+                }
+                break;
+            
+            
 
         case 'Solicitudes':
             $rspta = $solicitud->Estado();
@@ -238,6 +283,8 @@ if (isset($_GET['op'])) {
                     unset($_SESSION['est_nombre']); // Destruir sesión columna3
                     unset($_SESSION['est_correoPersonal']);
                     unset($_SESSION['est_celular']);
+                    unset($_SESSION['doc_ids']);
+                    unset($_SESSION['cedula_ids']);
                     echo 'Sesiones eliminadas correctamente';
                     break;
 

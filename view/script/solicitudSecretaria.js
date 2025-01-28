@@ -71,20 +71,24 @@ $(document).ready(function () {
 
     // Seleccionar un resultado de la lista
     $(document).on('click', '.list-item', function () {
-        let id = $(this).data('id');         // Obtener la ID
-        let nombre = $(this).data('nombre'); // Obtener el nombre
-        let cedula = $(this).data('cedula'); // Obtener la cédula
-
+        const id = $(this).data('id');  // Obtener la ID
+        let nombre = $(this).data('nombre');  // Obtener el nombre
+        let cedula = $(this).data('cedula');  // Obtener la cédula
+    
+        // Verificar que la ID está correcta
+        console.log('ID seleccionada: ', id);
+    
         // Rellenar los campos de texto
         $('#nombre').val(nombre);
         $('#cedula').val(cedula);
-
+    
         // Guardar la ID seleccionada en un atributo de datos o campo oculto
         $('#formSubirSolicitud').data('id', id);
-
+    
         // Ocultar las listas de resultados
         $('.list-group').hide();
     });
+    
 
     // Ocultar la lista si se hace clic fuera
     $(document).click(function (event) {
@@ -93,27 +97,146 @@ $(document).ready(function () {
         }
     });
 
-    /* Ejemplo de cómo usar la ID al enviar el formulario
-    $('#formSubirSolicitud').on('submit', function (e) {
-        e.preventDefault(); // Evitar el envío por defecto
-        let id = $(this).data('id'); // Obtener la ID seleccionada
-        let formData = new FormData(this); // Obtener los datos del formulario
-        formData.append('id', id); // Agregar la ID al envío
+    // Función para guardar la solicitud en la base de datos
+    function guardarSolicitud() {
+        // Verificar si las sesiones están configuradas (simulación en el lado del cliente)
+        if (
+            typeof sessionStorage.getItem("doc_ids") !== "undefined" &&
+            typeof sessionStorage.getItem("cedula_ids") !== "undefined"
+        ) {
+            // Obtener los valores de las sesiones
+            const cedula_id = sessionStorage.getItem("cedula_ids");
+            const doc_id = sessionStorage.getItem("doc_ids");
+            
+            // Obtener la ID seleccionada en el formulario
+            const est_id = $('#formSubirSolicitud').data('id');
+    
+            // El estado será 6 (Documentos subidos) en este caso
+            const estado_id = 6;
+    
+            // Realizar la solicitud AJAX al servidor para guardar la solicitud en la base de datos
+            $.ajax({
+                url: "../ajax/usuario.php?op=solicitud1",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    cedula_id: cedula_id,
+                    doc_id: doc_id,
+                    est_id: est_id,  // Enviamos la ID seleccionada
+                    estado_id: estado_id,  // Enviamos el estado aquí
+                },
+                success: function (response) {
+                    // Manejo de la respuesta
+                    if (response.success) {
+                        Swal.fire({
+                            title: "Éxito",
+                            text: "Solicitud procesada correctamente.",
+                            icon: "success",
+                            confirmButtonText: "Aceptar",
+                        });
+                        cerrarSesion();
+                        cargarSolicitudes(); // Cargar las solicitudes después de guardar la nueva
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: response.error || "No se pudo procesar la solicitud.",
+                            icon: "error",
+                            confirmButtonText: "Aceptar",
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Manejo de errores
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error en el servidor: " + error,
+                        icon: "error",
+                        confirmButtonText: "Aceptar",
+                    });
+                },
+            });
+        } else {
+            Swal.fire({
+                title: "Advertencia",
+                text: "No hay información suficiente en la sesión.",
+                icon: "warning",
+                confirmButtonText: "Aceptar",
+            });
+        }}
 
-        // Enviar el formulario con AJAX
+        function cerrarSesion() {
+            // Realizar la solicitud AJAX para cerrar la sesión
+            $.ajax({
+              url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
+              type: "GET",
+              success: function(response) {
+                Swal.fire({
+                  title: "Sesión cerrada",
+                  text: response, // Mensaje que se recibe al cerrar sesión
+                  icon: "success",
+                  confirmButtonText: "Aceptar",
+                }).then(function() {
+                  // Redirigir a la página principal o logout
+                  //window.location.href = "login.php"; // O la URL que necesites
+                });
+              },
+              error: function(xhr, status, error) {
+                // Manejo de errores al intentar cerrar sesión
+                Swal.fire({
+                  title: "Error",
+                  text: "Error al cerrar sesión: " + error,
+                  icon: "error",
+                  confirmButtonText: "Aceptar",
+                });
+              }
+            });
+          }
+
+    // Función para enviar la solicitud con archivos a Google Drive o similar
+    function enviarSolicitud(event) {
+        // Prevenir el envío por defecto del formulario
+        event.preventDefault();
+
+        // Obtener los datos del formulario
+        const nombre = document.getElementById('nombre').value;
+        const cedula = document.getElementById('cedula').value;
+        const archivoSolicitud = document.getElementById('archivo_solicitud').files[0];
+        const archivoCedula = document.getElementById('archivo_cedula').files[0];
+
+        // Crear un objeto FormData para enviar los datos y archivos
+        const formData = new FormData();
+        formData.append('nombre', nombre);
+        formData.append('cedula', cedula);
+        formData.append('archivo_solicitud', archivoSolicitud);
+        formData.append('archivo_cedula', archivoCedula);
+
+        // Usar AJAX para enviar los datos al servidor
         $.ajax({
-            url: '../ajax/usuario.php?op=subirSolicitud',
-            method: 'POST',
+            url: '../ajax/solicitud.php?op=estado1',
+            type: 'POST',
             data: formData,
-            processData: false,
-            contentType: false,
-            success: function (respuesta) {
-                alert('Solicitud subida exitosamente.');
-                location.reload();
+            contentType: false,  // Importante para enviar archivos
+            processData: false,  // Impide que jQuery procese los datos como string
+            success: function (data) {
+                if (data.estado) {
+                    alert('Solicitud enviada correctamente');
+                    // Realiza las acciones necesarias si la solicitud fue exitosa, por ejemplo, limpiar el formulario
+                    document.getElementById('formSubirSolicitud').reset();
+                } else {
+                    alert('Error al enviar la solicitud: ' + data.error);
+                }
             },
-            error: function () {
-                alert('Error al subir la solicitud.');
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al procesar la solicitud.');
             }
         });
-    });*/
+    }
+
+    // Asignar el evento 'submit' al formulario para llamar a la función enviarSolicitud
+    document.getElementById('formSubirSolicitud').addEventListener('submit', function (e) {
+        enviarSolicitud(e);
+        guardarSolicitud();
+    });
+
 });

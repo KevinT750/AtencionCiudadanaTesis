@@ -31,29 +31,57 @@ try {
             }
             break;
 
-        case 'solicitud':
-            // Verificar si la sesión está activa
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            if (isset($_SESSION['doc_ids'], $_SESSION['cedula_ids'], $_SESSION['usu_id'])) {
-                $cedula_id = $_SESSION['cedula_ids'];
-                $doc_id = $_SESSION['doc_ids'];
-                $est_id = $_SESSION['usu_id'];
-
-                $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id);
-
-                if (isset($rspta['estado']) && $rspta['estado']) {
-                    echo json_encode(['success' => true, 'message' => 'Solicitud procesada correctamente.']); // Respuesta JSON para éxito
-                } else {
-                    echo json_encode(['success' => false, 'error' => $rspta['error'] ?? 'Respuesta no válida.']); // Respuesta JSON para error
+            case 'solicitud':
+                // Verificar si la sesión está activa
+                if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
                 }
+            
+                if (isset($_SESSION['doc_ids'], $_SESSION['cedula_ids'], $_SESSION['usu_id'])) {
+                    $cedula_id = $_SESSION['cedula_ids'];
+                    $doc_id = $_SESSION['doc_ids'];
+                    $est_id = $_SESSION['usu_id'];
+                    
+                    // Recibir el estado_id desde POST
+                    $estado_id = isset($_POST['estado_id']) ? $_POST['estado_id'] : 5; // Si no se envía el estado, se usa 5 por defecto
+            
+                    // Llamar a la función solicitud con los parámetros
+                    $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id);
+            
+                    if (isset($rspta['estado']) && $rspta['estado']) {
+                        echo json_encode(['success' => true, 'message' => 'Solicitud procesada correctamente.']); // Respuesta JSON para éxito
+                    } else {
+                        echo json_encode(['success' => false, 'error' => $rspta['error'] ?? 'Respuesta no válida.']); // Respuesta JSON para error
+                    }
+                    
+                } else {
+                    echo json_encode(['success' => false, 'error' => 'No se encontraron IDs de documentos, cédulas o usuario en la sesión.']);
+                }
+                break;
+                case 'solicitud1':
+                    // Verificar si las variables necesarias están presentes en la sesión y POST
+                    if (isset($_SESSION['doc_ids'], $_SESSION['cedula_ids']) && isset($_POST['est_id'], $_POST['estado_id'])) {
+                        $cedula_id = $_SESSION['cedula_ids'];
+                        $doc_id = $_SESSION['doc_ids'];
+                        $est_id = $_POST['est_id'];  // Usar el est_id que se recibe por POST
+                        $estado_id = $_POST['estado_id'];  // Usar el estado recibido por POST
                 
-            } else {
-                echo "No se encontraron IDs de documentos, cédulas o usuario en la sesión.";
-            }
-            break;
+                        // Llamar a la función solicitud con los parámetros
+                        $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id);
+                
+                        // Verificar la respuesta de la función solicitud
+                        if (isset($rspta['estado']) && $rspta['estado']) {
+                            echo json_encode(['success' => true, 'message' => 'Solicitud procesada correctamente.']); // Respuesta JSON para éxito
+                        } else {
+                            echo json_encode(['success' => false, 'error' => $rspta['error'] ?? 'Respuesta no válida.']); // Respuesta JSON para error
+                        }
+                    } else {
+                        echo json_encode(['success' => false, 'error' => 'No se encontraron los datos necesarios en la sesión o en POST.']);
+                    }
+                    break;
+                
+                
+            
 
         case 'estado':
             if (isset($_SESSION['usu_id'])) {

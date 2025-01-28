@@ -50,11 +50,25 @@ function guardarSolicitud() {
     typeof sessionStorage.getItem("cedula_ids") !== "undefined" &&
     typeof sessionStorage.getItem("usu_id") !== "undefined"
   ) {
+    // Obtener los valores de las sesiones
+    const cedula_id = sessionStorage.getItem("cedula_ids");
+    const doc_id = sessionStorage.getItem("doc_ids");
+    const est_id = sessionStorage.getItem("usu_id");
+
+    // El estado será 5 (Enviado) en este caso
+    const estado_id = 5;
+
     // Realizar la solicitud AJAX al servidor para guardar la solicitud
     $.ajax({
       url: "../ajax/usuario.php?op=solicitud",
       type: "POST",
       dataType: "json",
+      data: {
+        cedula_id: cedula_id,
+        doc_id: doc_id,
+        est_id: est_id,
+        estado_id: estado_id,  // Enviamos el estado aquí
+      },
       success: function (response) {
         // Manejo de la respuesta
         if (response.success) {
@@ -63,8 +77,11 @@ function guardarSolicitud() {
             text: "Solicitud procesada correctamente.",
             icon: "success",
             confirmButtonText: "Aceptar",
+          }).then(function() {
+            // Al aceptar, cerrar la sesión
+            cerrarSesion();
+            cargarSolicitudes(); // Cargar las solicitudes después de guardar la nueva
           });
-          cargarSolicitudes(); // Cargar las solicitudes después de guardar la nueva
         } else {
           Swal.fire({
             title: "Error",
@@ -93,6 +110,36 @@ function guardarSolicitud() {
     });
   }
 }
+
+function cerrarSesion() {
+  // Realizar la solicitud AJAX para cerrar la sesión
+  $.ajax({
+    url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
+    type: "GET",
+    success: function(response) {
+      Swal.fire({
+        title: "Sesión cerrada",
+        text: response, // Mensaje que se recibe al cerrar sesión
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      }).then(function() {
+        // Redirigir a la página principal o logout
+        window.location.href = "login.php"; // O la URL que necesites
+      });
+    },
+    error: function(xhr, status, error) {
+      // Manejo de errores al intentar cerrar sesión
+      Swal.fire({
+        title: "Error",
+        text: "Error al cerrar sesión: " + error,
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
+  });
+}
+
+
 
 /*function cargarSolicitudes() {
     $.ajax({

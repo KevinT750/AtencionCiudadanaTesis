@@ -42,15 +42,15 @@ class Usuario {
         }
     }
 
-    public function solicitud($idEstudiante, $isSolicitud, $idPdf){
+    public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId) {
         try {
             // Validar que todos los parámetros estén presentes
-            if (empty($idEstudiante) || empty($isSolicitud) || empty($idPdf)) {
+            if (empty($idEstudiante) || empty($isSolicitud) || empty($idPdf) || empty($estadoId)) {
                 return ["estado" => false, "error" => "Faltan parámetros necesarios"];
             }
     
             // Ejecutar el procedimiento almacenado para insertar la solicitud
-            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf')";
+            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId')";
             $rspta = ejecutarConsulta($sql);
     
             // Verificar si la consulta fue exitosa
@@ -65,6 +65,7 @@ class Usuario {
             return ["estado" => false, "error" => "Error inesperado: " . $e->getMessage()];
         }
     }
+    
     
 
     private function establecerPermisos($rol) {
