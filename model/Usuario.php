@@ -118,6 +118,22 @@ class Usuario {
         }
     }
 
+    public function getFileForDownload($file) {
+        if (file_exists($file)) {
+            return [
+                'file' => $file,
+                'headers' => [
+                    'Content-Description' => 'File Transfer',
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'Content-Disposition' => 'attachment; filename="' . basename($file) . '"',
+                    'Content-Length' => filesize($file)
+                ]
+            ];
+        } else {
+            return false;
+        }
+    }
+    
     public function generarDocumentoSolicitud($nombres, $cedula, $carrera, $telefono_domicilio, $celular, $correo, $fecha, $asunto) {
         try {
             // Ruta al documento base

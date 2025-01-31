@@ -1,0 +1,1 @@
+{"version":1,"defects":{"DescargarSolicitudTest::testDescargarSolicitud":4,"DescargarSolicitudTest::testGetFileForDownload":3},"times":{"DescargarSolicitudTest::testDescargarSolicitud":0.011,"DescargarSolicitudTest::testGetFileForDownload":0.004}}

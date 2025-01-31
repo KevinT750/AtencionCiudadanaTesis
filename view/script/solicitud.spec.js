@@ -1,100 +1,90 @@
-const sinon = require('sinon');
-const { expect } = require('chai');
-const $ = require('jquery'); 
+describe('Solicitudes Secretarias - Tests', function () {
+  let $table;
 
-describe('Función enviarSolicitudFormulario', function () {
-    let sandbox;
-  
-    beforeEach(function () {
-      // Crear un contenedor temporal para el DOM
-      sandbox = document.createElement('div');
-      sandbox.id = 'sandbox';
-      document.body.appendChild(sandbox);
-  
-      // Crear un formulario de prueba y los elementos necesarios
-      const formHtml = `
-        <form id="formSolicitud">
-          <input type="file" id="archivo">
-          <button type="button" id="submitBtn">Enviar</button>
-        </form>
+  beforeEach(function () {
+      // Cargar el HTML necesario para la prueba
+      document.body.innerHTML = `
+          <table id="solicitudesSecret"></table>
       `;
-      sandbox.innerHTML = formHtml;
-    });
-  
-    afterEach(function () {
-      // Limpiar el DOM después de cada prueba
-      sandbox.remove();
-    });
-  
-    it('Debería realizar una solicitud AJAX cuando el botón de enviar sea presionado', function (done) {
-      // Preparar el stub de la función AJAX
-      const fakeResponse = { estado: true };
-      const fakeSuccess = sinon.stub($, 'ajax').yieldsTo('success', JSON.stringify(fakeResponse));
-  
-      // Simular el clic en el botón
-      const submitButton = document.getElementById('submitBtn');
-      submitButton.click();
-  
-      // Esperar a que la solicitud AJAX termine
-      setTimeout(function () {
-        // Comprobar si la solicitud fue realizada
-        expect(fakeSuccess.calledOnce).to.be.true;
-  
-        // Restaurar el stub
-        fakeSuccess.restore();
-  
-        done();
-      }, 100);
-    });
-  
-    it('Debería mostrar un mensaje de éxito cuando la respuesta del servidor sea correcta', function (done) {
-      // Preparar el stub de Swal
-      const swalStub = sinon.stub(window, 'Swal').returns(Promise.resolve());
-  
-      // Simular la función de éxito
-      const fakeResponse = { success: true };
-      const fakeSuccess = sinon.stub($, 'ajax').yieldsTo('success', fakeResponse);
-  
-      // Simular el clic en el botón
-      const submitButton = document.getElementById('submitBtn');
-      submitButton.click();
-  
-      // Esperar a que la solicitud termine
-      setTimeout(function () {
-        // Comprobar que se llamó a Swal con el mensaje de éxito
-        expect(swalStub.calledWith(sinon.match({ title: 'Éxito' }))).to.be.true;
-  
-        // Restaurar los stubs
-        fakeSuccess.restore();
-        swalStub.restore();
-  
-        done();
-      }, 100);
-    });
-  
-    it('Debería mostrar un mensaje de error cuando la respuesta del servidor sea incorrecta', function (done) {
-      // Preparar el stub de Swal
-      const swalStub = sinon.stub(window, 'Swal').returns(Promise.resolve());
-  
-      // Simular la función de error
-      const fakeResponse = { success: false, error: 'Error del servidor' };
-      const fakeError = sinon.stub($, 'ajax').yieldsTo('error', fakeResponse);
-  
-      // Simular el clic en el botón
-      const submitButton = document.getElementById('submitBtn');
-      submitButton.click();
-  
-      // Esperar a que la solicitud termine
-      setTimeout(function () {
-        // Comprobar que se llamó a Swal con el mensaje de error
-        expect(swalStub.calledWith(sinon.match({ title: 'Error' }))).to.be.true;
-  
-        // Restaurar los stubs
-        fakeError.restore();
-        swalStub.restore();
-  
-        done();
-      }, 100);
-    });
+      
+      // Espiar funciones jQuery
+      spyOn($, 'ajax').and.callThrough(); // Espiar la llamada AJAX
+
+      // Inicializar DataTable
+      $table = $('#solicitudesSecret');
+      spyOn($.fn, 'DataTable').and.callFake(function () {
+          return {
+              ajax: { url: '../ajax/solicitud.php?op=Solicitudes', type: 'GET' },
+              columns: [],
+          };
+      });
+
+      // Establecer un entorno básico para las pruebas (por ejemplo, simular datos)
+      $.ajax.calls.mostRecent().returnValue = {
+          aaData: [
+              [1, 'Solicitud 1', 'Descripción', 'No Leído', '1', 'document1', 'file1', 'Leído'],
+              [2, 'Solicitud 2', 'Descripción', 'Leído', '2', 'document2', 'file2', 'No Leído']
+          ]
+      };
   });
-  
+
+  it('debería inicializar DataTable correctamente', function () {
+      // Inicializamos DataTable
+      $('#solicitudesSecret').DataTable();
+      
+      // Verificar que DataTable fue llamado correctamente
+      expect($.fn.DataTable).toHaveBeenCalled();
+  });
+
+  it('debería realizar una llamada AJAX al cargar los datos', function () {
+      // Disparar el evento de carga de datos
+      $('#solicitudesSecret').DataTable().ajax.reload();
+
+      // Verificar que la función AJAX haya sido llamada
+      expect($.ajax).toHaveBeenCalled();
+      expect($.ajax).toHaveBeenCalledWith(jasmine.objectContaining({
+          url: '../ajax/solicitud.php?op=Solicitudes',
+          type: 'GET'
+      }));
+  });
+
+  it('debería abrir la URL correcta cuando se hace clic en el botón "Ver Solicitud"', function () {
+      spyOn(window, 'open'); // Espiar la función window.open
+
+      // Simular clic en el botón
+      $('#solicitudesSecret').trigger('click');
+
+      // Verificar que la URL correcta fue llamada
+      expect(window.open).toHaveBeenCalledWith('https://docs.google.com/document/d/document1/view', '_blank');
+  });
+
+  it('debería mostrar mensaje al hacer clic en "Dejar Comentario"', function () {
+      // Simular clic en el botón "Dejar Comentario"
+      const $btnCancelar = $('<button>').addClass('cancelar-datos').data('columna-2', 'data2').data('columna-3', 'data3');
+      $('body').append($btnCancelar);
+      
+      spyOn($, 'ajax').and.callFake(function (options) {
+          // Simular la respuesta del AJAX
+          options.success('success');
+      });
+
+      $btnCancelar.trigger('click');
+
+      // Verificar si el modal ha sido agregado
+      expect($('body').find('#modalSubir').length).toBeGreaterThan(0);
+  });
+
+  it('debería mostrar mensaje de error si no se proporciona un mensaje', function () {
+      spyOn(window, 'Swal'); // Espiar la función Swal
+
+      // Simular el clic en el botón de enviar mensaje
+      $('#btnEnviar').trigger('click');
+
+      // Verificar que se muestra un mensaje de error
+      expect(window.Swal).toHaveBeenCalledWith(jasmine.objectContaining({
+          icon: 'error',
+          title: 'Error',
+          text: 'Por favor, escribe un mensaje antes de enviar.'
+      }));
+  });
+});

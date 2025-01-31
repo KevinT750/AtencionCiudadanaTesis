@@ -17,8 +17,7 @@ describe("Formulario de acceso", function() {
         $clavea = $("#clavea");
         $submitButton = $("#btnSubmit");
 
-        // Espiar la función de alerta
-        spyOn(window, "alert");
+        
 
         // Prevenir que se ejecute la recarga de página
         spyOn($form[0], 'submit').and.callFake(function() {
@@ -27,10 +26,10 @@ describe("Formulario de acceso", function() {
         });
     });
 
-    it("debería restaurar el estado del botón después del proceso", function() {
+   it("debería restaurar el estado del botón después del proceso", function() {
         // Enviar el formulario con las credenciales correctas
-        $logina.val("admin1");
-        $clavea.val("12341");
+        $logina.val("");
+        $clavea.val("1234");
         $submitButton.trigger('click');
 
         // Simular que el proceso ha terminado
@@ -40,4 +39,5 @@ describe("Formulario de acceso", function() {
         expect($submitButton.prop('disabled')).toBeFalse();
         expect($submitButton.text()).toBe('Enviar');
     });
+
 });

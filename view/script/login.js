@@ -4,30 +4,28 @@ $(document).ready(function() {
         
         var usuario = $('#logina').val();
         var clave = $('#clavea').val();
+        var $btnSubmit = $('#btnSubmit');
         
         // Validación de campos vacíos
         if (usuario === '' || clave === '') {
             alert('Por favor, complete todos los campos');
             return;
         }
-        
-        // Cambiar el texto del botón y deshabilitarlo durante el proceso
-        var $btnSubmit = $('#btnSubmit');
+
+        // Bloquear el botón antes de iniciar el proceso
         $btnSubmit.prop('disabled', true);
         $btnSubmit.text('Procesando...');
-        
-        // Simulamos un login
+
+        // Simulamos un proceso de login (pero no lo desbloqueamos automáticamente)
         setTimeout(function() {
-            // Simulamos la verificación de credenciales
+            // Simular verificación de credenciales
             if (usuario === 'admin' && clave === '1234') {
                 alert('Ingreso exitoso');
+                // Solo desbloqueamos el botón en caso de éxito
+                $btnSubmit.prop('disabled', false).text('Enviar');
             } else {
                 alert('Credenciales incorrectas');
             }
-            
-            // Restauramos el botón después del proceso
-            $btnSubmit.prop('disabled', false);
-            $btnSubmit.text('Enviar');
         }, 1000);
     });
 });
