@@ -44,30 +44,37 @@ class Usuario {
 
     public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId) {
         try {
-            // Validar que todos los parámetros estén presentes
+            // Iniciar la sesión si no está iniciada
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+    
             if (empty($idEstudiante) || empty($isSolicitud) || empty($idPdf) || empty($estadoId)) {
                 return ["estado" => false, "error" => "Faltan parámetros necesarios"];
             }
     
             // Ejecutar el procedimiento almacenado para insertar la solicitud
-            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId')";
-            $rspta = ejecutarConsulta($sql);
+            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId', @p_sol_id)";
+            $sqlGetId = "SELECT @p_sol_id AS sol_id";
     
-            // Verificar si la consulta fue exitosa
-            if ($rspta) {
-                return ["estado" => true, "mensaje" => "Solicitud procesada correctamente"];
+            // Obtener el valor de sol_id desde el procedimiento almacenado
+            $sol_id = ejecutarConsulta_retornarIDs($sql, $sqlGetId);
+    
+            // Verificar si se obtuvo sol_id
+            if ($sol_id) {
+                // Guardar sol_id en la sesión
+                $_SESSION['sol_id'] = $sol_id;
+    
+                return ["estado" => true, "sol_id" => $sol_id]; // Retornar el sol_id
             } else {
-                return ["estado" => false, "error" => "Error al procesar la solicitud"];
+                return ["estado" => false, "error" => "Error al obtener la ID de la solicitud"];
             }
-    
         } catch (Exception $e) {
             error_log("Error en solicitud: " . $e->getMessage());
             return ["estado" => false, "error" => "Error inesperado: " . $e->getMessage()];
         }
-    }
+    }  
     
-    
-
     private function establecerPermisos($rol) {
 
         $_SESSION['Escritorio'] = 0;

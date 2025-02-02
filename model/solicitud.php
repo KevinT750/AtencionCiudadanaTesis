@@ -200,7 +200,7 @@ class ModeloSolicitud {
     
     public function estadoSolicitud($usu_id) {
         $sql = "CALL SP_GetSolicitudesEstId($usu_id)";
-        return ejecutarConsulta($sql); // Asegúrate de que `$this->conn` es una instancia válida de mysqli.
+        return ejecutarConsulta($sql); 
     }
 
     public function Estado(){
@@ -218,5 +218,12 @@ class ModeloSolicitud {
         ";
         return ejecutarConsulta($sql);
     }
+
+    public function insertSeguimiento($op, $sol_id, $est_id, $seg_accion, $seg_comentario, $seg_visto) {
+        // Asegurarse de que el SQL esté bien formado
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id', '$est_id', '$seg_accion', '$seg_comentario', '$seg_visto')";
+        return ejecutarConsulta($sql);
+    }
+    
 }
 ?>

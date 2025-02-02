@@ -26,7 +26,8 @@ function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
           try {
             var data = JSON.parse(response); // Intentar parsear JSON
             if (data.estado) {
-              guardarSolicitud(); // Llamar a guardarSolicitud después del éxito
+              guardarSolicitud();
+              guardarSeguimiento();
             }
           } catch (e) {
             console.error("Error al procesar la respuesta:", e);
@@ -78,9 +79,7 @@ function guardarSolicitud() {
             icon: "success",
             confirmButtonText: "Aceptar",
           }).then(function() {
-            // Al aceptar, cerrar la sesión
-            cerrarSesion();
-            cargarSolicitudes(); // Cargar las solicitudes después de guardar la nueva
+
           });
         } else {
           Swal.fire({
@@ -111,6 +110,36 @@ function guardarSolicitud() {
   }
 }
 
+function guardarSeguimiento() {
+  const OP = 2;
+  const seg_accion = "Solicitud Enviada";
+  const seg_visto = 0;
+  const seg_comentario = "Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.";
+
+  const data = {
+    OP: OP,
+    seg_accion: seg_accion,
+    seg_visto: seg_visto,
+    seg_comentario: seg_comentario  
+  };
+
+  console.log("📤 Enviando datos al servidor:", data); // Mostrar en consola
+
+  $.ajax({
+    url: "../ajax/solicitud.php?op=InsertSeguimiento",
+    type: "POST",
+    dataType: "json",
+    data: data,
+    success: function (response){
+      console.log("✅ Respuesta del servidor:", response); // Mostrar la respuesta en consola
+      cerrarSesion();
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error("❌ Error al guardar seguimiento:", textStatus, errorThrown);
+    }
+  });
+}
+
 function cerrarSesion() {
   // Realizar la solicitud AJAX para cerrar la sesión
   $.ajax({
@@ -124,7 +153,7 @@ function cerrarSesion() {
         confirmButtonText: "Aceptar",
       }).then(function() {
         // Redirigir a la página principal o logout
-        window.location.href = "login.php"; // O la URL que necesites
+       // window.location.href = "login.php"; // O la URL que necesites
       });
     },
     error: function(xhr, status, error) {

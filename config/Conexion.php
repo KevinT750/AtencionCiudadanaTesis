@@ -58,6 +58,40 @@ if (!function_exists('ejecutarConsulta')) {
         return $lastId;
     }
 
+    function ejecutarConsulta_retornarIDs($sql, $sqlGetId, $db = 'atencion_ciudadana') {
+        // Crear conexión
+        $conexion = new Cls_DataConnection();
+        $Cn = $conexion->Fn_getConnect($db);
+    
+        // Ejecutar la consulta del SP
+        $query = $Cn->query($sql);
+    
+        // Verificamos si la primera consulta fue exitosa
+        if ($query) {
+            // Ejecutamos la consulta para obtener el valor de @p_sol_id
+            $result = $Cn->query($sqlGetId);
+    
+            // Verificamos si se ha obtenido el resultado correctamente
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $sol_id = $row['sol_id'] ?? null;
+                
+                // Cerrar la conexión
+                $Cn->close();
+                
+                return $sol_id;  // Retornar la ID de la solicitud
+            } else {
+                // Si no se obtiene la ID, retornamos null o manejamos el error
+                $Cn->close();
+                return null;
+            }
+        } else {
+            // Si la consulta no se ejecutó correctamente, cerrar la conexión y retornar false
+            $Cn->close();
+            return null;
+        }
+    }
+    
     // Limpia y escapa cadenas
     function limpiarCadena($str, $db = 'atencion_ciudadana') {
         $conexion = new Cls_DataConnection();
