@@ -225,5 +225,10 @@ class ModeloSolicitud {
         return ejecutarConsulta($sql);
     }
     
+    public function mostrarSeguimiento($op, $sol_id) {
+        // Asegurarse de que el SQL esté bien formado
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id')";
+        return ejecutarConsulta($sql);
+    }
 }
 ?>
