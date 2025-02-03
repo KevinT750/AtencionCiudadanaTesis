@@ -1,11 +1,12 @@
-<?php 
+<?php
 require_once "global.php";
 require_once "conn.php";
 
 // Verifica si las funciones no están definidas previamente
 if (!function_exists('ejecutarConsultaSP')) {
     // Ejecuta procedimientos almacenados
-    function ejecutarConsultaSP($sql, $db = 'atencion_ciudadana') { 
+    function ejecutarConsultaSP($sql, $db = 'atencion_ciudadana')
+    {
         $Fn = new Cls_DataConnection();
         $Cn = $Fn->Fn_getConnect($db); // Aquí se obtiene la conexión
         $query = $Cn->query($sql); // Ejecuta la consulta
@@ -30,7 +31,8 @@ $conexion->query('SET NAMES "utf8"'); // Usar el método query directamente sobr
 // Verifica si las funciones no están definidas previamente
 if (!function_exists('ejecutarConsulta')) {
     // Ejecuta consultas generales
-    function ejecutarConsulta($sql, $db = 'atencion_ciudadana') {
+    function ejecutarConsulta($sql, $db = 'atencion_ciudadana')
+    {
         $conexion = new Cls_DataConnection();
         $Cn = $conexion->Fn_getConnect($db);
         $query = $Cn->query($sql);
@@ -39,7 +41,8 @@ if (!function_exists('ejecutarConsulta')) {
     }
 
     // Ejecuta consultas que devuelven una fila simple
-    function ejecutarConsultaSimpleFila($sql, $db = 'atencion_ciudadana') {
+    function ejecutarConsultaSimpleFila($sql, $db = 'atencion_ciudadana')
+    {
         $conexion = new Cls_DataConnection();
         $Cn = $conexion->Fn_getConnect($db);
         $query = $Cn->query($sql);
@@ -49,7 +52,8 @@ if (!function_exists('ejecutarConsulta')) {
     }
 
     // Ejecuta consultas de inserción y devuelve el ID generado
-    function ejecutarConsulta_retornarID($sql, $db = 'atencion_ciudadana') {
+    function ejecutarConsulta_retornarID($sql, $db = 'atencion_ciudadana')
+    {
         $conexion = new Cls_DataConnection();
         $Cn = $conexion->Fn_getConnect($db);
         $query = $Cn->query($sql);
@@ -58,27 +62,28 @@ if (!function_exists('ejecutarConsulta')) {
         return $lastId;
     }
 
-    function ejecutarConsulta_retornarIDs($sql, $sqlGetId, $db = 'atencion_ciudadana') {
+    function ejecutarConsulta_retornarIDs($sql, $sqlGetId, $db = 'atencion_ciudadana')
+    {
         // Crear conexión
         $conexion = new Cls_DataConnection();
         $Cn = $conexion->Fn_getConnect($db);
-    
+
         // Ejecutar la consulta del SP
         $query = $Cn->query($sql);
-    
+
         // Verificamos si la primera consulta fue exitosa
         if ($query) {
             // Ejecutamos la consulta para obtener el valor de @p_sol_id
             $result = $Cn->query($sqlGetId);
-    
+
             // Verificamos si se ha obtenido el resultado correctamente
             if ($result && $result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 $sol_id = $row['sol_id'] ?? null;
-                
+
                 // Cerrar la conexión
                 $Cn->close();
-                
+
                 return $sol_id;  // Retornar la ID de la solicitud
             } else {
                 // Si no se obtiene la ID, retornamos null o manejamos el error
@@ -91,9 +96,10 @@ if (!function_exists('ejecutarConsulta')) {
             return null;
         }
     }
-    
+
     // Limpia y escapa cadenas
-    function limpiarCadena($str, $db = 'atencion_ciudadana') {
+    function limpiarCadena($str, $db = 'atencion_ciudadana')
+    {
         $conexion = new Cls_DataConnection();
         $Cn = $conexion->Fn_getConnect($db);
         $str = mysqli_real_escape_string($Cn, trim($str));
@@ -101,5 +107,3 @@ if (!function_exists('ejecutarConsulta')) {
         return htmlspecialchars($str);
     }
 }
-
-?>

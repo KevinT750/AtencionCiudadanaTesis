@@ -12,26 +12,28 @@ require 'header.php';
 if ($_SESSION['Ver_Solicitudes'] == 1) {
 ?>
     <style>
-    .list-group {
-        position: absolute;
-        z-index: 1000;
-        width: 100%;
-        background: white;
-        border: 1px solid #ccc;
-        max-height: 200px;
-        overflow-y: auto;
-        padding: 0;
-        margin: 0;
-        list-style-type: none;
-    }
-    .list-group li {
-        padding: 8px 12px;
-        cursor: pointer;
-    }
-    .list-group li:hover {
-        background-color: #f0f0f0;
-    }
-</style>
+        .list-group {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+
+        .list-group li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .list-group li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 
     <div class="content-wrapper">
         <section class="content">
@@ -52,21 +54,21 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
                             </div>
                             <div class="box-body">
                                 <form id="formSubirSolicitud" method="post" enctype="multipart/form-data">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="nombre">Nombres Completos:</label>
-                                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese sus nombres completos" required autocomplete="off">
-                                        <ul id="resultados-nombre" class="list-group"></ul> <!-- Contenedor de resultados -->
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="nombre">Nombres Completos:</label>
+                                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese sus nombres completos" required autocomplete="off">
+                                            <ul id="resultados-nombre" class="list-group"></ul> <!-- Contenedor de resultados -->
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="cedula">Número de Cédula:</label>
-                                        <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required autocomplete="off">
-                                        <ul id="resultados-cedula" class="list-group"></ul> <!-- Contenedor de resultados -->
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="cedula">Número de Cédula:</label>
+                                            <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required autocomplete="off">
+                                            <ul id="resultados-cedula" class="list-group"></ul> <!-- Contenedor de resultados -->
+                                        </div>
                                     </div>
-                                </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="archivo_solicitud">Subir Solicitud (PDF o DOC):</label>
@@ -138,12 +140,12 @@ require 'footer.php';
 <script src="script/solicitudSecretaria.js"></script>
 <script>
     // Mostrar el formulario al hacer clic en el botón
-    document.getElementById('btnMostrarFormulario').addEventListener('click', function () {
+    document.getElementById('btnMostrarFormulario').addEventListener('click', function() {
         document.getElementById('formularioSolicitud').style.display = 'block';
     });
 
     // Cancelar y ocultar el formulario al hacer clic en el botón de cancelar
-    document.getElementById('btnCancelar').addEventListener('click', function () {
+    document.getElementById('btnCancelar').addEventListener('click', function() {
         document.getElementById('formularioSolicitud').style.display = 'none';
     });
 </script>

@@ -68,7 +68,7 @@ function guardarSolicitud() {
         cedula_id: cedula_id,
         doc_id: doc_id,
         est_id: est_id,
-        estado_id: estado_id,  // Enviamos el estado aquí
+        estado_id: estado_id, // Enviamos el estado aquí
       },
       success: function (response) {
         // Manejo de la respuesta
@@ -78,9 +78,7 @@ function guardarSolicitud() {
             text: "Solicitud procesada correctamente.",
             icon: "success",
             confirmButtonText: "Aceptar",
-          }).then(function() {
-
-          });
+          }).then(function () {});
         } else {
           Swal.fire({
             title: "Error",
@@ -114,13 +112,14 @@ function guardarSeguimiento() {
   const OP = 2;
   const seg_accion = "Solicitud Enviada";
   const seg_visto = 0;
-  const seg_comentario = "Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.";
+  const seg_comentario =
+    "Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.";
 
   const data = {
     OP: OP,
     seg_accion: seg_accion,
     seg_visto: seg_visto,
-    seg_comentario: seg_comentario  
+    seg_comentario: seg_comentario,
   };
 
   console.log("📤 Enviando datos al servidor:", data); // Mostrar en consola
@@ -130,13 +129,17 @@ function guardarSeguimiento() {
     type: "POST",
     dataType: "json",
     data: data,
-    success: function (response){
+    success: function (response) {
       console.log("✅ Respuesta del servidor:", response); // Mostrar la respuesta en consola
       cerrarSesion();
     },
     error: function (jqXHR, textStatus, errorThrown) {
-      console.error("❌ Error al guardar seguimiento:", textStatus, errorThrown);
-    }
+      console.error(
+        "❌ Error al guardar seguimiento:",
+        textStatus,
+        errorThrown
+      );
+    },
   });
 }
 
@@ -145,18 +148,18 @@ function cerrarSesion() {
   $.ajax({
     url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
     type: "GET",
-    success: function(response) {
+    success: function (response) {
       Swal.fire({
         title: "Sesión cerrada",
         text: response, // Mensaje que se recibe al cerrar sesión
         icon: "success",
         confirmButtonText: "Aceptar",
-      }).then(function() {
+      }).then(function () {
         // Redirigir a la página principal o logout
-       // window.location.href = "login.php"; // O la URL que necesites
+        // window.location.href = "login.php"; // O la URL que necesites
       });
     },
-    error: function(xhr, status, error) {
+    error: function (xhr, status, error) {
       // Manejo de errores al intentar cerrar sesión
       Swal.fire({
         title: "Error",
@@ -164,11 +167,9 @@ function cerrarSesion() {
         icon: "error",
         confirmButtonText: "Aceptar",
       });
-    }
+    },
   });
 }
-
-
 
 /*function cargarSolicitudes() {
     $.ajax({

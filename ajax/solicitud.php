@@ -339,8 +339,6 @@ if (isset($_GET['op'])) {
                 break;
 
         case 'modalAprobar':
-
-
             $nombre = isset($_SESSION['est_nombre']) ? $_SESSION['est_nombre'] : 'No disponible';
             $rutaArchivo = '../Mailer/emails.json';
             $correos = [];

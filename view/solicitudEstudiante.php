@@ -19,7 +19,7 @@ if ($_SESSION['Solicitud'] == 1) {
             <div class="row">
                 <div class="col-md-12">
                     <div class="box">
-                    <div class="box-header with-border" style="text-align: center;">
+                        <div class="box-header with-border" style="text-align: center;">
                             <h1 class="box-title">Enviar Solicitud</h1>
                         </div>
                         <div class="box-body">

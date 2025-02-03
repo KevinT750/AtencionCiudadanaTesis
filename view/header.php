@@ -8,7 +8,7 @@ if (strlen(session_id()) < 1)
         'Solicitud', 
         'Atencion', 
         'Estado', 
-        'Historial', 
+        'Seguimiento', 
         'Aprobadas', 
         'Ver_Solicitudes', 
         'Subir_Solicitud', 
@@ -152,8 +152,8 @@ foreach ($permisos as $permiso) {
                             </a>
                             <ul class="treeview-menu">
                                 
-                                <li><a href="solicitudEstado.php">Ver Estado de la Solicitud</a></li>
-                                <li><a href="aprobadasRechazadas.php">Aprobadas y Rechazadas</a></li>
+                                <li><a href="solicitudEstado.php">Solicitudes</a></li>
+                                <li><a href="seguimiento.php">Sehuimiento de Solicitudes</a></li>
                             </ul>
                         </li>
                     <?php endif; ?>
