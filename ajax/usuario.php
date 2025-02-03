@@ -50,9 +50,10 @@ try {
 
             // Recibir y validar el estado_id desde POST (valor predeterminado 5 si no se envía)
             $estado_id = isset($_POST['estado_id']) && is_numeric($_POST['estado_id']) ? (int)$_POST['estado_id'] : 5;
+            $titulo = isset($_POST['titulo']);
 
             // Llamar a la función solicitud con los parámetros
-            $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id);
+            $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id, $titulo);
 
             // Verificar la respuesta
             if (isset($rspta['estado']) && $rspta['estado']) {
@@ -80,8 +81,9 @@ try {
                 $est_id = $_POST['est_id'];  // Usar el est_id que se recibe por POST
                 $estado_id = $_POST['estado_id'];  // Usar el estado recibido por POST
 
+                $titulo = 'Documento Subido';
                 // Llamar a la función solicitud con los parámetros
-                $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id);
+                $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id, $titulo);
 
                 // Verificar la respuesta de la función solicitud
                 if (isset($rspta['estado']) && $rspta['estado']) {

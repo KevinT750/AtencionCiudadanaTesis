@@ -44,7 +44,7 @@ class Usuario
         }
     }
 
-    public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId)
+    public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId, $titulo)
     {
         try {
             // Iniciar la sesión si no está iniciada
@@ -57,10 +57,10 @@ class Usuario
             }
 
             // Ejecutar el procedimiento almacenado para insertar la solicitud
-            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId', @p_sol_id)";
+            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId', '$titulo', @p_sol_id)";
             $sqlGetId = "SELECT @p_sol_id AS sol_id";
 
-            // Obtener el valor de sol_id desde el procedimiento almacenado
+            // Ejecutar las consultas
             $sol_id = ejecutarConsulta_retornarIDs($sql, $sqlGetId);
 
             // Verificar si se obtuvo sol_id
@@ -77,6 +77,7 @@ class Usuario
             return ["estado" => false, "error" => "Error inesperado: " . $e->getMessage()];
         }
     }
+
 
     private function establecerPermisos($rol)
     {

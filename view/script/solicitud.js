@@ -45,68 +45,62 @@ function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
 }
 
 function guardarSolicitud() {
-  // Verificar si las sesiones están configuradas (simulación en el lado del cliente)
-  if (
-    typeof sessionStorage.getItem("doc_ids") !== "undefined" &&
-    typeof sessionStorage.getItem("cedula_ids") !== "undefined" &&
-    typeof sessionStorage.getItem("usu_id") !== "undefined"
-  ) {
-    // Obtener los valores de las sesiones
-    const cedula_id = sessionStorage.getItem("cedula_ids");
-    const doc_id = sessionStorage.getItem("doc_ids");
-    const est_id = sessionStorage.getItem("usu_id");
+  // Obtener el valor del título correctamente usando el ID del elemento
+  const titulo = document.getElementById("titulo").value; 
 
-    // El estado será 5 (Enviado) en este caso
-    const estado_id = 5;
+  // Definir el estado como 5 (Enviado)
+  const estado_id = 5;
 
-    // Realizar la solicitud AJAX al servidor para guardar la solicitud
-    $.ajax({
-      url: "../ajax/usuario.php?op=solicitud",
-      type: "POST",
-      dataType: "json",
-      data: {
-        cedula_id: cedula_id,
-        doc_id: doc_id,
-        est_id: est_id,
-        estado_id: estado_id, // Enviamos el estado aquí
-      },
-      success: function (response) {
-        // Manejo de la respuesta
-        if (response.success) {
-          Swal.fire({
-            title: "Éxito",
-            text: "Solicitud procesada correctamente.",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-          }).then(function () {});
-        } else {
-          Swal.fire({
-            title: "Error",
-            text: response.error || "No se pudo procesar la solicitud.",
-            icon: "error",
-            confirmButtonText: "Aceptar",
-          });
-        }
-      },
-      error: function (xhr, status, error) {
-        // Manejo de errores
-        Swal.fire({
-          title: "Error",
-          text: "Error en el servidor: " + error,
-          icon: "error",
-          confirmButtonText: "Aceptar",
-        });
-      },
-    });
-  } else {
+  // Verificar si el título está vacío
+  if (!titulo.trim()) {
     Swal.fire({
       title: "Advertencia",
-      text: "No hay información suficiente en la sesión.",
+      text: "Debe ingresar un título.",
       icon: "warning",
       confirmButtonText: "Aceptar",
     });
+    return; // Salir de la función si el título está vacío
   }
+
+  // Realizar la solicitud AJAX al servidor para guardar la solicitud
+  $.ajax({
+    url: "../ajax/usuario.php?op=solicitud",
+    type: "POST",
+    dataType: "json",
+    data: {
+      estado_id: estado_id,
+      titulo: titulo // Enviar correctamente el título
+    },
+    success: function (response) {
+      // Manejo de la respuesta
+      if (response.success) {
+        Swal.fire({
+          title: "Éxito",
+          text: "Solicitud procesada correctamente.",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response.error || "No se pudo procesar la solicitud.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
+      }
+    },
+    error: function (xhr, status, error) {
+      // Manejo de errores
+      Swal.fire({
+        title: "Error",
+        text: "Error en el servidor: " + error,
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
+  });
 }
+
 
 function guardarSeguimiento() {
   const OP = 2;
