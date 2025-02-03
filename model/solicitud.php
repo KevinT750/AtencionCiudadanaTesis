@@ -199,7 +199,8 @@ class ModeloSolicitud {
     
     
     public function estadoSolicitud($usu_id) {
-        $sql = "CALL SP_GetSolicitudesEstId($usu_id)";
+        $op = 1;
+        $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id)";
         return ejecutarConsulta($sql); 
     }
 

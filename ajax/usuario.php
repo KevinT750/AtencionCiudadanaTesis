@@ -112,6 +112,7 @@ try {
                 echo json_encode(['error' => 'No se encuentra la sesión activa']);
             }
             break;
+        
 
         case 'estadoSolicitud':
             if (isset($_SESSION['usu_id'])) {
