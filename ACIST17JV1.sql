@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `atencion_ciudadana_ist17j` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `atencion_ciudadana_ist17j`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: atencion_ciudadana_ist17j
@@ -116,7 +118,7 @@ CREATE TABLE `seguimiento` (
   KEY `est_id` (`est_id`),
   CONSTRAINT `seguimiento_ibfk_1` FOREIGN KEY (`sol_id`) REFERENCES `solicitudes` (`sol_id`) ON DELETE CASCADE,
   CONSTRAINT `seguimiento_ibfk_2` FOREIGN KEY (`est_id`) REFERENCES `solicitudes` (`est_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +127,7 @@ CREATE TABLE `seguimiento` (
 
 LOCK TABLES `seguimiento` WRITE;
 /*!40000 ALTER TABLE `seguimiento` DISABLE KEYS */;
-INSERT INTO `seguimiento` VALUES (4,163,NULL,'2025-02-02 19:52:06','Solicitud Enviada','Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.',0),(5,164,146,'2025-02-02 19:58:30','Solicitud Enviada','Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.',0);
+INSERT INTO `seguimiento` VALUES (6,165,NULL,'2025-02-02 20:19:15','Solicitud Enviada','Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.',0),(7,166,146,'2025-02-02 21:49:57','Solicitud Enviada','Su solicitud ha sido enviada correctamente. Debe esperar a que un responsable revise su solicitud para ser aprobada o rechazada. Manténgase atento.',0);
 /*!40000 ALTER TABLE `seguimiento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,7 +151,7 @@ CREATE TABLE `solicitudes` (
   KEY `idx_sol_solicitud_documento` (`sol_solicitud`,`sol_documento`),
   CONSTRAINT `solicitudes_ibfk_1` FOREIGN KEY (`est_id`) REFERENCES `estudiantes_ist17j`.`estudiante` (`est_id`) ON DELETE CASCADE,
   CONSTRAINT `solicitudes_ibfk_2` FOREIGN KEY (`estado_id`) REFERENCES `estado_solicitud` (`estado_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=167 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +160,7 @@ CREATE TABLE `solicitudes` (
 
 LOCK TABLES `solicitudes` WRITE;
 /*!40000 ALTER TABLE `solicitudes` DISABLE KEYS */;
-INSERT INTO `solicitudes` VALUES (163,146,'2025-02-02 19:52:06','1tTh6vPsUPJw-YPUdgV7VqjyEd5qMRcTl','1cFC-SSMlZzGBl_isoFkxdRvzmYLKEh7P',5),(164,146,'2025-02-02 19:58:30','1DmUBS6pA6zsdnORqRg0FqKRW68ouX0Pu','1hc82ZM64xjaCvWFr0S457VIZ7JNehQCw',5);
+INSERT INTO `solicitudes` VALUES (165,146,'2025-02-02 20:19:15','1B4zWVIo0IIWO2wX7Ehrzw6vw5BHm9LrS','11UzuTn8d-Nwm7GzWPOE-RjKoLTMV7fNO',5),(166,146,'2025-02-02 21:49:56','18m1hv6GKqoi74mXX-8rBLetpAoM76Czn','1_UicdZoMW3k7y0v5riR92XVy_Avm34uK',5);
 /*!40000 ALTER TABLE `solicitudes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,21 +383,32 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GetSolicitudesEstId`(
+    IN op INT,
     IN p_est_id INT
 )
 BEGIN
-    SELECT 
-        s.sol_id,
-        s.sol_fecha,
-        s.sol_solicitud,
-        s.sol_documento,
-        es.estado_nombre
-    FROM 
-        solicitudes s
-    INNER JOIN 
-        estado_solicitud es ON s.estado_id = es.estado_id
-    WHERE 
-        s.est_id = p_est_id;
+    IF op = 1 THEN
+        -- Obtener todas las solicitudes con detalles del estado
+        SELECT 
+            s.sol_id,
+            s.sol_fecha,
+            s.sol_solicitud,
+            s.sol_documento,
+            es.estado_nombre
+        FROM 
+            solicitudes s
+        INNER JOIN 
+            estado_solicitud es ON s.estado_id = es.estado_id
+        WHERE 
+            s.est_id = p_est_id;
+    
+    ELSEIF op = 2 THEN
+        -- Obtener solo los sol_id de las solicitudes
+        SELECT sol_id 
+        FROM solicitudes 
+        WHERE est_id = p_est_id;
+    
+    END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -549,6 +562,10 @@ BEGIN
         -- Mostrar los registros de seguimiento para el sol_id insertado
         SELECT * FROM seguimiento WHERE sol_id = p_sol_id;
     
+    ELSEIF op = 3 THEN
+        -- Seleccionar todos los registros de seguimiento para un est_id dado
+        SELECT * FROM seguimiento WHERE est_id = p_est_id;
+    
     END IF;
 END ;;
 DELIMITER ;
@@ -566,4 +583,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-02 20:08:20
+-- Dump completed on 2025-02-02 22:05:46
