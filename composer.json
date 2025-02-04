@@ -1,6 +1,7 @@
 {
     "require-dev": {
-        "pestphp/pest": "^1.23"
+        "pestphp/pest": "^1.23",
+        "phpunit/phpunit": "^9.6"
     },
     "config": {
         "allow-plugins": {
