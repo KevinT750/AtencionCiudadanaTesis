@@ -9,7 +9,7 @@ if (!isset($_SESSION['usu_nombre'])) {
 
 require 'header.php';
 
-if ($_SESSION['Seguimiento'] == 1) {
+if ($_SESSION['Escritorio'] == 1) {
 ?>
     <div class="content-wrapper">
         <section class="content">
@@ -21,10 +21,9 @@ if ($_SESSION['Seguimiento'] == 1) {
                                 <img src="../public/img/logoIST17J.jpg" width="250" height="225" alt="Frontal Image" />
                             </h1>
                         </div>
-
                         <div class="box-body">
                             <h3 class="text-center">Seguimiento de Solicitud</h3>
-                            <canvas id="seguimientoChart" width="400" height="200"></canvas>
+                            <canvas id="seguimientoChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -32,35 +31,36 @@ if ($_SESSION['Seguimiento'] == 1) {
         </section>
     </div>
 
+    <!-- Agregar Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            let sol_id = 101; // Cambia esto dinámicamente según la solicitud
+            let sol_id = 101; // Cambiar por el ID de solicitud dinámico
 
             $.getJSON(`../ajax/seguimiento.php?sol_id=${sol_id}`, function(data) {
-                let labels = [];
                 let fechas = [];
                 let acciones = [];
+                let estados = [];
 
                 data.forEach(evento => {
-                    labels.push(evento.seg_accion);
                     fechas.push(evento.seg_fecha);
-                    acciones.push(evento.seg_visto == 1 ? 1 : 0); // Visto (1) / No visto (0)
+                    acciones.push(evento.seg_accion);
+                    estados.push(evento.seg_visto == 1 ? 'Visto' : 'No visto');
                 });
 
-                const ctx = document.getElementById('seguimientoChart').getContext('2d');
+                let ctx = document.getElementById('seguimientoChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: fechas,
                         datasets: [{
-                            label: 'Seguimiento de la Solicitud',
-                            data: acciones,
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            label: 'Seguimiento de Solicitud',
+                            data: acciones.map((_, index) => index + 1), // Solo para la línea de tiempo
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderWidth: 2,
-                            fill: true
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2
                         }]
                     },
                     options: {
@@ -69,18 +69,25 @@ if ($_SESSION['Seguimiento'] == 1) {
                             tooltip: {
                                 callbacks: {
                                     label: function(tooltipItem) {
-                                        return labels[tooltipItem.dataIndex];
+                                        return acciones[tooltipItem.dataIndex] + " (" + estados[tooltipItem.dataIndex] + ")";
                                     }
                                 }
                             }
                         },
                         scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Fecha del Evento'
+                                }
+                            },
                             y: {
-                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Progreso'
+                                },
                                 ticks: {
-                                    callback: function(value) {
-                                        return value === 1 ? 'Visto' : 'No visto';
-                                    }
+                                    stepSize: 1
                                 }
                             }
                         }
@@ -89,7 +96,6 @@ if ($_SESSION['Seguimiento'] == 1) {
             });
         });
     </script>
-
 <?php
 } else {
     require 'noacceso.php';

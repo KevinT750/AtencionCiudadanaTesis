@@ -200,18 +200,39 @@ class ModeloSolicitud
 
 
     public function estadoSolicitud($usu_id)
-    {
-        $op = 1;
-        $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id)";
-        return ejecutarConsulta($sql);
+{
+    $op = 1;
+    $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
+    return ejecutarConsulta($sql);
+}
+
+public function obtIdSol($usu_id)
+{
+    $op = 2;
+    $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
+    return ejecutarConsulta($sql);
+}
+
+public function obtIdSolDoc($sol_sol, $sol_doc)
+{
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
 
-    public function obtIdSol($usu_id)
-    {
-        $op = 2;
-        $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id)";
-        return ejecutarConsulta($sql);
+    $op = 3;
+    $sql = "CALL SP_GetSolicitudesEstId($op, NULL, '$sol_sol', '$sol_doc')";
+    $result = ejecutarConsulta($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $_SESSION['sol_id'] = $row['sol_id']; // Guardar sol_id en sesión
+        $_SESSION['usu_id'] = $row['est_id']; // Guardar est_id como usu_id en sesión
+
+        return $row; // Retornar los datos obtenidos
     }
+
+    return null; // Retornar null si no se encontró la solicitud
+}
+
 
     public function Estado()
     {

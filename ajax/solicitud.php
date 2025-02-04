@@ -129,57 +129,57 @@ if (isset($_GET['op'])) {
             }
             break;
 
-            case 'InsertSeguimiento':
-                // Inicializar un array para los errores de parámetros faltantes
-                $missingParams = [];
-            
-                // Verificar si cada parámetro está presente, si no, agregarlo al array de errores
-                if (!isset($_POST['OP'])) {
-                    $missingParams[] = 'OP';
-                }
-                if (!isset($_SESSION['sol_id'])) {  // Corregido a 'sol_id'
-                    $missingParams[] = 'sol_id';
-                }
-                if (!isset($_SESSION['usu_id'])) {
-                    $missingParams[] = 'usu_id';
-                }
-                if (!isset($_POST['seg_accion'])) {
-                    $missingParams[] = 'seg_accion';
-                }
-                if (!isset($_POST['seg_comentario'])) {
-                    $missingParams[] = 'seg_comentario';
-                }
-                if (!isset($_POST['seg_visto'])) {
-                    $missingParams[] = 'seg_visto';
-                }
-            
-                // Si faltan parámetros, devolver el mensaje con los parámetros faltantes
-                if (count($missingParams) > 0) {
-                    $missingParamsStr = implode(', ', $missingParams); // Convertir el array en una cadena
-                    echo json_encode([
-                        "status" => "error",
-                        "message" => "Faltan parámetros: $missingParamsStr"
-                    ]);
+        case 'InsertSeguimiento':
+            // Inicializar un array para los errores de parámetros faltantes
+            $missingParams = [];
+
+            // Verificar si cada parámetro está presente, si no, agregarlo al array de errores
+            if (!isset($_POST['OP'])) {
+                $missingParams[] = 'OP';
+            }
+            if (!isset($_SESSION['sol_id'])) {  // Corregido a 'sol_id'
+                $missingParams[] = 'sol_id';
+            }
+            if (!isset($_SESSION['usu_id'])) {
+                $missingParams[] = 'usu_id';
+            }
+            if (!isset($_POST['seg_accion'])) {
+                $missingParams[] = 'seg_accion';
+            }
+            if (!isset($_POST['seg_comentario'])) {
+                $missingParams[] = 'seg_comentario';
+            }
+            if (!isset($_POST['seg_visto'])) {
+                $missingParams[] = 'seg_visto';
+            }
+
+            // Si faltan parámetros, devolver el mensaje con los parámetros faltantes
+            if (count($missingParams) > 0) {
+                $missingParamsStr = implode(', ', $missingParams); // Convertir el array en una cadena
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Faltan parámetros: $missingParamsStr"
+                ]);
+            } else {
+                // Si todos los parámetros están presentes, proceder con la inserción
+                $op = $_POST['OP'];
+                $sol_id = $_SESSION['sol_id'];  // Usar la clave correcta de la sesión
+                $est_id = $_SESSION['usu_id'];
+                $seg_accion = $_POST['seg_accion'];
+                $seg_comentario = $_POST['seg_comentario'];
+                $seg_visto = $_POST['seg_visto'];
+
+                // Llamar a la función de inserción
+                $rspta = $solicitud->insertSeguimiento($op, $sol_id, $est_id, $seg_accion, $seg_comentario, $seg_visto);
+
+                if ($rspta) {
+                    echo json_encode(["status" => "success", "message" => "Seguimiento insertado correctamente"]);
                 } else {
-                    // Si todos los parámetros están presentes, proceder con la inserción
-                    $op = $_POST['OP'];
-                    $sol_id = $_SESSION['sol_id'];  // Usar la clave correcta de la sesión
-                    $est_id = $_SESSION['usu_id'];
-                    $seg_accion = $_POST['seg_accion'];
-                    $seg_comentario = $_POST['seg_comentario'];
-                    $seg_visto = $_POST['seg_visto'];
-            
-                    // Llamar a la función de inserción
-                    $rspta = $solicitud->insertSeguimiento($op, $sol_id, $est_id, $seg_accion, $seg_comentario, $seg_visto);
-            
-                    if ($rspta) {
-                        echo json_encode(["status" => "success", "message" => "Seguimiento insertado correctamente"]);
-                    } else {
-                        echo json_encode(["status" => "error", "message" => "Error al insertar seguimiento"]);
-                    }
+                    echo json_encode(["status" => "error", "message" => "Error al insertar seguimiento"]);
                 }
-                break;
-            
+            }
+            break;
+
         case 'modalSecretaria':
             if (session_status() == PHP_SESSION_NONE) {
                 session_start(); // Inicia la sesión si no está activa
@@ -309,7 +309,35 @@ if (isset($_GET['op'])) {
             echo json_encode(['modalContent' => $modal]);
             break;
 
-
+            case 'idSolDoc':
+                if (isset($_POST['sol_sol']) && isset($_POST['sol_doc'])) {
+                    $sol_sol = $_POST['sol_sol'];
+                    $sol_doc = $_POST['sol_doc'];
+            
+                    $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
+            
+                    if ($sol) {
+                        $response = [
+                            "success" => true,
+                            "message" => "Sesión guardada correctamente.",
+                            "data" => $sol
+                        ];
+                    } else {
+                        $response = [
+                            "success" => false,
+                            "message" => "No se encontró la solicitud."
+                        ];
+                    }
+                } else {
+                    $response = [
+                        "success" => false,
+                        "message" => "Faltan parámetros sol_solicitud y/o sol_documento"
+                    ];
+                }
+            
+                echo json_encode($response);
+                break;
+            
 
         case 'cerrarSesion':
             unset($_SESSION['columna2']); // Destruir sesión columna2
@@ -323,20 +351,20 @@ if (isset($_GET['op'])) {
             echo 'Sesiones eliminadas correctamente';
             break;
 
-            case 'Eliminar':
-                // Verificar si los parámetros necesarios están presentes
-                if (isset($_POST['sol_solicitud']) && isset($_POST['sol_documento'])) {
-                    $sol_solicitud = $_POST['sol_solicitud'];
-                    $sol_documento = $_POST['sol_documento'];
-                    // Llamar a la función eliminarSolicitud
-                    $rspta = $solicitud->eliminarSolicitud($sol_solicitud, $sol_documento);
-    
-                    // Verificar la respuesta y retornar el resultado al cliente
-                    echo $rspta ? "Solicitud eliminada correctamente" : "No se pudo eliminar la solicitud.";
-                } else {
-                    echo "Faltan parámetros para eliminar la solicitud.";
-                }
-                break;
+        case 'Eliminar':
+            // Verificar si los parámetros necesarios están presentes
+            if (isset($_POST['sol_solicitud']) && isset($_POST['sol_documento'])) {
+                $sol_solicitud = $_POST['sol_solicitud'];
+                $sol_documento = $_POST['sol_documento'];
+                // Llamar a la función eliminarSolicitud
+                $rspta = $solicitud->eliminarSolicitud($sol_solicitud, $sol_documento);
+
+                // Verificar la respuesta y retornar el resultado al cliente
+                echo $rspta ? "Solicitud eliminada correctamente" : "No se pudo eliminar la solicitud.";
+            } else {
+                echo "Faltan parámetros para eliminar la solicitud.";
+            }
+            break;
 
         case 'modalAprobar':
             $nombre = isset($_SESSION['est_nombre']) ? $_SESSION['est_nombre'] : 'No disponible';

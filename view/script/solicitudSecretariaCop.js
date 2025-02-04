@@ -172,7 +172,7 @@ $(document).ready(function () {
                     const result = JSON.parse(response);
                     if (result.success) {
                         console.log("Estado actualizado correctamente:", result.message);
-                        $('#solicitudesSecret').DataTable().ajax.reload();
+                        obtId(columna2, columna3);
                         
                     } else {
                         console.error("Error al actualizar el estado:", result.message);
@@ -197,6 +197,89 @@ $(document).ready(function () {
     });
 
 
+    function obtId(columna2, columna3) {  // Corregido: sin '$' en los parámetros
+        if (!columna2 || !columna3) {
+            console.error("❌ Error: columna2 o columna3 no definidas.");
+            return;
+        }
+    
+        const data = {
+            sol_sol: columna2,
+            sol_doc: columna3
+        };
+    
+        $.ajax({
+            url: "../ajax/solicitud.php?op=idSolDoc",
+            type: "POST",
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                console.log("✅ Respuesta del servidor:", response);
+                guardarSeguimiento();
+            },
+            error: function (xhr, status, error) {
+                console.error("❌ Error en la solicitud AJAX:", error);
+            }
+        });
+    }
+
+    function cerrarSesion() {
+        // Realizar la solicitud AJAX para cerrar la sesión
+        $.ajax({
+          url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
+          type: "GET",
+          success: function (response) {
+            Swal.fire({
+              title: "Sesión cerrada",
+              text: response, // Mensaje que se recibe al cerrar sesión
+              icon: "success",
+              confirmButtonText: "Aceptar",
+            }).then(function () {
+              // Redirigir a la página principal o logout
+              // window.location.href = "login.php"; // O la URL que necesites
+            });
+          },
+          error: function (xhr, status, error) {
+            // Manejo de errores al intentar cerrar sesión
+            Swal.fire({
+              title: "Error",
+              text: "Error al cerrar sesión: " + error,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+            });
+          },
+        });
+      }
+    function guardarSeguimiento() {
+        // Definir los datos del seguimiento
+        const data = {
+          OP: 2, // Operación: Indica que se está registrando un seguimiento
+          seg_accion: "Solicitud Leída", // Acción registrada en el seguimiento
+          seg_visto: 0, // Estado de visualización (0: No visto, 1: Visto)
+          seg_comentario: "Su solicitud ha sido leída. Pronto recibirá respuesta sobre su aprobación. Manténgase atento."
+        };
+      
+        // Enviar los datos al servidor mediante AJAX
+        $.ajax({
+          url: "../ajax/solicitud.php?op=InsertSeguimiento", // Ruta del servicio backend
+          type: "POST",
+          dataType: "json",
+          data: data,
+          success: function (response) { // Cierra la sesión después de guardar el seguimiento
+            ('#solicitudesSecret').DataTable().ajax.reload();
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            Swal.fire({
+              title: "Error",
+              text: "No se pudo registrar el seguimiento. Inténtelo de nuevo.",
+              icon: "error",
+              confirmButtonText: "Aceptar"
+            });
+          }
+        });
+      }
+      
+
     function agregarModal(content) {
         // Limpiar cualquier modal anterior
         $('.modal, #overlay').remove();
@@ -213,6 +296,7 @@ $(document).ready(function () {
     function cerrarModal() {
         $('#solicitudesSecret').DataTable().ajax.reload();
         $('.modal, #overlay').remove();
+        cerrarSesion();
     }
 
     // Evento para manejar el modal de "Dejar un mensaje"
