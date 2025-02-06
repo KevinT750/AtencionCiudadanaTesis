@@ -100,6 +100,7 @@ $(document).ready(function () {
                     return `
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
+                            data-id="${row[8]}"
                             data-columna-2="${row[5]}" 
                             data-columna-3="${row[6]}" ${disableButton} 
                             title="${titleText}">
@@ -149,6 +150,7 @@ $(document).ready(function () {
     });
 
     $('#solicitudesSecret').on('click', '.ver-solicitud', function () {
+        cerrarSesion();
         const fileUrl = $(this).data('file-url');  // Obtener la URL del archivo
         console.log("Ver archivo con URL:", fileUrl);
     
@@ -223,21 +225,32 @@ $(document).ready(function () {
         });
     }
 
+    function obtIds() {  // Sin parámetros
+        $.ajax({
+            url: "../ajax/solicitud.php?op=idSolDoc", // Usando la operación para obtener desde la sesión
+            type: "GET", // Usando GET ya que no enviamos datos
+            dataType: "json",
+            success: function (response) {
+                console.log("✅ Respuesta del servidor:", response);
+                if (response.success) {
+                    guardarSeguimiento();  // Llamar a la función que deseas ejecutar
+                } else {
+                    console.error("❌ Error:", response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("❌ Error en la solicitud AJAX:", error);
+            }
+        });
+    }
+    
     function cerrarSesion() {
         // Realizar la solicitud AJAX para cerrar la sesión
         $.ajax({
           url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
           type: "GET",
           success: function (response) {
-            Swal.fire({
-              title: "Sesión cerrada",
-              text: response, // Mensaje que se recibe al cerrar sesión
-              icon: "success",
-              confirmButtonText: "Aceptar",
-            }).then(function () {
-              // Redirigir a la página principal o logout
-              // window.location.href = "login.php"; // O la URL que necesites
-            });
+            
           },
           error: function (xhr, status, error) {
             // Manejo de errores al intentar cerrar sesión
@@ -267,6 +280,7 @@ $(document).ready(function () {
           data: data,
           success: function (response) { // Cierra la sesión después de guardar el seguimiento
             ('#solicitudesSecret').DataTable().ajax.reload();
+            cerrarSesion();
           },
           error: function (jqXHR, textStatus, errorThrown) {
             Swal.fire({
@@ -296,7 +310,7 @@ $(document).ready(function () {
     function cerrarModal() {
         $('#solicitudesSecret').DataTable().ajax.reload();
         $('.modal, #overlay').remove();
-        cerrarSesion();
+        
     }
 
     // Evento para manejar el modal de "Dejar un mensaje"
@@ -324,6 +338,7 @@ $(document).ready(function () {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             mostrarModalAprobar();
+                            obtId(columna2, columna3);
                             cerrarModal();
                         }
                     });

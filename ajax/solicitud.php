@@ -111,7 +111,8 @@ if (isset($_GET['op'])) {
                         "4" => $reg[8], // Numero de Celular
                         "5" => strip_tags(html_entity_decode($reg[2])),
                         "6" => strip_tags(html_entity_decode($reg[3])),
-                        "7" => $reg[4] //Estado
+                        "7" => $reg[4],
+                        "8" => $reg[0] //Estado
                     );
                 }
                 // Devuelve los datos en formato JSON para DataTables
@@ -308,8 +309,41 @@ if (isset($_GET['op'])) {
                     ';
             echo json_encode(['modalContent' => $modal]);
             break;
+            case 'idSolDocs':
+                session_start(); // Iniciar sesión
+            
+                if (isset($_SESSION['sol_sol']) && isset($_SESSION['sol_doc'])) {
+                    $sol_sol = $_SESSION['sol_sol'];
+                    $sol_doc = $_SESSION['sol_doc'];
+            
+                    $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
+            
+                    if ($sol) {
+                        $response = [
+                            "success" => true,
+                            "message" => "Datos obtenidos correctamente desde la sesión.",
+                            "data" => $sol
+                        ];
+                    } else {
+                        $response = [
+                            "success" => false,
+                            "message" => "No se encontró la solicitud en la sesión."
+                        ];
+                    }
+                } else {
+                    $response = [
+                        "success" => false,
+                        "message" => "No hay datos almacenados en la sesión."
+                    ];
+                }
+            
+                echo json_encode($response);
+                break;
+            
 
             case 'idSolDoc':
+                //session_start(); // Inicia la sesión
+            
                 if (isset($_POST['sol_sol']) && isset($_POST['sol_doc'])) {
                     $sol_sol = $_POST['sol_sol'];
                     $sol_doc = $_POST['sol_doc'];
@@ -317,6 +351,10 @@ if (isset($_GET['op'])) {
                     $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
             
                     if ($sol) {
+                        // Guardar en sesión
+                        $_SESSION['sol_sol'] = $sol_sol;
+                        $_SESSION['sol_doc'] = $sol_doc;
+            
                         $response = [
                             "success" => true,
                             "message" => "Sesión guardada correctamente.",
@@ -339,6 +377,7 @@ if (isset($_GET['op'])) {
                 break;
             
 
+
         case 'cerrarSesion':
             unset($_SESSION['columna2']); // Destruir sesión columna2
             unset($_SESSION['columna3']);
@@ -348,6 +387,8 @@ if (isset($_GET['op'])) {
             unset($_SESSION['doc_ids']);
             unset($_SESSION['cedula_ids']);
             unset($_SESSION['sol_id']);
+            unset( $_SESSION['sol_sol']);
+            unset($_SESSION['sol_doc']);
             echo 'Sesiones eliminadas correctamente';
             break;
 
@@ -377,92 +418,97 @@ if (isset($_GET['op'])) {
             $correosSeleccionados = isset($_POST['correosSeleccionados']) ? $_POST['correosSeleccionados'] : [];
 
             $modal = '
-                    <div class="modal" id="modalEnviarSolicitud" tabindex="-1" aria-labelledby="modalEnviarSolicitudLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <div class="container-fluid">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="alert alert-info">
-                                                    <strong>Estudiante:</strong> <span id="nombreEstudiante"></span><br>
-                                                    <strong>' . htmlspecialchars($nombre) . '</strong>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <form id="formEnviarSolicitud" method="POST" action="">
+                        <div class="modal" id="modalEnviarSolicitud" tabindex="-1" aria-labelledby="modalEnviarSolicitudLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="container-fluid">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="motivoSolicitud">Motivo de la Solicitud</label>
-                                                        <select class="form-control" id="motivoSolicitud" name="motivoSolicitud" required>
-                                                            <option value="matricula">Matrícula</option>
-                                                            <option value="homologacion">Homologación</option>
-                                                            <option value="cambio_carrera">Cambio de Carrera</option>
-                                                        </select>
+                                                <div class="col-md-12">
+                                                    <div class="alert alert-info">
+                                                        <strong>Estudiante:</strong> <span id="nombreEstudiante"></span><br>
+                                                        <strong>' . htmlspecialchars($nombre) . '</strong>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
-                                                        <div id="correosDestinatarios">
-                                                            <div class="d-flex align-items-center mb-2">
-                                                                <select id="comboCorreos" class="form-control me-2" name="correoSeleccionado">
-                                                                    <option value="">Seleccione un correo...</option>';
-
-            // Mostrar los correos disponibles
+                                            <form id="formEnviarSolicitud" method="POST" action="">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="motivoSolicitud">Motivo de la Solicitud</label>
+                                                            <select class="form-control" id="motivoSolicitud" name="motivoSolicitud" required>
+                                                                <option value="matricula">Matrícula</option>
+                                                                <option value="homologacion">Homologación</option>
+                                                                <option value="cambio_carrera">Cambio de Carrera</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="correoDestinatarios">Seleccionar Correo(s) de Coordinador(es)</label>
+                                                            <div id="correosDestinatarios">
+                                                                <div class="d-flex align-items-center mb-2">
+                                                                    <select id="comboCorreos" class="form-control me-2" name="correoSeleccionado">
+                                                                        <option value="">Seleccione un correo...</option>';
             foreach ($correos as $correo) {
                 $selected = in_array($correo, $correosSeleccionados) ? 'disabled' : '';
                 $modal .= "<option value='$correo' $selected>$correo</option>";
             }
-
             $modal .= '
-                                                                </select>
-                                                                <button class="btn btn-success" type="button" name="agregarCorreo">+</button>
-                                                            </div>
-                                                            <div id="contenedorCorreos">';
-
-            // Mostrar los correos seleccionados (si hay)
+                                                                    </select>
+                                                                    <button class="btn btn-success" type="button" name="agregarCorreo">+</button>
+                                                                </div>
+                                                                <div id="contenedorCorreos">';
             foreach ($correosSeleccionados as $correoSeleccionado) {
                 $modal .= "<div class='d-flex align-items-center mb-2'>$correoSeleccionado 
-                                    <button type='button' class='btn btn-danger ms-2' name='eliminarCorreo' value='$correoSeleccionado'>X</button></div>";
+                                            <button type='button' class='btn btn-danger ms-2' name='eliminarCorreo' value='$correoSeleccionado'>X</button></div>";
             }
-
             $modal .= '
+                                                                </div>
+                                                                <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo ya seleccionado. Por favor, elige otro.</small>
                                                             </div>
-                                                            <small id="errorCorreo" class="form-text text-danger" style="display: none;">Correo ya seleccionado. Por favor, elige otro.</small>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="comentario">Comentario (opcional)</label>
-                                                        <textarea class="form-control" id="comentario" name="comentario" rows="4" placeholder="Deja un comentario si lo deseas..."></textarea>
+                                                <!-- Comentario para el estudiante -->
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="comentarioEstudiante">Comentario opcional para el estudiante</label>
+                                                            <textarea class="form-control" id="comentarioEstudiante" name="comentarioEstudiante" rows="3" placeholder="Añade un comentario para el estudiante..."></textarea>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12 text-center">
-                                                    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-                                                    <button type="button" class="btn btn-secondary" onclick="cerrarModalAprobar()">Cerrar</button>
+                                                <!-- Comentario para el destinatario del email -->
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="comentarioDestinatario">Comentario para el destinatario del email</label>
+                                                            <textarea class="form-control" id="comentarioDestinatario" name="comentarioDestinatario" rows="3" placeholder="Añade un comentario para el destinatario del email..."></textarea>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </form>
+                                                <div class="row">
+                                                    <div class="col-md-12 text-center">
+                                                        <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                                        <button type="button" class="btn btn-secondary" onclick="cerrarModalAprobar()">Cerrar</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <script src="../view/script/solicitudApro.js"></script>
-                    <link rel="stylesheet" href="../public/css/solicitudApro.css">
-                    ';
+                        <script src="../view/script/solicitudApro.js"></script>
+                        <link rel="stylesheet" href="../public/css/solicitudApro.css">
+                        ';
 
             echo $modal;
             break;
+
 
         case 'cambiarEstado':
             if (session_status() == PHP_SESSION_NONE) {

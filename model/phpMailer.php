@@ -10,7 +10,7 @@ require_once '../Mailer/PHPMailer/SMTP.php';
 class EmailSender {
     private $mailer;
 
-    public function __construct($host, $username, $password, $port = 587, $smtpSecure = 'tls') {
+    public function __construct($host, $username, $password, $port, $smtpSecure) {
         // Inicializar PHPMailer
         $this->mailer = new PHPMailer(true);
 
