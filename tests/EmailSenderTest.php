@@ -1,45 +1,32 @@
 <?php
-use PHPUnit\Framework\TestCase;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+require_once __DIR__ . '\model\phpMailer.php';
 
-require_once '../Mailer/EmailSender.php';
 
-class EmailSenderTest extends TestCase {
-    private $mailerMock;
-    private $emailSender;
+beforeEach(function () {
+    // Crear un mock de PHPMailer
+    $this->mailerMock = Mockery::mock(PHPMailer::class);
 
-    protected function setUp(): void {
-        // Crear un mock de PHPMailer
-        $this->mailerMock = $this->createMock(PHPMailer::class);
+    // Crear instancia de EmailSender con mock
+    $this->emailSender = Mockery::mock(EmailSender::class, ["smtp.example.com", "user@example.com", "password"])
+        ->makePartial() // Permite simular solo ciertos métodos
+        ->shouldAllowMockingProtectedMethods();
+});
 
-        // Inyectar el mock en EmailSender
-        $this->emailSender = new EmailSender("smtp.example.com", "user@example.com", "password");
-        $this->emailSender = $this->getMockBuilder(EmailSender::class)
-            ->setConstructorArgs(["smtp.example.com", "user@example.com", "password"])
-            ->onlyMethods(["sendEmail"]) // Simula solo este método
-            ->getMock();
-    }
+test('sendEmail devuelve true cuando el correo se envía correctamente', function () {
+    $this->emailSender->shouldReceive('sendEmail')
+        ->once()
+        ->andReturn(true);
 
-    public function testSendEmailSuccess() {
-        // Simular que el correo se envía correctamente
-        $this->emailSender->expects($this->once())
-            ->method('sendEmail')
-            ->willReturn(true);
+    expect($this->emailSender->sendEmail("Test Subject", "Test Body"))->toBeTrue();
+});
 
-        // Verificar que sendEmail devuelve true
-        $this->assertTrue($this->emailSender->sendEmail("Test Subject", "Test Body"));
-    }
+test('sendEmail lanza una excepción en caso de error', function () {
+    $this->emailSender->shouldReceive('sendEmail')
+        ->once()
+        ->andThrow(new Exception("Error al enviar el correo"));
 
-    public function testSendEmailFailure() {
-        // Simular un fallo en el envío del correo
-        $this->emailSender->expects($this->once())
-            ->method('sendEmail')
-            ->willThrowException(new Exception("Error al enviar el correo"));
-
-        // Verificar que se lanza la excepción esperada
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Error al enviar el correo");
-        $this->emailSender->sendEmail("Test Subject", "Test Body");
-    }
-}
+    $this->emailSender->sendEmail("Test Subject", "Test Body");
+})->throws(Exception::class, "Error al enviar el correo");
