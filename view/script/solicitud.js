@@ -144,7 +144,7 @@ function cerrarSesion() {
     type: "GET",
     success: function (response) {
       Swal.fire({
-        title: "Sesión cerrada",
+        title: "Solicitud Enviada Correctamente",
         text: response, // Mensaje que se recibe al cerrar sesión
         icon: "success",
         confirmButtonText: "Aceptar",
@@ -155,54 +155,12 @@ function cerrarSesion() {
     },
     error: function (xhr, status, error) {
       // Manejo de errores al intentar cerrar sesión
-      Swal.fire({
-        title: "Error",
-        text: "Error al cerrar sesión: " + error,
-        icon: "error",
-        confirmButtonText: "Aceptar",
-      });
+      console.error("Error al cerrar sesión:", error); // Mostrar solo en consola
     },
   });
 }
 
-/*function cargarSolicitudes() {
-    $.ajax({
-      url: "../ajax/usuario.php?op=estado",
-      type: "GET",
-      dataType: "json",
-      success: function (response) {
-        if (response.success) {
-          const solicitudes = response.solicitudes;
-          let rows = "";
-          solicitudes.forEach((solicitud) => {
-            rows += `<tr>
-                                  <td>${solicitud.sol_id}</td>
-                                  <td>${solicitud.sol_fecha}</td>
-                                  <td>
-                                      <button class="btn btn-info btn-sm" onclick="verSolicitud(${solicitud.sol_solicitud})">
-                                          <i class="fa fa-eye"></i> Ver Solicitud
-                                      </button>
-                                  </td>
-                                  <td>
-                                      <button class="btn btn-success btn-sm" onclick="verDocumento(${solicitud.sol_documento})">
-                                          <i class="fa fa-file-pdf"></i> Ver Documento
-                                      </button>
-                                  </td>
-                                  <td><span class="badge bg-${solicitud.estado_class}">${solicitud.estado_nombre}</span></td>
-                                </tr>`;
-          });
-          $("#solicitudesTable tbody").html(rows);
-        } else {
-          alert(response.error);
-        }
-      },
-      error: function () {
-        alert("Error al obtener las solicitudes");
-      },
-    });
-  }
-  
-*/
+
 $(document).ready(function () {
   enviarSolicitudFormulario(
     "formSolicitud", // El ID del formulario

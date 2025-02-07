@@ -366,7 +366,7 @@ $(document).ready(function () {
                         cancelButtonText: "Cancelar",
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            cambiarEstado('4')
+                            obtId(columna2, columna3);
                             $('#mensajeArea').show();
                             $('#mensaje').focus();
                         }
@@ -377,6 +377,8 @@ $(document).ready(function () {
                     const mensaje = $('#mensaje').val().trim();
                     if (mensaje) {
                         Swal.fire("Mensaje enviado", "El mensaje se envió correctamente.", "success");
+                        cambiarEstado('4');
+                        guardarSeguimientoR();
                     } else {
                         Swal.fire("Error", "Por favor, escribe un mensaje antes de enviar.", "error");
                     }
@@ -433,6 +435,35 @@ $(document).ready(function () {
             }
         });
     }
+    function guardarSeguimientoR() {
+        const comentarioEstudiante = $("#mensaje").val(); // Comentario del estudiante
+      
+        const data = {
+          OP: 2, // Operación: Indica que se está registrando un seguimiento
+          seg_accion: "Solicitud rechazada", // Acción registrada en el seguimiento
+          seg_visto: 0, // Estado de visualización (0: No visto, 1: Visto)
+          seg_comentario: comentarioEstudiante,
+        };
+      
+        // Enviar los datos al servidor mediante AJAX
+        $.ajax({
+          url: "../ajax/solicitud.php?op=InsertSeguimiento", // Ruta del servicio backend
+          type: "POST",
+          dataType: "json",
+          data: data,
+          success: function (response) {
+            // Cierra la sesión después de guardar el seguimiento
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            Swal.fire({
+              title: "Error",
+              text: "No se pudo registrar el seguimiento. Inténtelo de nuevo.",
+              icon: "error",
+              confirmButtonText: "Aceptar",
+            });
+          },
+        });
+      }
 
     function cambiarEstado(idEstado){
         $.ajax({
