@@ -1,123 +1,147 @@
-$(document).ready(async function (params) {
-  $("#solicitudesTable").DataTable({
-    ajax: {
-      url: "../ajax/usuario.php?op=estadoSolicitud",
-      type: "GET",
-      data: { tipo: 0 },
-      dataSrc: function (json) {
-        if (json.aaData) {
-          return json.aaData;
-        } else {
-          console.error(
-            "Error: No se encontró 'aaData' en la respuesta JSON.",
-            json
-          );
-          return [];
-        }
-      },
-      error: function (xhr, error, thrown) {
-        console.error(
-          "Error al cargar datos en DataTable:",
-          xhr,
-          error,
-          thrown
-        );
-      },
-    },
-    columns: [
-      {
-        data: 0, // Fecha
-        title: "Fecha", // Título de la columna
-      },
-      {
-        data: 1, // ID de solicitud
-        render: function (data, type, row) {
-          return `
-                    <button 
-                      class="btn btn-info btn-sm ver-solicitud" 
-                      data-file-url="https://drive.google.com/file/d/${data}/preview" 
-                      title="Ver Solicitud">
-                      <i class="fa fa-eye"></i> Ver Solicitud
-                    </button>`;
-        },
-        title: "Acción", // Título de la columna
-      },
-      {
-        data: 2, // Documento
-        render: function (data, type, row) {
-          return `
-                    <button 
-                      class="btn btn-success btn-sm ver-otro-dato" 
-                      data-file-url="https://drive.google.com/file/d/${data}/preview" 
-                      title="Ver Documento">
-                      <i class="fa fa-eye"></i> Ver Documento
-                    </button>`;
-        },
-        title: "Acción", // Título de la columna
-      },
-      {
-        data: 3, // Estado (Leído o No Leído)
-        render: function (data, type, row) {
-          let badgeClass, titleText;
-
-          // Si el estado es "No Leído", lo mostramos como "Enviado"
-          if (data === "No Leído") {
-            data = "Enviado"; // Cambiar "No Leído" a "Enviado"
+$(document).ready(function () {
+  var table = $('#solicitudesTable').DataTable({
+      "ajax": {
+          url: "../ajax/usuario.php?op=estadoSolicitud",
+          type: "GET",
+          data: { tipo: 0 }, // Cargar todas las solicitudes inicialmente
+          dataSrc: function (json) {
+              if (json.aaData) {
+                  return json.aaData;
+              } else {
+                  console.error("Error: No se encontró 'aaData' en la respuesta JSON.", json);
+                  return [];
+              }
+          },
+          error: function (xhr, error, thrown) {
+              console.error("Error al cargar datos en DataTable:", xhr, error, thrown);
           }
-
-          switch (data) {
-            case "Enviado":
-              badgeClass = "primary";
-              titleText = "Solicitud Enviada";
-              break;
-            case "Leído":
-              badgeClass = "success";
-              titleText = "Solicitud Leída";
-              break;
-            case "Aceptado":
-              badgeClass = "info";
-              titleText = "Solicitud Aceptada";
-              break;
-            case "Rechazado":
-              badgeClass = "danger";
-              titleText = "Solicitud Rechazada";
-              break;
-            default:
-              badgeClass = "secondary";
-              titleText = "Estado Desconocido";
-              break;
+      },
+      "columns": [
+          {
+              "data": 0, // Fecha
+              "title": "Fecha"
+          },
+          {
+              "data": 1, // ID de solicitud
+              "render": function (data, type, row) {
+                  return `
+                      <button class="btn btn-info btn-sm ver-solicitud" data-file-url="https://drive.google.com/file/d/${data}/preview" title="Ver Solicitud">
+                          <i class="fa fa-eye"></i> Ver Solicitud
+                      </button>`;
+              },
+              "title": "Acción"
+          },
+          {
+              "data": 2, // Documento
+              "render": function (data, type, row) {
+                  return `
+                      <button class="btn btn-success btn-sm ver-otro-dato" data-file-url="https://drive.google.com/file/d/${data}/preview" title="Ver Documento">
+                          <i class="fa fa-eye"></i> Ver Documento
+                      </button>`;
+              },
+              "title": "Acción"
+          },
+          {
+              "data": 3, // Estado
+              "render": function (data, type, row) {
+                  let badgeClass, titleText;
+                  if (data === "No Leído") data = "Enviado";
+                  switch (data) {
+                      case "Enviado":
+                          badgeClass = "primary";
+                          titleText = "Solicitud Enviada";
+                          break;
+                      case "Leído":
+                          badgeClass = "success";
+                          titleText = "Solicitud Leída";
+                          break;
+                      case "Aceptado":
+                          badgeClass = "info";
+                          titleText = "Solicitud Aceptada";
+                          break;
+                      case "Rechazado":
+                          badgeClass = "danger";
+                          titleText = "Solicitud Rechazada";
+                          break;
+                      default:
+                          badgeClass = "secondary";
+                          titleText = "Estado Desconocido";
+                          break;
+                  }
+                  return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
+              },
+              "title": "Estado"
+          },
+          {
+              "data": null, // Botón para cancelar
+              "render": function (data, type, row) {
+                  var disableButton = row[3] === "Aceptado" || row[3] === "Rechazado" ? "disabled" : "";
+                  return `
+                      <button class="btn btn-danger btn-sm cancelar-datos" data-columna-2="${row[1]}" data-columna-3="${row[2]}" ${disableButton} title="Cancelar">
+                          <i class="fa fa-trash"></i> Cancelar
+                      </button>`;
+              },
+              "title": "Acción"
           }
-
-          // Devuelve el badge con el texto y estilo correspondientes
-          return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
-        },
-        title: "Estado", // Título de la columna
+      ],
+      "dom": 'Bfrtip', // Agrega la barra de botones en la parte superior
+      "language": {
+          "search": "Buscar:",
+          "lengthMenu": "Mostrar _MENU_ registros por página",
+          "zeroRecords": "No se encontraron resultados",
+          "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+          "infoEmpty": "No hay registros disponibles",
+          "infoFiltered": "(filtrado de _MAX_ registros en total)",
       },
-
-      {
-        data: null, // Botón para cancelar
-        render: function (data, type, row) {
-          var disableButton =
-            row[3] === "Aceptado" || row[3] === "Rechazado" ? "disabled" : "";
-          return `
-                    <button 
-                      class="btn btn-danger btn-sm cancelar-datos" 
-                      data-columna-2="${row[1]}" 
-                      data-columna-3="${row[2]}" ${disableButton} 
-                      title="Cancelar">
-                      <i class="fa fa-trash"></i> Cancelar
-                    </button>`;
-        },
-        title: "Acción", // Título de la columna
-      },
-    ],
-    responsive: true, // Hacer la tabla responsiva
-    paging: true, // Habilitar paginación
-    lengthChange: false, // Deshabilitar la opción de cambiar el número de filas por página
-    info: true, // Mostrar información de la tabla
-    autoWidth: false, // Desactivar ajuste automático de ancho de las columnas
+      "pagingType": "simple_numbers",
+      "ordering": true,
+      "searching": true,
+      "responsive": true,
+      "autoWidth": false,
+      "buttons": [
+          {
+              text: '<i class="fa fa-paper-plane"></i> Enviado',
+              action: function () {
+                  table.column(3).search('Enviado').draw(); // Filtra por "Enviado"
+              },
+              className: 'btn btn-outline-primary m-1 rounded-pill shadow-sm'
+          },
+          {
+              text: '<i class="fa fa-check-circle"></i> Leído',
+              action: function () {
+                  table.column(3).search('Leído').draw(); // Filtra por "Leído"
+              },
+              className: 'btn btn-outline-success m-1 rounded-pill shadow-sm'
+          },
+          {
+              text: '<i class="fa fa-thumbs-up"></i> Aceptado',
+              action: function () {
+                  table.column(3).search('Aceptado').draw(); // Filtra por "Aceptado"
+              },
+              className: 'btn btn-outline-info m-1 rounded-pill shadow-sm'
+          },
+          {
+              text: '<i class="fa fa-times-circle"></i> Rechazado',
+              action: function () {
+                  table.column(3).search('Rechazado').draw(); // Filtra por "Rechazado"
+              },
+              className: 'btn btn-outline-danger m-1 rounded-pill shadow-sm'
+          },
+          {
+              text: '<i class="fa fa-list"></i> Todos',
+              action: function () {
+                  table.column(3).search('').draw(); // Muestra todas las solicitudes
+              },
+              className: 'btn btn-outline-secondary m-1 rounded-pill shadow-sm'
+          }
+      ],
+      "responsive": true,
+      "paging": true,
+      "lengthChange": false,
+      "info": true,
+      "autoWidth": false
   });
-
+  
   // Evento para abrir el archivo en una nueva ventana
   $("#solicitudesTable").on("click", ".ver-solicitud", function () {
     var fileUrl = $(this).data("file-url"); // Obtener la URL del archivo

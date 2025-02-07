@@ -11,28 +11,9 @@ require 'header.php';
 
 if ($_SESSION['Ver_Solicitudes'] == 1) {
 ?>
+    <link rel="stylesheet" href="../public/css/solicitudSecretaria.css">
     <style>
-        .list-group {
-            position: absolute;
-            z-index: 1000;
-            width: 100%;
-            background: white;
-            border: 1px solid #ccc;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 0;
-            margin: 0;
-            list-style-type: none;
-        }
-
-        .list-group li {
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-
-        .list-group li:hover {
-            background-color: #f0f0f0;
-        }
+       
     </style>
 
     <div class="content-wrapper">
@@ -104,6 +85,9 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
                             </h3>
                         </div>
                         <div class="card-body">
+                            <div id="filter-buttons" class="mb-3">
+                                <!-- Los botones de filtrado se insertarán aquí -->
+                            </div>
                             <div class="table-responsive">
                                 <table id="solicitudesSecret" class="table table-hover table-striped table-bordered">
                                     <thead class="table-dark">
@@ -124,6 +108,7 @@ if ($_SESSION['Ver_Solicitudes'] == 1) {
                                 </table>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

@@ -1,9 +1,10 @@
 $(document).ready(function () {
-    $('#solicitudesSecret').DataTable({
+    // Inicializamos el DataTable con los datos
+    var table = $('#solicitudesSecret').DataTable({
         "ajax": {
             url: "../ajax/solicitud.php?op=Solicitudes",
             type: "GET",
-            data: { tipo: 0 },
+            data: { tipo: 0 }, // Cargar todas las solicitudes inicialmente
             dataSrc: function (json) {
                 if (json.aaData) {
                     return json.aaData;
@@ -30,7 +31,7 @@ $(document).ready(function () {
                             class="btn btn-info btn-sm ver-solicitud" 
                             data-file-url="https://drive.google.com/file/d/${data}/preview"
                             data-columna-2="${row[5]}" 
-                            data-columna-3="${row[6]}"
+                            data-columna-3="${row[6]}" 
                             title="Ver Solicitud">
                             <i class="fa fa-eye"></i> Ver Solicitud
                         </button>`;
@@ -51,7 +52,6 @@ $(document).ready(function () {
             {
                 "data": 7,  // Estado (Enviado, Leído, Aceptado, Rechazado, No Leído)
                 "render": function (data, type, row) {
-                    // Determinar la clase de fondo y el título según el estado
                     let badgeClass, titleText;
             
                     switch (data) {
@@ -71,32 +71,21 @@ $(document).ready(function () {
                             badgeClass = "danger";
                             titleText = "Solicitud Rechazada";
                             break;
-                        case "No Leído":
-                            badgeClass = "warning";
-                            titleText = "Solicitud No Leída";
-                            break;
                         default:
                             badgeClass = "secondary";
                             titleText = "Estado Desconocido";
                             break;
                     }
             
-                    // Retornar el span con clase y título dinámico
                     return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
                 }
             },
-            
             {
-                "data": null,  // Botón que cancela datos de columnas 2 y 3
+                "data": null, 
                 "render": function (data, type, row) {
-                    // Verificar si el estado del botón requiere estar deshabilitado
-                    const estado = row[7]; // Asegúrate de que el estado esté en la columna 7
+                    const estado = row[7];
                     const disableButton = (estado !== "No Leído" && estado !== "Leído") ? 'disabled' : '';
-                    const titleText = disableButton 
-                        ? `No puede Dejar un comentario (${estado.toLowerCase()})` 
-                        : 'Dejar comentario';
-            
-                    // Retornar el botón con la condición aplicada
+                    const titleText = disableButton ? `No puede Dejar un comentario (${estado.toLowerCase()})` : 'Dejar comentario';
                     return `
                         <button 
                             class="btn btn-danger btn-sm cancelar-datos" 
@@ -108,9 +97,8 @@ $(document).ready(function () {
                         </button>`;
                 }
             }
-            
         ],
-        "dom": '<"top"f>rt<"bottom"ilp><"clear">', // Elimina los botones PDF, Print, etc.
+        "dom": 'Bfrtip', // Agrega la barra de botones en la parte superior
         "language": {
             "search": "Buscar:",
             "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -124,21 +112,45 @@ $(document).ready(function () {
         "searching": true,
         "responsive": true,
         "autoWidth": false,
+        // Agregar los botones
         "buttons": [
-            // Agregamos solo el botón de Excel con un diseño personalizado
             {
-                extend: 'excelHtml5',
-                text: '<i class="fa fa-file-excel-o"></i> Exportar a Excel', // Icono y texto
-                className: 'btn btn-success btn-sm', // Estilo con Bootstrap
-                titleAttr: 'Exportar a Excel'
+                text: '<i class="fa fa-paper-plane"></i> Enviado',
+                action: function () {
+                    table.column(7).search('Enviado').draw(); // Filtra por "Enviado"
+                },
+                className: 'btn btn-outline-primary m-1 rounded-pill shadow-sm'
+            },
+            {
+                text: '<i class="fa fa-check-circle"></i> Leído',
+                action: function () {
+                    table.column(7).search('Leído').draw(); // Filtra por "Leído"
+                },
+                className: 'btn btn-outline-success m-1 rounded-pill shadow-sm'
+            },
+            {
+                text: '<i class="fa fa-thumbs-up"></i> Aceptado',
+                action: function () {
+                    table.column(7).search('Aceptado').draw(); // Filtra por "Aceptado"
+                },
+                className: 'btn btn-outline-info m-1 rounded-pill shadow-sm'
+            },
+            {
+                text: '<i class="fa fa-times-circle"></i> Rechazado',
+                action: function () {
+                    table.column(7).search('Rechazado').draw(); // Filtra por "Rechazado"
+                },
+                className: 'btn btn-outline-danger m-1 rounded-pill shadow-sm'
+            },
+            {
+                text: '<i class="fa fa-list"></i> Todos',
+                action: function () {
+                    table.column(7).search('').draw(); // Muestra todas las solicitudes
+                },
+                className: 'btn btn-outline-secondary m-1 rounded-pill shadow-sm'
             }
-        ],
-        "initComplete": function() {
-            // Agregar clase adicional o estilo si es necesario
-            $('.dt-buttons .btn').addClass('mx-2');
-        }
+        ]
     });
-    
 
     // Evento para mostrar un mensaje emergente cuando se pase el mouse por encima de un botón
     $(document).on('mouseenter', '.btn', function () {
