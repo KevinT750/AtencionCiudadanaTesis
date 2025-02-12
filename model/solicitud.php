@@ -200,38 +200,38 @@ class ModeloSolicitud
 
 
     public function estadoSolicitud($usu_id)
-{
-    $op = 1;
-    $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
-    return ejecutarConsulta($sql);
-}
-
-public function obtIdSol($usu_id)
-{
-    $op = 2;
-    $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
-    return ejecutarConsulta($sql);
-}
-
-public function obtIdSolDoc($sol_sol, $sol_doc)
-{
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
+    {
+        $op = 1;
+        $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
+        return ejecutarConsulta($sql);
     }
 
-    $op = 3;
-    $sql = "CALL SP_GetSolicitudesEstId($op, NULL, '$sol_sol', '$sol_doc')";
-    $result = ejecutarConsulta($sql);
-
-    if ($result && $row = $result->fetch_assoc()) {
-        $_SESSION['sol_id'] = $row['sol_id']; // Guardar sol_id en sesión
-        $_SESSION['usu_id'] = $row['est_id']; // Guardar est_id como usu_id en sesión
-
-        return $row; // Retornar los datos obtenidos
+    public function obtIdSol($usu_id)
+    {
+        $op = 2;
+        $sql = "CALL SP_GetSolicitudesEstId($op, $usu_id, NULL, NULL)";
+        return ejecutarConsulta($sql);
     }
 
-    return null; // Retornar null si no se encontró la solicitud
-}
+    public function obtIdSolDoc($sol_sol, $sol_doc)
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $op = 3;
+        $sql = "CALL SP_GetSolicitudesEstId($op, NULL, '$sol_sol', '$sol_doc')";
+        $result = ejecutarConsulta($sql);
+
+        if ($result && $row = $result->fetch_assoc()) {
+            $_SESSION['sol_id'] = $row['sol_id']; // Guardar sol_id en sesión
+            $_SESSION['usu_id'] = $row['est_id']; // Guardar est_id como usu_id en sesión
+
+            return $row; // Retornar los datos obtenidos
+        }
+
+        return null; // Retornar null si no se encontró la solicitud
+    }
 
 
     public function Estado()
@@ -256,7 +256,7 @@ public function obtIdSolDoc($sol_sol, $sol_doc)
     public function insertSeguimiento($op, $sol_id, $est_id, $seg_accion, $seg_comentario, $seg_visto)
     {
         // Asegurarse de que el SQL esté bien formado
-        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id', '$est_id', '$seg_accion', '$seg_comentario', '$seg_visto')";
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id', '$est_id', '$seg_accion', '$seg_comentario', '$seg_visto', , NULL)";
         return ejecutarConsulta($sql);
     }
 
@@ -267,18 +267,27 @@ public function obtIdSolDoc($sol_sol, $sol_doc)
         return ejecutarConsulta($sql);
     }
 
-    public function obtenerSolSeg($op, $est_id){
+    public function obtenerSolSeg($op, $est_id)
+    {
         $sql = "CALL atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$op', '$est_id', NULL, NULL)";
         return ejecutarConsulta($sql);
     }
 
-    public function obteneSeg($op, $est_id, $sol_id){
-        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id','$est_id', NULL, NULL, NULL)";
+    public function obteneSeg($op, $est_id, $sol_id)
+    {
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id','$est_id', NULL, NULL, NULL, NULL)";
         return ejecutarConsulta($sql);
     }
 
-    public function obteneSegId($op, $est_id){
-        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op',  NULL,'$est_id', NULL, NULL, NULL)";
+    public function obtenerSegId($op, $est_id)
+    {
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento($op, NULL, $est_id, NULL, NULL, NULL, NULL)";
+        return ejecutarConsulta($sql);
+    }
+
+    public function cambiarVis($op, $seg_id)
+    {
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento($op, NULL, NULL, NULL, NULL, NULL, '$seg_id')";
         return ejecutarConsulta($sql);
     }
 }

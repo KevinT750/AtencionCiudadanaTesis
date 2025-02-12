@@ -1,0 +1,19 @@
+/* Estilos para las notificaciones vistas */
+.seen {
+    background-color: #d3d3d3; /* Gris claro */
+    color: #585858; /* Texto gris */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra */
+  }
+  
+  /* Estilos para las notificaciones no vistas */
+  .unseen {
+    background-color: #fff; /* Blanco */
+    color: #000; /* Texto negro */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra más intensa */
+  }
+  
+  .unseen:hover {
+    background-color: #e6f7ff; /* Color azul claro al pasar el ratón */
+    cursor: pointer;
+  }
+  

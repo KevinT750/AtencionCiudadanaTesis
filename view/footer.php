@@ -31,6 +31,8 @@
 <!-- Otros scripts -->
 <script src="script/solicitud.js"></script>
 <script src="../public/sweetalert2/dist/sweetalert2.min.js"></script>
+<!--<link rel="stylesheet" href="../public/css/notificacion.css">-->
+<script src="script/notificacion.js"></script>
 
 </body>
 </html>

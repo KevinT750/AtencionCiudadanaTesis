@@ -623,7 +623,7 @@ if (isset($_GET['op'])) {
         case 'obtenerSeg':
             $op = 4;
             $sol_id = isset($_POST['sol_id']) ? intval($_POST['sol_id']) : 0;
-            $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0; 
+            $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0;
 
             if ($sol_id > 0 || $est_id > 0) {
                 $res = $solicitud->obteneSeg($op, $est_id, $sol_id);
@@ -643,6 +643,68 @@ if (isset($_GET['op'])) {
                 echo json_encode(["error" => "Datos insuficientes para la consulta"]);
             }
             break;
+
+            case 'obtenerNotificaciones':
+                $op = 5;
+                $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0;
+            
+                if ($est_id > 0) {
+                    // Asegúrate de pasar $op y $est_id correctamente al método obtenerSegId
+                    $res = $solicitud->obtenerSegId($op, $est_id);
+            
+                    if (!$res) {
+                        echo json_encode(["error" => "No se pudieron obtener las notificaciones"]);
+                        exit;
+                    }
+            
+                    $notificaciones = [];
+                    $contadorNoVistas = 0; // Variable para contar las notificaciones no vistas
+            
+                    while ($row = $res->fetch_assoc()) {
+                        // Añadir notificación a la lista
+                        $notificaciones[] = [
+                            "id" => $row["seg_id"],
+                            "accion" => $row["seg_accion"],
+                            "comentario" => $row["seg_comentario"],
+                            "fecha" => $row["seg_fecha"],
+                            "visto" => $row["seg_visto"]
+                        ];
+            
+                        // Contar las notificaciones que no han sido vistas
+                        if ($row["seg_visto"] == 0) {
+                            $contadorNoVistas++;
+                        }
+                    }
+            
+                    // Devolver las notificaciones y el contador de las no vistas
+                    echo json_encode([
+                        "notificaciones" => $notificaciones,
+                        "contadorNoVistas" => $contadorNoVistas
+                    ]);
+                } else {
+                    echo json_encode(["error" => "Datos insuficientes para la consulta"]);
+                }
+                break;
+            
+
+        case 'cambiarVis':
+            if (isset($_POST['seg_id'])) {
+                $seg_id = $_POST['seg_id']; // Obtener el seg_id desde el POST
+
+                // Llamar a la función del modelo para actualizar el seg_visto
+                $resultado = $solicitud->cambiarVis(6, $seg_id);
+
+                // Verificar el resultado y responder
+                if ($resultado) {
+                    echo json_encode(['success' => true, 'message' => 'Estado de visto actualizado correctamente']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Error al actualizar el estado de visto']);
+                }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Falta el seg_id']);
+            }
+            break;
+
 
             // Agregar otros casos si es necesario
         default:

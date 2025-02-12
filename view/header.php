@@ -73,30 +73,16 @@ foreach ($permisos as $permiso) {
                             <li class="dropdown notifications-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-bell-o"></i>
-                                    <span class="label label-warning">3</span>
+                                    <span id="notificacion-count" class="label label-warning">0</span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li class="header">Tienes 3 notificaciones</li>
+                                    <li class="header">Tienes <span id="notificacion-text">0</span> notificaciones</li>
                                     <li>
-                                        <ul class="menu">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-users text-aqua"></i> Nueva evidencia asignada
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-warning text-yellow"></i> Evidencia próxima a vencer
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-check text-green"></i> Evidencia aprobada
-                                                </a>
-                                            </li>
+                                        <ul class="menu" id="notificacion-list" style="max-height: 300px; overflow-y: auto;">
+                                            <!-- Aquí se insertan dinámicamente las notificaciones -->
                                         </ul>
                                     </li>
-                                    <li class="footer"><a href="#">Ver todas</a></li>
+                                    <li class="footer"><a href="seguimiento.php">Ver todas</a></li>
                                 </ul>
                             </li>
                         <?php endif; ?>
