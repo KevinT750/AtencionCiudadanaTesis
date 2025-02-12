@@ -290,4 +290,10 @@ class ModeloSolicitud
         $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento($op, NULL, NULL, NULL, NULL, NULL, '$seg_id')";
         return ejecutarConsulta($sql);
     }
+
+    public function obtSolId($sol_id, $est_id){
+        $op=5;
+        $sql = "CALL atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$op', '$est_id', '$sol_id', NULL)";
+        return ejecutarConsulta($sql);
+    }
 }

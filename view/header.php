@@ -158,12 +158,10 @@ foreach ($permisos as $permiso) {
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="solicitudSecretaria.php">Ver Solicitudes</a></li>
-                                <li><a href="SubirSolicitud.php">Subir Solicitudes</a></li>
-                                <li><a href="gestionSolicitudes.php">Gestión de Solicitudes</a></li>
                             </ul>
                         </li>
 
-                        <li class="treeview">
+                        <!--<li class="treeview">
                             <a href="#">
                                 <i class="fa fa-folder"></i> <span>Reporte</span>
                                 <span class="pull-right-container">
@@ -173,7 +171,7 @@ foreach ($permisos as $permiso) {
                             <ul class="treeview-menu">
                                 <li><a href="generarReporte.php">Generar Reporte</a></li>
                             </ul>
-                        </li>
+                        </li>-->
                     <?php endif; ?>
 
                 </ul>

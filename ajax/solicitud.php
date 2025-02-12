@@ -598,6 +598,7 @@ if (isset($_GET['op'])) {
                 ]);
             }
             break;
+
         case 'obSolSeg':
             $op = 4;
             $est_id = isset($_SESSION['usu_id']) ? $_SESSION['usu_id'] : 0; // Validación de sesión
@@ -620,6 +621,7 @@ if (isset($_GET['op'])) {
                 echo json_encode(["error" => "Usuario no autenticado"]);
             }
             break;
+
         case 'obtenerSeg':
             $op = 4;
             $sol_id = isset($_POST['sol_id']) ? intval($_POST['sol_id']) : 0;
@@ -644,48 +646,49 @@ if (isset($_GET['op'])) {
             }
             break;
 
-            case 'obtenerNotificaciones':
-                $op = 5;
-                $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0;
-            
-                if ($est_id > 0) {
-                    // Asegúrate de pasar $op y $est_id correctamente al método obtenerSegId
-                    $res = $solicitud->obtenerSegId($op, $est_id);
-            
-                    if (!$res) {
-                        echo json_encode(["error" => "No se pudieron obtener las notificaciones"]);
-                        exit;
-                    }
-            
-                    $notificaciones = [];
-                    $contadorNoVistas = 0; // Variable para contar las notificaciones no vistas
-            
-                    while ($row = $res->fetch_assoc()) {
-                        // Añadir notificación a la lista
-                        $notificaciones[] = [
-                            "id" => $row["seg_id"],
-                            "accion" => $row["seg_accion"],
-                            "comentario" => $row["seg_comentario"],
-                            "fecha" => $row["seg_fecha"],
-                            "visto" => $row["seg_visto"]
-                        ];
-            
-                        // Contar las notificaciones que no han sido vistas
-                        if ($row["seg_visto"] == 0) {
-                            $contadorNoVistas++;
-                        }
-                    }
-            
-                    // Devolver las notificaciones y el contador de las no vistas
-                    echo json_encode([
-                        "notificaciones" => $notificaciones,
-                        "contadorNoVistas" => $contadorNoVistas
-                    ]);
-                } else {
-                    echo json_encode(["error" => "Datos insuficientes para la consulta"]);
+        case 'obtenerNotificaciones':
+            $op = 5;
+            $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0;
+
+            if ($est_id > 0) {
+                // Asegúrate de pasar $op y $est_id correctamente al método obtenerSegId
+                $res = $solicitud->obtenerSegId($op, $est_id);
+
+                if (!$res) {
+                    echo json_encode(["error" => "No se pudieron obtener las notificaciones"]);
+                    exit;
                 }
-                break;
-            
+
+                $notificaciones = [];
+                $contadorNoVistas = 0; // Variable para contar las notificaciones no vistas
+
+                while ($row = $res->fetch_assoc()) {
+                    // Añadir notificación a la lista
+                    $notificaciones[] = [
+                        "id" => $row["seg_id"],
+                        "solicitud" => $row["sol_id"],
+                        "accion" => $row["seg_accion"],
+                        "comentario" => $row["seg_comentario"],
+                        "fecha" => $row["seg_fecha"],
+                        "visto" => $row["seg_visto"]
+                    ];
+
+                    // Contar las notificaciones que no han sido vistas
+                    if ($row["seg_visto"] == 0) {
+                        $contadorNoVistas++;
+                    }
+                }
+
+                // Devolver las notificaciones y el contador de las no vistas
+                echo json_encode([
+                    "notificaciones" => $notificaciones,
+                    "contadorNoVistas" => $contadorNoVistas
+                ]);
+            } else {
+                echo json_encode(["error" => "Datos insuficientes para la consulta"]);
+            }
+            break;
+
 
         case 'cambiarVis':
             if (isset($_POST['seg_id'])) {
@@ -702,6 +705,30 @@ if (isset($_GET['op'])) {
                 }
             } else {
                 echo json_encode(['success' => false, 'message' => 'Falta el seg_id']);
+            }
+            break;
+
+        case 'obSolSegEst':
+            // Obtener sol_id desde la URL
+            $sol_id = isset($_GET['sol_id']) ? $_GET['sol_id'] : null;
+            $est_id = isset($_SESSION['usu_id']) ? $_SESSION['usu_id'] : 0;
+
+            if ($est_id > 0 && $sol_id) {
+                $res = $solicitud->obtSolId($sol_id, $est_id);
+
+                if (!$res) {
+                    echo json_encode(["error" => "Error al ejecutar la consulta"]);
+                    exit;
+                }
+
+                $data = [];
+                while ($row = $res->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                echo json_encode($data);
+            } else {
+                echo json_encode(["error" => "Usuario no autenticado o sol_id no proporcionado"]);
             }
             break;
 
