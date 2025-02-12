@@ -2,22 +2,22 @@
 if (strlen(session_id()) < 1)
     session_start();
 
-    $permisos = [
-        'Escritorio', 
-        'Descargar', 
-        'Solicitud', 
-        'Atencion', 
-        'Estado', 
-        'Seguimiento', 
-        'Aprobadas', 
-        'Ver_Solicitudes', 
-        'Subir_Solicitud', 
-        'Gestion', 
-        'Reporte',
-        'Estudiante', 
-        'Secretaria'
-    ];
-    
+$permisos = [
+    'Escritorio',
+    'Descargar',
+    'Solicitud',
+    'Atencion',
+    'Estado',
+    'Seguimiento',
+    'Aprobadas',
+    'Ver_Solicitudes',
+    'Subir_Solicitud',
+    'Gestion',
+    'Reporte',
+    'Estudiante',
+    'Secretaria'
+];
+
 foreach ($permisos as $permiso) {
     if (!isset($_SESSION[$permiso])) {
         $_SESSION[$permiso] = 1;
@@ -42,6 +42,7 @@ foreach ($permisos as $permiso) {
     <link rel="stylesheet" href="../public/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="../public/css/daterangepicker.css">
     <link href="../public/datatables/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="../public/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/model.css">
 
 
@@ -67,36 +68,38 @@ foreach ($permisos as $permiso) {
                 </a>
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
-                        <!-- NOTIFICACIONES -->
-                        <li class="dropdown notifications-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-bell-o"></i>
-                                <span class="label label-warning">3</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="header">Tienes 3 notificaciones</li>
-                                <li>
-                                    <ul class="menu">
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-users text-aqua"></i> Nueva evidencia asignada
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-warning text-yellow"></i> Evidencia próxima a vencer
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-check text-green"></i> Evidencia aprobada
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="footer"><a href="#">Ver todas</a></li>
-                            </ul>
-                        </li>
+                        <!-- NOTIFICACIONES (Solo para estudiantes) -->
+                        <?php if (strtoupper($_SESSION['Rol']) === 'ESTUDIANTE' && $_SESSION['Estudiante'] == 1): ?>
+                            <li class="dropdown notifications-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-bell-o"></i>
+                                    <span class="label label-warning">3</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">Tienes 3 notificaciones</li>
+                                    <li>
+                                        <ul class="menu">
+                                            <li>
+                                                <a href="#">
+                                                    <i class="fa fa-users text-aqua"></i> Nueva evidencia asignada
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="fa fa-warning text-yellow"></i> Evidencia próxima a vencer
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="fa fa-check text-green"></i> Evidencia aprobada
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="footer"><a href="#">Ver todas</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
 
                         <!-- MENÚ DEL USUARIO -->
                         <li class="dropdown user user-menu">
@@ -137,12 +140,12 @@ foreach ($permisos as $permiso) {
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                
+
                                 <li><a href="solicitudEstudiante.php">Solicitud de Estudiante</a></li>
                                 <li><a href="atencionCiudadana.php">Atención Ciudadana</a></li>
                             </ul>
                         </li>
-                        
+
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-folder"></i> <span>Mis Solicitudes</span>
@@ -151,9 +154,9 @@ foreach ($permisos as $permiso) {
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                
+
                                 <li><a href="solicitudEstado.php">Solicitudes</a></li>
-                                <li><a href="seguimiento.php">Sehuimiento de Solicitudes</a></li>
+                                <li><a href="seguimiento.php">Seguimiento de Solicitudes</a></li>
                             </ul>
                         </li>
                     <?php endif; ?>
@@ -173,7 +176,7 @@ foreach ($permisos as $permiso) {
                                 <li><a href="gestionSolicitudes.php">Gestión de Solicitudes</a></li>
                             </ul>
                         </li>
-                        
+
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-folder"></i> <span>Reporte</span>

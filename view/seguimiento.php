@@ -9,21 +9,21 @@ if (!isset($_SESSION['usu_nombre'])) {
 
 require 'header.php';
 
-if ($_SESSION['Escritorio'] == 1) {
+if ($_SESSION['Seguimiento'] == 1) {
 ?>
     <div class="content-wrapper">
         <section class="content">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="box">
-                        <div class="box-header with-border text-center">
-                            <h1 class="box-title">
-                                <img src="../public/img/logoIST17J.jpg" width="250" height="225" alt="Frontal Image" />
-                            </h1>
-                        </div>
-                        <div class="box-body">
-                            <h3 class="text-center">Seguimiento de Solicitud</h3>
-                            <canvas id="seguimientoChart"></canvas>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-header text-center bg-gradient-primary text-white">
+                                <h2 class="mb-0"><i class="fa fa-tasks"></i> Mis Solicitudes</h2>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="text-center text-secondary">Seguimiento de Solicitud</h4>
+                                <ul id="listaSolicitudes" class="list-group list-group-flush mt-3"></ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -31,76 +31,60 @@ if ($_SESSION['Escritorio'] == 1) {
         </section>
     </div>
 
-    <!-- Agregar Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, rgb(68, 150, 237), #0056b3);
+        }
 
-    <script>
-        $(document).ready(function() {
-            let sol_id = 101; // Cambiar por el ID de solicitud dinámico
+        .solicitud-item {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
 
-            $.getJSON(`../ajax/seguimiento.php?sol_id=${sol_id}`, function(data) {
-                let fechas = [];
-                let acciones = [];
-                let estados = [];
+        .solicitud-item:hover {
+            transform: scale(1.02);
+        }
 
-                data.forEach(evento => {
-                    fechas.push(evento.seg_fecha);
-                    acciones.push(evento.seg_accion);
-                    estados.push(evento.seg_visto == 1 ? 'Visto' : 'No visto');
-                });
+        .seguimiento {
+            display: none;
+            transition: all 0.3s ease-in-out;
+        }
 
-                let ctx = document.getElementById('seguimientoChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: fechas,
-                        datasets: [{
-                            label: 'Seguimiento de Solicitud',
-                            data: acciones.map((_, index) => index + 1), // Solo para la línea de tiempo
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return acciones[tooltipItem.dataIndex] + " (" + estados[tooltipItem.dataIndex] + ")";
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Fecha del Evento'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Progreso'
-                                },
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-        });
-    </script>
+        .solicitud-enviada {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00acc1;
+        }
+
+        .solicitud-leida {
+            background-color: #fff3e0;
+            border-left: 5px solid #ffb74d;
+        }
+
+        .solicitud-aprobada {
+            background-color: #dcedc8;
+            border-left: 5px solid #388e3c;
+        }
+
+        .solicitud-rechazada {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+
+        .icono {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+    </style>
+
 <?php
 } else {
     require 'noacceso.php';
 }
 
 require 'footer.php';
+?>
+<script src="script/seguimiento.js"></script>
+<?php
 ob_end_flush();
 ?>

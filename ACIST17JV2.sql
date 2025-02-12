@@ -116,9 +116,14 @@ CREATE TABLE `seguimiento` (
   PRIMARY KEY (`seg_id`),
   KEY `sol_id` (`sol_id`),
   KEY `est_id` (`est_id`),
-  CONSTRAINT `seguimiento_ibfk_1` FOREIGN KEY (`sol_id`) REFERENCES `solicitudes` (`sol_id`) ON DELETE CASCADE,
-  CONSTRAINT `seguimiento_ibfk_2` FOREIGN KEY (`est_id`) REFERENCES `solicitudes` (`est_id`) ON DELETE SET NULL
+  CONSTRAINT `seguimiento_ibfk_1` 
+    FOREIGN KEY (`sol_id`) REFERENCES `solicitudes` (`sol_id`) 
+    ON DELETE CASCADE,
+  CONSTRAINT `seguimiento_ibfk_2` 
+    FOREIGN KEY (`est_id`) REFERENCES `estudiantes_ist17j`.`estudiante` (`est_id`) 
+    ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

@@ -143,7 +143,7 @@ function cerrarSesion() {
     url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
     type: "GET",
     success: function (response) {
-      Swal.fire({
+      /*Swal.fire({
         title: "Solicitud Enviada Correctamente",
         text: response, // Mensaje que se recibe al cerrar sesión
         icon: "success",
@@ -151,7 +151,7 @@ function cerrarSesion() {
       }).then(function () {
         // Redirigir a la página principal o logout
         // window.location.href = "login.php"; // O la URL que necesites
-      });
+      });*/
     },
     error: function (xhr, status, error) {
       // Manejo de errores al intentar cerrar sesión

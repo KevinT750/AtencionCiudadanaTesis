@@ -266,4 +266,19 @@ public function obtIdSolDoc($sol_sol, $sol_doc)
         $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id')";
         return ejecutarConsulta($sql);
     }
+
+    public function obtenerSolSeg($op, $est_id){
+        $sql = "CALL atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$op', '$est_id', NULL, NULL)";
+        return ejecutarConsulta($sql);
+    }
+
+    public function obteneSeg($op, $est_id, $sol_id){
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id','$est_id', NULL, NULL, NULL)";
+        return ejecutarConsulta($sql);
+    }
+
+    public function obteneSegId($op, $est_id){
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op',  NULL,'$est_id', NULL, NULL, NULL)";
+        return ejecutarConsulta($sql);
+    }
 }

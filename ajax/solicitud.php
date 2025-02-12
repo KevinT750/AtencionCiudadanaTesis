@@ -309,73 +309,73 @@ if (isset($_GET['op'])) {
                     ';
             echo json_encode(['modalContent' => $modal]);
             break;
-            case 'idSolDocs':
-                session_start(); // Iniciar sesión
-            
-                if (isset($_SESSION['sol_sol']) && isset($_SESSION['sol_doc'])) {
-                    $sol_sol = $_SESSION['sol_sol'];
-                    $sol_doc = $_SESSION['sol_doc'];
-            
-                    $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
-            
-                    if ($sol) {
-                        $response = [
-                            "success" => true,
-                            "message" => "Datos obtenidos correctamente desde la sesión.",
-                            "data" => $sol
-                        ];
-                    } else {
-                        $response = [
-                            "success" => false,
-                            "message" => "No se encontró la solicitud en la sesión."
-                        ];
-                    }
-                } else {
-                    $response = [
-                        "success" => false,
-                        "message" => "No hay datos almacenados en la sesión."
-                    ];
-                }
-            
-                echo json_encode($response);
-                break;
-            
+        case 'idSolDocs':
+            session_start(); // Iniciar sesión
 
-            case 'idSolDoc':
-                //session_start(); // Inicia la sesión
-            
-                if (isset($_POST['sol_sol']) && isset($_POST['sol_doc'])) {
-                    $sol_sol = $_POST['sol_sol'];
-                    $sol_doc = $_POST['sol_doc'];
-            
-                    $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
-            
-                    if ($sol) {
-                        // Guardar en sesión
-                        $_SESSION['sol_sol'] = $sol_sol;
-                        $_SESSION['sol_doc'] = $sol_doc;
-            
-                        $response = [
-                            "success" => true,
-                            "message" => "Sesión guardada correctamente.",
-                            "data" => $sol
-                        ];
-                    } else {
-                        $response = [
-                            "success" => false,
-                            "message" => "No se encontró la solicitud."
-                        ];
-                    }
+            if (isset($_SESSION['sol_sol']) && isset($_SESSION['sol_doc'])) {
+                $sol_sol = $_SESSION['sol_sol'];
+                $sol_doc = $_SESSION['sol_doc'];
+
+                $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
+
+                if ($sol) {
+                    $response = [
+                        "success" => true,
+                        "message" => "Datos obtenidos correctamente desde la sesión.",
+                        "data" => $sol
+                    ];
                 } else {
                     $response = [
                         "success" => false,
-                        "message" => "Faltan parámetros sol_solicitud y/o sol_documento"
+                        "message" => "No se encontró la solicitud en la sesión."
                     ];
                 }
-            
-                echo json_encode($response);
-                break;
-            
+            } else {
+                $response = [
+                    "success" => false,
+                    "message" => "No hay datos almacenados en la sesión."
+                ];
+            }
+
+            echo json_encode($response);
+            break;
+
+
+        case 'idSolDoc':
+            //session_start(); // Inicia la sesión
+
+            if (isset($_POST['sol_sol']) && isset($_POST['sol_doc'])) {
+                $sol_sol = $_POST['sol_sol'];
+                $sol_doc = $_POST['sol_doc'];
+
+                $sol = $solicitud->obtIdSolDoc($sol_sol, $sol_doc);
+
+                if ($sol) {
+                    // Guardar en sesión
+                    $_SESSION['sol_sol'] = $sol_sol;
+                    $_SESSION['sol_doc'] = $sol_doc;
+
+                    $response = [
+                        "success" => true,
+                        "message" => "Sesión guardada correctamente.",
+                        "data" => $sol
+                    ];
+                } else {
+                    $response = [
+                        "success" => false,
+                        "message" => "No se encontró la solicitud."
+                    ];
+                }
+            } else {
+                $response = [
+                    "success" => false,
+                    "message" => "Faltan parámetros sol_solicitud y/o sol_documento"
+                ];
+            }
+
+            echo json_encode($response);
+            break;
+
 
 
         case 'cerrarSesion':
@@ -387,7 +387,7 @@ if (isset($_GET['op'])) {
             unset($_SESSION['doc_ids']);
             unset($_SESSION['cedula_ids']);
             unset($_SESSION['sol_id']);
-            unset( $_SESSION['sol_sol']);
+            unset($_SESSION['sol_sol']);
             unset($_SESSION['sol_doc']);
             echo 'Sesiones eliminadas correctamente';
             break;
@@ -598,7 +598,51 @@ if (isset($_GET['op'])) {
                 ]);
             }
             break;
+        case 'obSolSeg':
+            $op = 4;
+            $est_id = isset($_SESSION['usu_id']) ? $_SESSION['usu_id'] : 0; // Validación de sesión
 
+            if ($est_id > 0) {
+                $res = $solicitud->obtenerSolSeg($op, $est_id);
+
+                if (!$res) {
+                    echo json_encode(["error" => "Error al ejecutar la consulta"]);
+                    exit;
+                }
+
+                $data = [];
+                while ($row = $res->fetch_assoc()) { // Si `ejecutarConsulta` devuelve un objeto mysqli_result
+                    $data[] = $row;
+                }
+
+                echo json_encode($data); // Enviar respuesta como JSON
+            } else {
+                echo json_encode(["error" => "Usuario no autenticado"]);
+            }
+            break;
+        case 'obtenerSeg':
+            $op = 4;
+            $sol_id = isset($_POST['sol_id']) ? intval($_POST['sol_id']) : 0;
+            $est_id = isset($_SESSION['usu_id']) ? intval($_SESSION['usu_id']) : 0; 
+
+            if ($sol_id > 0 || $est_id > 0) {
+                $res = $solicitud->obteneSeg($op, $est_id, $sol_id);
+
+                if (!$res) {
+                    echo json_encode(["error" => "No se pudo ejecutar la consulta"]);
+                    exit;
+                }
+
+                $data = [];
+                while ($row = $res->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                echo json_encode($data); // Respuesta en JSON
+            } else {
+                echo json_encode(["error" => "Datos insuficientes para la consulta"]);
+            }
+            break;
 
             // Agregar otros casos si es necesario
         default:
