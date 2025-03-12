@@ -590,3 +590,75 @@ DELIMITER ;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-02-02 22:35:55
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_GetSolicitudesEstId`(
+  IN op INT,
+    IN p_est_id INT,
+    IN p_sol_solicitud VARCHAR(255),
+    IN p_sol_documento VARCHAR(255)
+)
+BEGIN
+    IF op = 1 THEN
+        -- Obtener todas las solicitudes con detalles del estado por ID de estudiante
+        SELECT 
+            s.sol_id,
+            s.sol_fecha,
+            s.sol_solicitud,
+            s.sol_documento,
+            es.estado_nombre
+        FROM 
+            solicitudes s
+        INNER JOIN 
+            estado_solicitud es ON s.estado_id = es.estado_id
+        WHERE 
+            s.est_id = p_est_id;
+    
+    ELSEIF op = 2 THEN
+        -- Obtener solo los sol_id de las solicitudes por ID de estudiante
+        SELECT sol_id 
+        FROM solicitudes 
+        WHERE est_id = p_est_id;
+
+    ELSEIF op = 3 THEN
+        -- Obtener todos los datos de una solicitud por sol_solicitud y sol_documento
+        SELECT 
+            s.sol_id,
+            s.est_id,
+            s.sol_fecha,
+            s.sol_solicitud,
+            s.sol_documento,
+            s.estado_id,
+            s.titulo,
+            es.estado_nombre
+        FROM 
+            solicitudes s
+        INNER JOIN 
+            estado_solicitud es ON s.estado_id = es.estado_id
+        WHERE 
+            s.sol_solicitud = p_sol_solicitud 
+            AND s.sol_documento = p_sol_documento;
+    ELSEIF op = 4 THEN
+    -- Obtener ID y título de cada solicitud según el est_id, excluyendo los títulos con "Documento Subido"
+    SELECT 
+        sol_id, 
+        titulo,
+        sol_fecha 
+    FROM 
+        solicitudes 
+    WHERE 
+        est_id = p_est_id
+        AND titulo != 'Documento Subido'  -- Condición para excluir "Documento Subido"
+    ORDER BY 
+        sol_fecha DESC;
+
+	 ELSEIF op = 5 THEN
+        -- Obtener título y fecha de una solicitud por sol_id y est_id
+        SELECT 
+            titulo,
+            sol_fecha
+        FROM 
+            solicitudes 
+        WHERE 
+            sol_id = CAST(p_sol_solicitud AS UNSIGNED) -- Corrección aquí
+            AND est_id = p_est_id;
+    END IF;
+END

@@ -5,13 +5,15 @@ $(document).ready(function () {
           type: "GET",
           data: { tipo: 0 }, // Cargar todas las solicitudes inicialmente
           dataSrc: function (json) {
-              if (json.aaData) {
-                  return json.aaData;
-              } else {
-                  console.error("Error: No se encontró 'aaData' en la respuesta JSON.", json);
-                  return [];
-              }
-          },
+            if (json.aaData) {
+                // Filtrar las solicitudes que no tengan el estado "Documentos subidos"
+                let filteredData = json.aaData.filter(row => row[3] !== "Documentos subidos");
+                return filteredData;
+            } else {
+                console.error("Error: No se encontró 'aaData' en la respuesta JSON.", json);
+                return [];
+            }
+        },
           error: function (xhr, error, thrown) {
               console.error("Error al cargar datos en DataTable:", xhr, error, thrown);
           }

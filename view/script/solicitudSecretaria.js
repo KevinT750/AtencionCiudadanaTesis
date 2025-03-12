@@ -97,7 +97,6 @@ $(document).ready(function () {
         }
     });
 
-    // Función para guardar la solicitud en la base de datos
     function guardarSolicitud() {
         // Verificar si las sesiones están configuradas (simulación en el lado del cliente)
         if (
@@ -162,35 +161,8 @@ $(document).ready(function () {
                 icon: "warning",
                 confirmButtonText: "Aceptar",
             });
-        }}
-
-        function cerrarSesion() {
-            // Realizar la solicitud AJAX para cerrar la sesión
-            $.ajax({
-              url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
-              type: "GET",
-              success: function(response) {
-                Swal.fire({
-                  title: "Sesión cerrada",
-                  text: response, // Mensaje que se recibe al cerrar sesión
-                  icon: "success",
-                  confirmButtonText: "Aceptar",
-                }).then(function() {
-                  // Redirigir a la página principal o logout
-                  //window.location.href = "login.php"; // O la URL que necesites
-                });
-              },
-              error: function(xhr, status, error) {
-                // Manejo de errores al intentar cerrar sesión
-                Swal.fire({
-                  title: "Error",
-                  text: "Error al cerrar sesión: " + error,
-                  icon: "error",
-                  confirmButtonText: "Aceptar",
-                });
-              }
-            });
-          }
+        }
+    }
 
     // Función para enviar la solicitud con archivos a Google Drive o similar
     function enviarSolicitud(event) {
@@ -222,8 +194,12 @@ $(document).ready(function () {
                     alert('Solicitud enviada correctamente');
                     // Realiza las acciones necesarias si la solicitud fue exitosa, por ejemplo, limpiar el formulario
                     document.getElementById('formSubirSolicitud').reset();
+                    // Llamar a guardarSolicitud después de que se haya enviado correctamente
+                    guardarSolicitud();
                 } else {
                     alert('Error al enviar la solicitud: ' + data.error);
+                    document.getElementById('formSubirSolicitud').reset();
+                    guardarSolicitud();
                 }
             },
             error: function (xhr, status, error) {
@@ -235,8 +211,6 @@ $(document).ready(function () {
 
     // Asignar el evento 'submit' al formulario para llamar a la función enviarSolicitud
     document.getElementById('formSubirSolicitud').addEventListener('submit', function (e) {
-        enviarSolicitud(e);
-        guardarSolicitud();
+        enviarSolicitud(e);  // Primero enviar la solicitud
     });
-
 });

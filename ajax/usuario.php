@@ -114,6 +114,30 @@ try {
                 echo json_encode(['error' => 'No se encuentra la sesión activa']);
             }
             break;
+        case 'ObtenerE':
+            if (isset($_SESSION['usu_id'])) {
+                $est_id = $_SESSION['usu_id'];
+                $rspta = $usuario->datosE($est_id);
+
+                if ($rspta) {
+                    // Enviar solo los datos necesarios, no toda la sesión
+                    $response = [
+                        'status' => 'success',
+                        'data' => [
+                            'cedula' => $_SESSION['cedula'] ?? 'No disponible',
+                            'correo' => $_SESSION['correo'] ?? 'No disponible',
+                        ]
+                    ];
+                    echo json_encode($response);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'No se encontraron datos']);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Sesión no iniciada']);
+            }
+            break;
+
+
 
         case 'estadoSolicitud':
             if (isset($_SESSION['usu_id'])) {

@@ -163,7 +163,8 @@ class Usuario
 
     public function datosEst($sol_solicitud, $sol_documento)
     {
-        $sql = "call atencion_ciudadana_ist17j.obtener_datos_estudiante('$sol_solicitud', '$sol_documento');";
+        $op = 1;
+        $sql = "call atencion_ciudadana_ist17j.obtener_datos_estudiante('$op', NULL,'$sol_solicitud', '$sol_documento');";
         $resultado = ejecutarConsulta($sql);
 
         // Verifica si hay resultados
@@ -174,6 +175,22 @@ class Usuario
 
         return null; // Retorna null si no se encuentra el estudiante
     }
+
+    public function datosE($est_id)
+    {
+        $op = 2;
+        $sql = "CALL atencion_ciudadana_ist17j.obtener_datos_estudiante('$op', '$est_id', 'NULL', 'NULL')";
+        $resultado = ejecutarConsulta($sql);
+
+        if ($resultado && $resultado->num_rows > 0) {
+            $reg = $resultado->fetch_assoc();
+            $_SESSION['cedula'] = $reg['est_cedula'] ?? 'No disponible';
+            $_SESSION['correo'] = $reg['est_correoInstitucional'] ?? 'No disponible';
+            return true;
+        }
+        return false;
+    }
+
 
     public function idEstudiante($tipo, $valor)
     {

@@ -114,6 +114,10 @@ class ModeloSolicitud
         }
         $servicioDrive = $servicio['dato'];
 
+        // Obtener nombre y cédula
+        $nombre = $datos['nombre'];
+        $cedula = $datos['cedula'];
+
         // Gestionar carpetas en Google Drive por año y mes
         $resultadoCarpetas = Drive::gestionarCarpetasAnualYMensual(RAIZ, $servicioDrive);
         if (!$resultadoCarpetas["estado"]) {
@@ -122,47 +126,34 @@ class ModeloSolicitud
         $anioCarpetaId = $resultadoCarpetas["anioCarpetaId"];
         $mesCarpetaId = $resultadoCarpetas["mesCarpetaId"];
 
-        // Ruta absoluta a la plantilla del documento Word
-        $templatePath = realpath('C:/xampp/htdocs/Atencion Ciudadana/public/document/Solicitud Cambio.docx');
-        if (!$templatePath || !file_exists($templatePath)) {
-            return ["estado" => false, "error" => 'Plantilla no encontrada o no accesible.'];
-        }
-
         try {
-            // Procesar plantilla Word con solo nombre y cédula
-            $templateProcessor = new TemplateProcessor($templatePath);
-            $templateProcessor->setValue('nombres', $datos['nombre']);
-            $templateProcessor->setValue('cedula', $datos['cedula']);
+            // Subir el archivo de solicitud (PDF o Word)
+            $archivoSolicitudTemp = $archivoSolicitud['tmp_name'];
+            $extensionSolicitud = pathinfo($archivoSolicitud['name'], PATHINFO_EXTENSION);
+            $nombreSolicitud = "{$nombre}_{$cedula}_Solicitud.{$extensionSolicitud}";
 
-            // Crear documento temporal en memoria
-            $tempFile = tempnam(sys_get_temp_dir(), 'Solicitud_') . '.docx';
-            $templateProcessor->saveAs($tempFile);
-
-            // Subir el documento a Google Drive con el nombre basado en 'nombre' y 'cedula'
-            $nombreSolicitud = "{$datos['nombre']}_{$datos['cedula']}_Solicitud.docx";
             $archivoSolicitudDrive = new Google_Service_Drive_DriveFile();
             $archivoSolicitudDrive->setName($nombreSolicitud);
             $archivoSolicitudDrive->setParents([$mesCarpetaId]);
 
-            $fileContent = file_get_contents($tempFile);
+            $contenidoSolicitud = file_get_contents($archivoSolicitudTemp);
             $resultadoSolicitudSubida = $servicioDrive->files->create($archivoSolicitudDrive, [
-                'data' => $fileContent,
-                'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'data' => $contenidoSolicitud,
+                'mimeType' => $archivoSolicitud['type'],
                 'uploadType' => 'multipart',
                 'fields' => 'id'
             ]);
-            unlink($tempFile); // Eliminar archivo temporal
 
-            // Establecer el archivo como público
-            $fileId = $resultadoSolicitudSubida->id;
-            $permiso = new Google_Service_Drive_Permission();
-            $permiso->setType('anyone');
-            $permiso->setRole('reader');
-            $servicioDrive->permissions->create($fileId, $permiso);
+            // Establecer el archivo de solicitud como público
+            $fileSolicitudId = $resultadoSolicitudSubida->id;
+            $permisoSolicitud = new Google_Service_Drive_Permission();
+            $permisoSolicitud->setType('anyone');
+            $permisoSolicitud->setRole('reader');
+            $servicioDrive->permissions->create($fileSolicitudId, $permisoSolicitud);
 
-            // Subir archivo PDF de la cédula con el nombre basado en 'cedula'
+            // Subir archivo PDF de la cédula
             $archivoCedulaTemp = $archivoCedula['tmp_name'];
-            $nombreCedula = "{$datos['cedula']}_Cedula.pdf";
+            $nombreCedula = "{$cedula}_Cedula.pdf";
 
             $archivoCedulaDrive = new Google_Service_Drive_DriveFile();
             $archivoCedulaDrive->setName($nombreCedula);
@@ -171,7 +162,7 @@ class ModeloSolicitud
             $contenidoCedula = file_get_contents($archivoCedulaTemp);
             $resultadoCedulaSubida = $servicioDrive->files->create($archivoCedulaDrive, [
                 'data' => $contenidoCedula,
-                'mimeType' => 'application/pdf',
+                'mimeType' => $archivoCedula['type'],
                 'uploadType' => 'multipart',
                 'fields' => 'id'
             ]);
@@ -183,14 +174,14 @@ class ModeloSolicitud
             $permisoCedula->setRole('reader');
             $servicioDrive->permissions->create($fileCedulaId, $permisoCedula);
 
-            // Guardar las IDs en la sesión, sobrescribiendo los valores anteriores
-            $_SESSION['doc_ids'] = $resultadoSolicitudSubida->id;  // Guardar el ID de la solicitud
-            $_SESSION['cedula_ids'] = $fileCedulaId;  // Guardar el ID de la cédula
+            // Guardar las IDs en la sesión
+            $_SESSION['doc_ids'] = $fileSolicitudId;
+            $_SESSION['cedula_ids'] = $fileCedulaId;
 
             // Retornar las IDs de los archivos subidos
             return [
                 "estado" => true,
-                "doc_id" => $resultadoSolicitudSubida->id,
+                "doc_id" => $fileSolicitudId,
                 "cedula_id" => $fileCedulaId
             ];
         } catch (Exception $e) {
@@ -256,7 +247,7 @@ class ModeloSolicitud
     public function insertSeguimiento($op, $sol_id, $est_id, $seg_accion, $seg_comentario, $seg_visto)
     {
         // Asegurarse de que el SQL esté bien formado
-        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id', '$est_id', '$seg_accion', '$seg_comentario', '$seg_visto', , NULL)";
+        $sql = "CALL atencion_ciudadana_ist17j.SP_Seguimiento('$op', '$sol_id', '$est_id', '$seg_accion', '$seg_comentario', '$seg_visto', NULL)";
         return ejecutarConsulta($sql);
     }
 
@@ -291,8 +282,9 @@ class ModeloSolicitud
         return ejecutarConsulta($sql);
     }
 
-    public function obtSolId($sol_id, $est_id){
-        $op=5;
+    public function obtSolId($sol_id, $est_id)
+    {
+        $op = 5;
         $sql = "CALL atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$op', '$est_id', '$sol_id', NULL)";
         return ejecutarConsulta($sql);
     }

@@ -46,7 +46,7 @@ if ($_SESSION['Solicitud'] == 1) {
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="cedula">Número de Cédula:</label>
-                                        <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" required>
+                                        <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su número de cédula" value="<?php echo $_SESSION['cedula']; ?>" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="carrera">Carrera:</label>
@@ -83,7 +83,7 @@ if ($_SESSION['Solicitud'] == 1) {
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                         <label for="correo">Correo Electrónico:</label>
-                                        <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese su correo electrónico" required>
+                                        <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese su correo electrónico" value="<?php echo $_SESSION['correo']; ?>" required>
                                     </div>
                                 </div>
 

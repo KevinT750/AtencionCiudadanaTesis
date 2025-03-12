@@ -3,42 +3,72 @@ function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
     $("#" + submitBtnId).on("click", function (e) {
       e.preventDefault();
 
-      // Obtener el archivo
-      var archivoInput = document.getElementById(archivoInputId);
-      var archivo = archivoInput.files[0];
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Quieres enviar la solicitud?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "No, cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Obtener el archivo
+          var archivoInput = document.getElementById(archivoInputId);
+          var archivo = archivoInput.files[0];
 
-      // Crear objeto FormData
-      var form = $("#" + formId); // Usar selector jQuery
-      var formData = new FormData(form[0]); // Obtener el elemento DOM del formulario
+          // Crear objeto FormData
+          var form = $("#" + formId);
+          var formData = new FormData(form[0]);
 
-      var btnSubmit = $("#" + submitBtnId); // Referencia al botón
-      var originalText = btnSubmit.text();
-      btnSubmit.prop("disabled", true).text("Procesando...");
+          var btnSubmit = $("#" + submitBtnId);
+          var originalText = btnSubmit.text();
+          btnSubmit.prop("disabled", true).text("Procesando...");
 
-      // Realizar solicitud AJAX
-      $.ajax({
-        url: url, // URL del controlador
-        type: "POST",
-        data: formData,
-        processData: false, // Importante para FormData
-        contentType: false, // Importante para FormData
-        success: function (response) {
-          try {
-            var data = JSON.parse(response); // Intentar parsear JSON
-            if (data.estado) {
-              guardarSolicitud();
-              guardarSeguimiento();
-            }
-          } catch (e) {
-            console.error("Error al procesar la respuesta:", e);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error("Error en la solicitud:", error);
-        },
-        complete: function () {
-          btnSubmit.prop("disabled", false).text(originalText); // Restaurar botón
-        },
+          // Realizar solicitud AJAX
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+              try {
+                var data = JSON.parse(response);
+                if (data.estado) {
+                  guardarSolicitud();
+                  guardarSeguimiento();
+                  Swal.fire(
+                    "¡Éxito!",
+                    "La solicitud se ha enviado correctamente.",
+                    "success"
+                  );
+                } else {
+                  Swal.fire(
+                    "Error",
+                    "Hubo un problema al enviar la solicitud.",
+                    "error"
+                  );
+                }
+              } catch (e) {
+                console.error("Error al procesar la respuesta:", e);
+                Swal.fire(
+                  "Error",
+                  "No se pudo procesar la respuesta del servidor.",
+                  "error"
+                );
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error("Error en la solicitud:", error);
+              Swal.fire("Error", "No se pudo completar la solicitud.", "error");
+            },
+            complete: function () {
+              btnSubmit.prop("disabled", false).text(originalText);
+            },
+          });
+        }
       });
     });
   });
@@ -46,7 +76,7 @@ function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
 
 function guardarSolicitud() {
   // Obtener el valor del título correctamente usando el ID del elemento
-  const titulo = document.getElementById("titulo").value; 
+  const titulo = document.getElementById("titulo").value;
 
   // Definir el estado como 5 (Enviado)
   const estado_id = 5;
@@ -69,7 +99,7 @@ function guardarSolicitud() {
     dataType: "json",
     data: {
       estado_id: estado_id,
-      titulo: titulo // Enviar correctamente el título
+      titulo: titulo, // Enviar correctamente el título
     },
     success: function (response) {
       // Manejo de la respuesta
@@ -97,10 +127,9 @@ function guardarSolicitud() {
         icon: "error",
         confirmButtonText: "Aceptar",
       });
-    }
+    },
   });
 }
-
 
 function guardarSeguimiento() {
   const OP = 2;
@@ -142,17 +171,7 @@ function cerrarSesion() {
   $.ajax({
     url: "../ajax/solicitud.php?op=cerrarSesion", // Dirección para cerrar sesión
     type: "GET",
-    success: function (response) {
-      /*Swal.fire({
-        title: "Solicitud Enviada Correctamente",
-        text: response, // Mensaje que se recibe al cerrar sesión
-        icon: "success",
-        confirmButtonText: "Aceptar",
-      }).then(function () {
-        // Redirigir a la página principal o logout
-        // window.location.href = "login.php"; // O la URL que necesites
-      });*/
-    },
+    success: function (response) {},
     error: function (xhr, status, error) {
       // Manejo de errores al intentar cerrar sesión
       console.error("Error al cerrar sesión:", error); // Mostrar solo en consola
@@ -160,6 +179,18 @@ function cerrarSesion() {
   });
 }
 
+function obtenerE() {
+    // Realizar la solicitud AJAX para cerrar la sesión
+    $.ajax({
+      url: "../ajax/usuario.php?op=ObtenerE",
+      type: "GET",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        // Manejo de errores al intentar cerrar sesión
+        console.error("Error al cerrar sesión:", error); // Mostrar solo en consola
+      },
+    });
+  }
 
 $(document).ready(function () {
   enviarSolicitudFormulario(
@@ -168,5 +199,5 @@ $(document).ready(function () {
     "submitBtn", // El ID del botón de submit
     "../ajax/solicitud.php?op=estado" // URL del controlador que manejará la solicitud
   );
-  //cargarSolicitudes();
+  obtenerE();
 });
