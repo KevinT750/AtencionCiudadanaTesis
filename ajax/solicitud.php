@@ -9,6 +9,7 @@ if (!isset($_SESSION['usu_nombre'])) {
 
 require_once '../model/solicitud.php';
 require_once '../model/Usuario.php';
+require_once '../model/Email.php';
 
 $solicitud = new ModeloSolicitud();
 $usuario = new Usuario();
@@ -730,6 +731,41 @@ if (isset($_GET['op'])) {
             } else {
                 echo json_encode(["error" => "Usuario no autenticado o sol_id no proporcionado"]);
             }
+            break;
+
+        case 'getEmails':
+            $file = '../Mailer/emails.json';
+            $emailsCrud = new EmailsCrud($file);
+            $emails = $emailsCrud->getEmails();
+            echo json_encode($emails);
+            break;
+
+        case 'addEmail':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $correoNuevo = $data['correo'];
+            $file = '../Mailer/emails.json';
+            $emailsCrud = new EmailsCrud($file);
+            $success = $emailsCrud->addEmail($correoNuevo);
+            echo json_encode(['success' => $success]);
+            break;
+
+        case 'editEmail':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $index = $data['index'];
+            $correoEditado = $data['correo'];
+            $file = '../Mailer/emails.json';
+            $emailsCrud = new EmailsCrud($file);
+            $success = $emailsCrud->editEmail($index, $correoEditado);
+            echo json_encode(['success' => $success]);
+            break;
+
+        case 'deleteEmail':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $index = $data['index'];
+            $file = '../Mailer/emails.json';
+            $emailsCrud = new EmailsCrud($file);
+            $success = $emailsCrud->deleteEmail($index);
+            echo json_encode(['success' => $success]);
             break;
 
 
