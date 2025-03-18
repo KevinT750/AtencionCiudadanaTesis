@@ -40,6 +40,7 @@ class ModeloSolicitud
             $templateProcessor->setValue('telefono_domicilio', $datos['telefono']);
             $templateProcessor->setValue('celular', $datos['celular']);
             $templateProcessor->setValue('correo', $datos['correo']);
+            $templateProcessor->setValue('asunto1', $datos['Tipo']);
             $templateProcessor->setValue('asunto', $datos['asuntoTexto']);
 
             // Crear documento temporal en memoria

@@ -128,6 +128,7 @@ foreach ($permisos as $permiso) {
                             <ul class="treeview-menu">
 
                                 <li><a href="solicitudEstudiante.php">Solicitud de Estudiante</a></li>
+                                <li><a href="solicitudEstudiante copy.php">Solicitud del Estudiante</a></li>
                                 <li><a href="atencionCiudadana.php">Atención Ciudadana</a></li>
                             </ul>
                         </li>
