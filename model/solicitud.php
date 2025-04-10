@@ -37,7 +37,7 @@ class ModeloSolicitud
             $templateProcessor->setValue('nombres', $datos['nombre']);
             $templateProcessor->setValue('cedula', $datos['cedula']);
             $templateProcessor->setValue('carrera', $datos['carrera']);
-            $templateProcessor->setValue('telefono_domicilio', $datos['telefono']);
+            $templateProcessor->setValue('telefono', $datos['telefono']);
             $templateProcessor->setValue('celular', $datos['celular']);
             $templateProcessor->setValue('correo', $datos['correo']);
             $templateProcessor->setValue('asunto1', $datos['Tipo']);
