@@ -44,7 +44,7 @@ class Usuario
         }
     }
 
-    public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId, $titulo)
+    public function solicitud($idEstudiante, $isSolicitud, $idPdf, $estadoId, $titulo, $asunto)
     {
         try {
             // Iniciar la sesión si no está iniciada
@@ -52,12 +52,23 @@ class Usuario
                 session_start();
             }
 
-            if (empty($idEstudiante) || empty($isSolicitud) || empty($idPdf) || empty($estadoId)) {
-                return ["estado" => false, "error" => "Faltan parámetros necesarios"];
+            $parametrosFaltantes = [];
+            if (empty($idEstudiante)) $parametrosFaltantes[] = 'idEstudiante';
+            if (empty($isSolicitud)) $parametrosFaltantes[] = 'isSolicitud';
+            if (empty($idPdf)) $parametrosFaltantes[] = 'idPdf';
+            if (empty($estadoId)) $parametrosFaltantes[] = 'estadoId';
+            if (empty($titulo)) $parametrosFaltantes[] = 'titulo';
+            if (empty($asunto)) $parametrosFaltantes[] = 'asunto';
+
+            if (!empty($parametrosFaltantes)) {
+                return [
+                    "estado" => false,
+                    "error" => "Faltan parámetros necesarios: " . implode(', ', $parametrosFaltantes)
+                ];
             }
 
             // Ejecutar el procedimiento almacenado para insertar la solicitud
-            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId', '$titulo', @p_sol_id)";
+            $sql = "CALL atencion_ciudadana_ist17j.SP_InsertarSolicitud('$idEstudiante', '$isSolicitud', '$idPdf', '$estadoId', '$titulo', '$asunto',@p_sol_id)";
             $sqlGetId = "SELECT @p_sol_id AS sol_id";
 
             // Ejecutar las consultas
@@ -148,7 +159,7 @@ class Usuario
             $templateProcessor->setValue('nombres', $nombres);
             $templateProcessor->setValue('cedula', $cedula);
             $templateProcessor->setValue('carrera', $carrera);
-            $templateProcessor->setValue('telefono_domicilio', $telefono_domicilio);
+            $templateProcessor->setValue('telefono', $telefono_domicilio);
             $templateProcessor->setValue('celular', $celular);
             $templateProcessor->setValue('correo', $correo);
             $templateProcessor->setValue('asunto', $asunto);

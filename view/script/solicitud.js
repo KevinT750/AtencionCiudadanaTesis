@@ -39,6 +39,7 @@ function enviarSolicitudFormulario(formId, archivoInputId, submitBtnId, url) {
                 if (data.estado) {
                   guardarSolicitud();
                   guardarSeguimiento();
+                  
                   Swal.fire(
                     "¡Éxito!",
                     "La solicitud se ha enviado correctamente.",
@@ -80,6 +81,7 @@ function guardarSolicitud() {
 
   // Definir el estado como 5 (Enviado)
   const estado_id = 5;
+  const asunto_id = document.getElementById("Tipo").value;
 
   // Verificar si el título está vacío
   if (!titulo.trim()) {
@@ -99,7 +101,8 @@ function guardarSolicitud() {
     dataType: "json",
     data: {
       estado_id: estado_id,
-      titulo: titulo, // Enviar correctamente el título
+      titulo: titulo, 
+      asunto_id: asunto_id
     },
     success: function (response) {
       // Manejo de la respuesta
@@ -200,4 +203,27 @@ $(document).ready(function () {
     "../ajax/solicitud.php?op=estado" // URL del controlador que manejará la solicitud
   );
   obtenerE();
+  llenarSelect();
 });
+
+function llenarSelect(){
+  $.ajax({
+        url: '../ajax/solicitud.php?op=obtAsunto',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            let select = $('#Tipo');
+            select.empty(); // Limpia opciones anteriores
+            select.append('<option value="">Seleccione el tipo de solicitud</option>');
+            data.forEach(function (asunto) {
+                select.append(
+                    '<option value="' + asunto.asunto_id + '">' + asunto.asunto_nombre + '</option>'
+                );
+            });
+        },
+        error: function () {
+            alert('Error al cargar los asuntos.');
+        }
+    });
+
+}

@@ -622,6 +622,20 @@ if (isset($_GET['op'])) {
                 echo json_encode(["error" => "Usuario no autenticado"]);
             }
             break;
+        case 'obtAsunto':
+            $res  = $solicitud->obtAsunto();
+            if (!$res) {
+                echo json_encode(["error" => "No se pudo ejecutar la consulta"]);
+                exit;
+            }
+
+            $data = [];
+            while ($row = $res->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            echo json_encode($data); // Respuesta en JSON
+            break;
 
         case 'obtenerSeg':
             $op = 4;
@@ -769,7 +783,7 @@ if (isset($_GET['op'])) {
             break;
 
 
-            // Agregar otros casos si es necesario
+        // Agregar otros casos si es necesario
         default:
             echo json_encode([
                 'estado' => false,

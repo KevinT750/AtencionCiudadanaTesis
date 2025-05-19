@@ -1,0 +1,125 @@
+/* Reinicio de estilos base y fuente */
+* {
+  margin: 0; /* Elimina el margen por defecto de todos los elementos */
+  padding: 0; /* Elimina el padding por defecto de todos los elementos */
+  box-sizing: border-box; /* Asegura que el padding y el borde se incluyan dentro del ancho/alto total */
+  font-family: "Bebas Neue", sans-serif; /* Aplica la fuente Bebas Neue a todos los elementos */
+}
+
+/* Estilo para el contenedor principal */
+.container {
+  width: 100%; /* Toma el 100% del ancho del contenedor padre */
+  max-width: 1220px; /* No sobrepasa este ancho máximo */
+  height: auto; /* Altura automática según el contenido */
+  background-color: white; /* Fondo blanco */
+  display: flex; /* Usa flexbox para alinear elementos hijos */
+  justify-content: center; /* Centra los elementos hijos horizontalmente */
+  align-items: center; /* Centra los elementos hijos verticalmente */
+  border-radius: 15px; /* Bordes redondeados */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra externa suave */
+  margin: 20px auto; /* Margen superior/inferior de 20px y centrado horizontal */
+  padding: 20px; /* Espaciado interno de 20px */
+}
+
+/* Estilos para pantallas pequeñas (responsivo) */
+@media (max-width: 600px) {
+  .container {
+    border-radius: 8px; /* Bordes menos redondeados en dispositivos pequeños */
+    padding: 15px; /* Menor espacio interno para pantallas pequeñas */
+  }
+}
+
+@media (max-width: 600px) {
+  .container-select select {
+    width: 100%;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .container-select {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
+/* Contenedor del formulario */
+.container-form {
+  width: 100%; /* Ocupa todo el ancho disponible */
+}
+
+/* Estilo para el formulario */
+.container-form form {
+  display: flex; /* Usa flexbox */
+  flex-direction: column; /* Organiza los elementos en columna */
+  gap: 20px; /* Espaciado entre elementos hijos */
+  align-items: center; /* Alinea los elementos a la izquierda */
+    justify-content: center; /* Centra los elementos verticalmente */
+}
+
+/* Estilo del título */
+.container-form .titulo {
+  font-size: 24px; /* Tamaño de fuente grande */
+  text-align: center; /* Centra el texto */
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+  margin-bottom: 10px; /* Espacio inferior respecto al siguiente elemento */
+}
+
+/* Contenedor de los selects */
+.container-select {
+  display: flex; /* Usa flexbox */
+  gap: 10px; /* Espacio entre grupos (año y mes) */
+  align-items: center;
+  justify-content: center; /* Centra los elementos hijos */
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+}
+
+/* Grupo individual de label + select */
+.select-group {
+  display: flex; /* Usa flexbox */
+  flex-direction: column; /* Coloca el label encima del select */
+}
+
+/* Estilo de los select */
+.container-select select {
+  border: 1px solid #000; /* Borde negro */
+  border-radius: 4px; /* Bordes redondeados */
+  padding: 8px 10px; /* Espaciado interno vertical y horizontal */
+  width: 200px; /* Ancho fijo del select */
+  background-color: transparent; /* Color de fondo gris claro */
+  font-size: 14px; /* Tamaño de fuente legible */
+  text-align: center; /* Centra el texto dentro del select */
+  transition: border-color 0.3s; /* Animación suave cuando cambia el borde */
+}
+
+/* Estilo cuando el select está enfocado (clicado) */
+.container-select select:focus {
+  outline: none; /* Elimina el contorno azul por defecto */
+  border-color: #007bff; /* Cambia el color del borde al azul Bootstrap */
+}
+
+/* Estilo del label */
+.container-select label {
+  font-size: 14px; /* Tamaño del texto del label */
+  margin-bottom: 4px; /* Espacio inferior entre el label y el select */
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  width: 100px;
+  height: 50px;
+  font-size: 17px;
+  background-color: #5bc0de;
+  color: white;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+button:hover,
+button:focus {
+  background-color: #31b0d5;
+  outline: none;
+}

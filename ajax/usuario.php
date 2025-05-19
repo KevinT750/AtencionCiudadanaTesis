@@ -51,9 +51,10 @@ try {
             // Recibir y validar el estado_id desde POST (valor predeterminado 5 si no se envía)
             $estado_id = isset($_POST['estado_id']) && is_numeric($_POST['estado_id']) ? (int)$_POST['estado_id'] : 5;
             $titulo = isset($_POST['titulo']) ? $_POST['titulo'] : '';
+            $asuntoTexto = isset($_POST['asunto_id']) ? $_POST['asunto_id'] : '';
 
             // Llamar a la función solicitud con los parámetros
-            $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id, $titulo);
+            $rspta = $usuario->solicitud($est_id, $doc_id, $cedula_id, $estado_id, $titulo, $asuntoTexto);
 
             // Verificar la respuesta
             if (isset($rspta['estado']) && $rspta['estado']) {

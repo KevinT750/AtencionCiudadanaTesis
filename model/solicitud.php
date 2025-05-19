@@ -25,7 +25,7 @@ class ModeloSolicitud
         $mesCarpetaId = $resultadoCarpetas["mesCarpetaId"];
 
         // Ruta absoluta a la plantilla del documento Word
-        $templatePath = realpath('C:/xampp/htdocs/Atencion Ciudadana/public/document/Solicitud Cambio.docx');
+        $templatePath = realpath('C:\xampp\htdocs\AtencionCiudadanaTesis\public\document\Solicitud Cambio.docx');
         if (!$templatePath || !file_exists($templatePath)) {
             return ["estado" => false, "error" => 'Plantilla no encontrada o no accesible.'];
         }
@@ -40,7 +40,7 @@ class ModeloSolicitud
             $templateProcessor->setValue('telefono', $datos['telefono']);
             $templateProcessor->setValue('celular', $datos['celular']);
             $templateProcessor->setValue('correo', $datos['correo']);
-            $templateProcessor->setValue('asunto1', $datos['Tipo']);
+            $templateProcessor->setValue('asuntos', $datos['Tipo']);
             $templateProcessor->setValue('asunto', $datos['asuntoTexto']);
 
             // Crear documento temporal en memoria
@@ -287,6 +287,12 @@ class ModeloSolicitud
     {
         $op = 5;
         $sql = "CALL atencion_ciudadana_ist17j.SP_GetSolicitudesEstId('$op', '$est_id', '$sol_id', NULL)";
+        return ejecutarConsulta($sql);
+    }
+
+    public function obtAsunto(){
+        $op = 1;
+        $sql = "call atencion_ciudadana_ist17j.SP_Asunto('$op', NULL, NULL)";
         return ejecutarConsulta($sql);
     }
 }

@@ -90,12 +90,7 @@ if ($_SESSION['Solicitud'] == 1) {
                                 <div class="form-group col-md-6">
                                     <label for="Tipo">Tipo:</label>
                                     <select class="form-control" id="Tipo" name="Tipo" required>
-                                        <option value="">Seleccione el tipo de solicitud</option>
-                                        <option value="Matriculas">Matriculas</option>
-                                        <option value="Segundas Matriculas">Segundas Matriculas</option>
-                                        <option value="Terceras Matriculas">Terceras Matriculas</option>
-                                        <option value="Cambio de Carreras">Cambio de Carreras</option>
-                                        <option value="Homologación">Homologación</option>
+                                    
                                     </select>
                                 </div>
                         </div>
@@ -142,23 +137,23 @@ if ($_SESSION['Solicitud'] == 1) {
                 comboBox.addEventListener("change", function() {
                     const opcion = comboBox.value;
                     switch (opcion) {
-                        case "Matriculas":
+                        case "1":
                             textArea.value = "Estimadas autoridades,\n\nPor medio de la presente, solicito de la manera más comedida se me autorice la matrícula en el período académico PAO 2025-I en las asignaturas correspondientes al ……………… nivel de la carrera [nombre de la carrera].\n\nMe comprometo a cumplir con todas las normativas establecidas por la institución y a realizar el respectivo proceso de inscripción dentro de los plazos indicados.\n\nPor la atención prestada, anticipo mis sinceros agradecimientos.";
                             break;
 
-                        case "Segundas Matriculas":
+                        case "2":
                             textArea.value = "Estimadas autoridades,\n\nPor medio de la presente, solicito de la manera más comedida se me autorice la segunda matrícula en el período académico PAO 2025-I en las asignaturas: …………………………………………. ……………………………………………………….., pertenecientes al ……………… nivel de la carrera.\n\nPor la atención prestada, anticipo mis sinceros agradecimientos.";
                             break;
 
-                        case "Terceras Matriculas":
+                        case "3":
                             textArea.value = "Estimadas autoridades,\n\nMe dirijo a ustedes para solicitar la autorización de mi tercera matrícula en el período académico PAO 2025-I en las asignaturas: …………………………………………. ……………………………………………………….., correspondientes al ……………… nivel de la carrera.\n\nMe comprometo a cumplir con todas las disposiciones reglamentarias y a esforzarme en el desarrollo académico de estas asignaturas.\n\nAgradezco de antemano su atención y consideración.";
                             break;
 
-                        case "Cambio de Carreras":
+                        case "4":
                             textArea.value = "Estimadas autoridades,\n\nPor medio de la presente, solicito de manera formal se me autorice el cambio de carrera de [carrera actual] a [nueva carrera] en el período académico PAO 2025-I.\n\nLos motivos de mi solicitud son los siguientes: …………………………………………. ………………………………………………………..\n\nAgradezco su tiempo y consideración para el análisis de mi petición.";
                             break;
 
-                        case "Homologación":
+                        case "5":
                             textArea.value = "Estimadas autoridades,\n\nPor la presente, solicito se me conceda la homologación de las asignaturas cursadas en [nombre de la institución o carrera anterior] con el objetivo de continuar mis estudios en la carrera de [nombre de la nueva carrera].\n\nAdjunto los documentos necesarios para su respectiva revisión y quedo atento/a a cualquier requerimiento adicional.\n\nAgradezco de antemano su atención y colaboración.";
                             break;
 

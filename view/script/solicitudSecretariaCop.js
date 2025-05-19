@@ -174,7 +174,6 @@ $(document).ready(function () {
   });
 
   $("#solicitudesSecret").on("click", ".ver-solicitud", function () {
-    cerrarSesion();
     const fileUrl = $(this).data("file-url"); // Obtener la URL del archivo
     console.log("Ver archivo con URL:", fileUrl);
 
@@ -286,37 +285,41 @@ $(document).ready(function () {
       },
     });
   }
-  function guardarSeguimiento() {
-    // Definir los datos del seguimiento
-    const data = {
-      OP: 2, // Operación: Indica que se está registrando un seguimiento
-      seg_accion: "Solicitud Leída", // Acción registrada en el seguimiento
-      seg_visto: 0, // Estado de visualización (0: No visto, 1: Visto)
-      seg_comentario:
-        "Su solicitud ha sido leída. Pronto recibirá respuesta sobre su aprobación. Manténgase atento.",
-    };
 
-    // Enviar los datos al servidor mediante AJAX
-    $.ajax({
-      url: "../ajax/solicitud.php?op=InsertSeguimiento", // Ruta del servicio backend
-      type: "POST",
-      dataType: "json",
-      data: data,
-      success: function (response) {
-        // Cierra la sesión después de guardar el seguimiento
-        "#solicitudesSecret".DataTable().ajax.reload();
-        cerrarSesion();
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        Swal.fire({
-          title: "Error",
-          text: "No se pudo registrar el seguimiento. Inténtelo de nuevo.",
-          icon: "error",
-          confirmButtonText: "Aceptar",
-        });
-      },
-    });
-  }
+  function guardarSeguimiento() {
+  const OP = 2;
+  const seg_accion = "Solicitud Leida";
+  const seg_visto = 0;
+  const seg_comentario =
+    "Su solicitud ha sido leída por un responsable. Pronto recibirá una respuesta sobre la aprobación o rechazo de su solicitud. Manténgase atento.";
+
+  const data = {
+    OP: OP,
+    seg_accion: seg_accion,
+    seg_visto: seg_visto,
+    seg_comentario: seg_comentario,
+  };
+
+  console.log("📤 Enviando datos al servidor:", data); // Mostrar en consola
+
+  $.ajax({
+    url: "../ajax/solicitud.php?op=InsertSeguimiento",
+    type: "POST",
+    dataType: "json",
+    data: data,
+    success: function (response) {
+      console.log("✅ Respuesta del servidor:", response); // Mostrar la respuesta en consola
+      cerrarSesion();
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error(
+        "❌ Error al guardar seguimiento:",
+        textStatus,
+        errorThrown
+      );
+    },
+  });
+}
 
   function agregarModal(content) {
     // Limpiar cualquier modal anterior
