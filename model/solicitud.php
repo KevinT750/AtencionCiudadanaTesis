@@ -295,4 +295,10 @@ class ModeloSolicitud
         $sql = "call atencion_ciudadana_ist17j.SP_Asunto('$op', NULL, NULL)";
         return ejecutarConsulta($sql);
     }
+
+    public function obtDatosSolicitud($anio, $mes, $asunto_id){
+        $op = 1;
+        $sql = "CALL SP_Solicitud('$op', NULL, '$anio', $mes, NULL, NULL, NULL, NULL, NULL, $asunto_id);";
+        return ejecutarConsulta($sql);
+    }
 }

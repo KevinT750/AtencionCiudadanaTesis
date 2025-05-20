@@ -130,6 +130,37 @@ if (isset($_GET['op'])) {
                 ));
             }
             break;
+        case 'obtDatosSolicitud':
+
+            if (isset($_POST['anio'])) {
+
+                $anio = $_POST['anio'];
+                $mes = isset($_POST['mes']) ? $_POST['mes'] : 'NULL';
+                $asunto_id = isset($_POST['asunto_id']) ? $_POST['asunto_id'] : 'NULL';
+
+                // Llama al SP con los parámetros disponibles
+                $rspta = $solicitud->obtDatosSolicitud($anio, $mes, $asunto_id);
+
+                if ($rspta !== false) {
+                    while ($reg = $rspta->fetch_row()) {
+                        $data[] = array(
+                            "0" => $reg[0], //mes o  dia
+                            "1" => $reg[1] //cantidad                               
+                        );
+                    }
+                }
+
+                if (!empty($data)) {
+                    echo json_encode($data);
+                } else {
+                    echo json_encode(array("error" => "No se encontraron datos para la solicitud."));
+                }
+            } else {
+                echo json_encode(array("error" => "Parámetro 'anio' es obligatorio."));
+            }
+
+            break;
+
 
         case 'InsertSeguimiento':
             // Inicializar un array para los errores de parámetros faltantes

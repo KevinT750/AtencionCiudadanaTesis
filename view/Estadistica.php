@@ -28,7 +28,7 @@ if ($_SESSION['Reporte'] == 1) {
                                     <div class="select-group">
                                         <label for="anio">Seleccione el año:</label>
                                         <select id="anio">
-                                            <option selected>Seleccione el Año</option>
+                                            <option value="">Seleccione el Año</option>
                                             <?php
                                             $anio = 2024;
                                             $anio_actual = date('Y');
@@ -40,8 +40,8 @@ if ($_SESSION['Reporte'] == 1) {
                                     </div>
                                     <div class="select-group">
                                         <label for="mes">Seleccione el mes:</label>
-                                        <select id="mes">
-                                            <option selected>Seleccione el Mes</option>
+                                        <select id="mes" disabled onchange="activarSelect()">
+                                            <option value="">Seleccione el Mes</option>
                                             <?php
                                             $meses = [
                                                 '01' => 'Enero',
@@ -65,13 +65,24 @@ if ($_SESSION['Reporte'] == 1) {
 
                                     </div>
                                     <div class="select-group">
-                                        <label for="asunto">Seleccione el mes:</label>
-                                        <select id="asunto"></select>
+                                        <label for="asunto">Seleccione el asunto:</label>
+                                        <select id="asunto" disabled></select>
                                     </div>
                                 </div>
                                 <button type="submit">Buscar</button>
                             </form>
                         </div>
+                    </div>
+
+                    <div class="container1">
+                        <div class="container-pieChart">
+                            <canvas id="pieChart" width="400" height="300"></canvas>
+
+                        </div>
+                        <div class="container-lineChart">
+                            <canvas id="lineChart" width="800" height="400"></canvas>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -85,4 +96,6 @@ if ($_SESSION['Reporte'] == 1) {
 
 require 'footer.php';
 ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="../view/script/estadistica.js"></script>

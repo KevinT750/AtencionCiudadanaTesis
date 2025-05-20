@@ -120,6 +120,7 @@ $(document).ready(function () {
         title: "Acción",
       },
     ],
+    order: [[0, "desc"]],
     dom: "Bfrtip", // Agrega la barra de botones en la parte superior
     language: {
       search: "Buscar:",

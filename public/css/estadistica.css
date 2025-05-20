@@ -123,3 +123,45 @@ button:focus {
   background-color: #31b0d5;
   outline: none;
 }
+
+.container1 {
+  width: 100%;
+  max-width: 1220px;
+  height: auto;
+  background-color: white;
+  display: flex;
+  flex-wrap: wrap; /* Esto ayuda a que los hijos se acomoden en filas en pantallas pequeñas */
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  margin: 20px auto;
+  padding: 20px;
+  border: 2px solid #e21313;
+  gap: 20px; /* Separación entre gráficas */
+}
+
+.container-pieChart,
+.container-lineChart {
+  flex: 1 1 100%; /* En pantallas pequeñas, ocupan el 100% */
+  max-width: 100%;
+}
+
+.container-pieChart canvas,
+.container-lineChart canvas {
+  width: 100% !important; /* Asegura que el canvas se adapte */
+  height: auto !important;
+}
+
+/* Opcional: Estilos más ajustados en móviles */
+@media (max-width: 600px) {
+  .container1 {
+    border-radius: 8px;
+    padding: 15px;
+  }
+
+  .container-pieChart,
+  .container-lineChart {
+    flex: 1 1 100%;
+  }
+}
