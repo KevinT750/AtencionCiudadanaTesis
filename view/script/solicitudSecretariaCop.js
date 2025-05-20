@@ -49,43 +49,64 @@ $(document).ready(function () {
         data: 6,
         render: function (data, type, row) {
           return `
-                        <button 
-                            class="btn btn-success btn-sm ver-otro-dato" 
-                            data-file-url="https://drive.google.com/file/d/${data}/preview" 
-                            title="Ver Documento">
-                            <i class="fa fa-eye"></i> Ver Documento
-                        </button>`;
+            <button 
+              class="btn btn-success btn-sm ver-otro-dato" 
+              data-file-url="https://drive.google.com/file/d/${data}/preview" 
+              title="Ver Documento">
+              <i class="fa fa-eye"></i> Ver Documento
+            </button>`;
         },
       },
       {
-        data: 7, // Estado (Enviado, Leído, Aceptado, Rechazado, No Leído)
+        data: 7,
         render: function (data, type, row) {
-          let badgeClass, titleText;
-
+          // Asigna una clase y un texto según el estado
+          let className = "";
+          let titleText = "";
           switch (data) {
-            case "Enviado":
-              badgeClass = "primary";
-              titleText = "Solicitud Enviada";
+            case "No Leído":
+              className = "badge bg-primary";
+              titleText = "Solicitud no leída";
               break;
             case "Leído":
-              badgeClass = "success";
-              titleText = "Solicitud Leída";
+              className = "badge bg-info";
+              titleText = "Solicitud leída";
               break;
             case "Aceptado":
-              badgeClass = "info";
-              titleText = "Solicitud Aceptada";
+              className = "badge bg-success";
+              titleText = "Solicitud aceptada";
               break;
             case "Rechazado":
-              badgeClass = "danger";
-              titleText = "Solicitud Rechazada";
+              className = "badge bg-danger";
+              titleText = "Solicitud rechazada";
               break;
             default:
-              badgeClass = "secondary";
-              titleText = "Estado Desconocido";
+              className = "badge bg-secondary";
+              titleText = data;
+          }
+          return `<span class="${className}" title="${titleText}">${data}</span>`;
+        },
+        createdCell: function (td, cellData, rowData, row, col) {
+          // Opcional: puedes agregar clases a la fila según el estado aquí si lo deseas
+          $(td)
+            .closest("tr")
+            .removeClass(
+              "estado-noleido estado-leido estado-aprobado estado-rechazado"
+            );
+          switch (cellData) {
+            case "No Leído":
+              $(td).closest("tr").addClass("estado-noleido");
+              break;
+            case "Leído":
+              $(td).closest("tr").addClass("estado-leido");
+              break;
+            case "Aceptado":
+              $(td).closest("tr").addClass("estado-aprobado");
+              break;
+            case "Rechazado":
+              $(td).closest("tr").addClass("estado-rechazado");
               break;
           }
-
-          return `<span class="badge bg-${badgeClass}" title="${titleText}">${data}</span>`;
         },
       },
       {
@@ -127,43 +148,59 @@ $(document).ready(function () {
     // Agregar los botones
     buttons: [
       {
-        text: '<i class="fa fa-paper-plane"></i> Enviado',
-        action: function () {
-          table.column(7).search("No Leído").draw(); // Filtra por "Enviado"
-        },
+        text: '<i class="fa fa-envelope"></i> No leído',
         className: "btn btn-outline-primary m-1 rounded-pill shadow-sm",
+        action: function () {
+          table.column(7).search("^No Leído$", true, false).draw();
+        },
+        init: function (api, node, config) {
+          $(node).attr("id", "btn-no-leido");
+        },
       },
       {
         text: '<i class="fa fa-check-circle"></i> Leído',
-        action: function () {
-          table.column(7).search("Leído").draw(); // Filtra por "Leído"
-        },
         className: "btn btn-outline-success m-1 rounded-pill shadow-sm",
+        action: function () {
+          table.column(7).search("^Leído$", true, false).draw();
+        },
+        init: function (api, node, config) {
+          $(node).attr("id", "btn-leido");
+        },
       },
       {
         text: '<i class="fa fa-thumbs-up"></i> Aceptado',
-        action: function () {
-          table.column(7).search("Aceptado").draw(); // Filtra por "Aceptado"
-        },
         className: "btn btn-outline-info m-1 rounded-pill shadow-sm",
+        action: function () {
+          table.column(7).search("Aceptado").draw();
+        },
+        init: function (api, node, config) {
+          $(node).attr("id", "btn-aceptado");
+        },
       },
       {
         text: '<i class="fa fa-times-circle"></i> Rechazado',
-        action: function () {
-          table.column(7).search("Rechazado").draw(); // Filtra por "Rechazado"
-        },
         className: "btn btn-outline-danger m-1 rounded-pill shadow-sm",
+        action: function () {
+          table.column(7).search("Rechazado").draw();
+        },
+        init: function (api, node, config) {
+          $(node).attr("id", "btn-rechazado");
+        },
       },
       {
         text: '<i class="fa fa-list"></i> Todos',
-        action: function () {
-          table.column(7).search("").draw(); // Muestra todas las solicitudes
-        },
         className: "btn btn-outline-secondary m-1 rounded-pill shadow-sm",
+        action: function () {
+          table.column(7).search("").draw();
+        },
+        init: function (api, node, config) {
+          $(node).attr("id", "btn-todos");
+        },
       },
     ],
   });
 
+  table.column(7).search("^No Leído$", true, false).draw();
   // Evento para mostrar un mensaje emergente cuando se pase el mouse por encima de un botón
   $(document).on("mouseenter", ".btn", function () {
     $(this).tooltip("show");
@@ -287,39 +324,39 @@ $(document).ready(function () {
   }
 
   function guardarSeguimiento() {
-  const OP = 2;
-  const seg_accion = "Solicitud Leida";
-  const seg_visto = 0;
-  const seg_comentario =
-    "Su solicitud ha sido leída por un responsable. Pronto recibirá una respuesta sobre la aprobación o rechazo de su solicitud. Manténgase atento.";
+    const OP = 2;
+    const seg_accion = "Solicitud Leida";
+    const seg_visto = 0;
+    const seg_comentario =
+      "Su solicitud ha sido leída por un responsable. Pronto recibirá una respuesta sobre la aprobación o rechazo de su solicitud. Manténgase atento.";
 
-  const data = {
-    OP: OP,
-    seg_accion: seg_accion,
-    seg_visto: seg_visto,
-    seg_comentario: seg_comentario,
-  };
+    const data = {
+      OP: OP,
+      seg_accion: seg_accion,
+      seg_visto: seg_visto,
+      seg_comentario: seg_comentario,
+    };
 
-  console.log("📤 Enviando datos al servidor:", data); // Mostrar en consola
+    console.log("📤 Enviando datos al servidor:", data); // Mostrar en consola
 
-  $.ajax({
-    url: "../ajax/solicitud.php?op=InsertSeguimiento",
-    type: "POST",
-    dataType: "json",
-    data: data,
-    success: function (response) {
-      console.log("✅ Respuesta del servidor:", response); // Mostrar la respuesta en consola
-      cerrarSesion();
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.error(
-        "❌ Error al guardar seguimiento:",
-        textStatus,
-        errorThrown
-      );
-    },
-  });
-}
+    $.ajax({
+      url: "../ajax/solicitud.php?op=InsertSeguimiento",
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        console.log("✅ Respuesta del servidor:", response); // Mostrar la respuesta en consola
+        cerrarSesion();
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error(
+          "❌ Error al guardar seguimiento:",
+          textStatus,
+          errorThrown
+        );
+      },
+    });
+  }
 
   function agregarModal(content) {
     // Limpiar cualquier modal anterior

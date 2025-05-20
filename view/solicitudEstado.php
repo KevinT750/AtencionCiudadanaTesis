@@ -12,114 +12,110 @@ require 'header.php';
 if ($_SESSION['Estado'] == 1) {
 ?>
     <style>
-        /* Estilos para los botones */
-        .btn-outline-primary {
-            font-size: 14px;
-            padding: 8px 16px;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            border-color: #007bff;
-            color: #007bff;
+        .estado-noleido {
+            background-color: #d0e4f7 !important;
+            /* azul claro */
         }
 
-        .btn-outline-primary:hover {
-            background-color: #007bff;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            transform: translateY(-2px);
+        .estado-leido {
+            background-color: rgb(237, 237, 139) !important;
+            /* gris claro */
         }
 
-        .btn-outline-success {
-            font-size: 14px;
-            padding: 8px 16px;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            border-color: #28a745;
-            color: #28a745;
+        .estado-aprobado {
+            background-color: #d4edda !important;
+            /* verde claro */
         }
 
-        .btn-outline-success:hover {
-            background-color: #28a745;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        .estado-rechazado {
+            background-color: #f8d7da !important;
+            /* rojo claro */
         }
 
-        .btn-outline-info {
-            font-size: 14px;
-            padding: 8px 16px;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            border-color: #17a2b8;
-            color: #17a2b8;
+
+        #btn-no-leido {
+            color: #0d6efd;
+            /* azul bootstrap */
         }
 
-        .btn-outline-info:hover {
-            background-color: #17a2b8;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
-            transform: translateY(-2px);
+        #btn-no-leido:hover {
+            background-color: rgba(13, 110, 253, 0.15);
         }
 
-        .btn-outline-danger {
-            font-size: 14px;
-            padding: 8px 16px;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            border-color: #dc3545;
+        #btn-leido {
+            color: #60d6ee;
+            /* verde bootstrap */
+        }
+
+        #btn-leido:hover {
+            background-color: rgba(25, 135, 84, 0.15);
+        }
+
+        #btn-aceptado {
+            color: #198754;
+            /* cyan bootstrap */
+        }
+
+        #btn-aceptado:hover {
+            background-color: rgba(13, 202, 240, 0.15);
+        }
+
+        #btn-rechazado {
             color: #dc3545;
+            /* rojo bootstrap */
         }
 
-        .btn-outline-danger:hover {
-            background-color: #dc3545;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-            transform: translateY(-2px);
+        #btn-rechazado:hover {
+            background-color: rgba(220, 53, 69, 0.15);
         }
 
-        .btn-outline-secondary {
-            font-size: 14px;
-            padding: 8px 16px;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            border-color: #6c757d;
+        #btn-todos {
             color: #6c757d;
+            /* gris bootstrap */
         }
 
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
-            transform: translateY(-2px);
+        #btn-todos:hover {
+            background-color: rgba(108, 117, 125, 0.15);
         }
 
-        /* Efecto de sombras para los botones */
-        .shadow-sm {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        #btn-no-leido,
+        #btn-leido,
+        #btn-aceptado,
+        #btn-rechazado,
+        #btn-todos {
+            border: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            padding: 0.375rem 1rem;
+            border-radius: 50rem !important;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .m-1 {
-            margin: 5px;
+
+        #btn-no-leido:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            /* Azul claro al hover */
         }
 
-        /* Íconos dentro de los botones */
-        .btn i {
-            margin-right: 5px;
+        #btn-leido:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+            /* Verde claro al hover */
         }
 
-        /* Estilos para el botón con los iconos */
-        .btn i {
-            margin-right: 10px;
-            /* Espacio entre el ícono y el texto */
+        #btn-aceptado:hover {
+            background-color: rgba(23, 162, 184, 0.1);
+            /* Azul info claro */
+        }
+
+        #btn-rechazado:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            /* Rojo claro */
+        }
+
+        #btn-todos:hover {
+            background-color: rgba(108, 117, 125, 0.1);
+            /* Gris claro */
         }
     </style>
     <div class="content-wrapper">
